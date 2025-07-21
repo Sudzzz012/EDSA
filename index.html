@@ -1,115 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>Erase Debt SA | ITC Clearance & Debt Review Support Portal</title>
-  <link rel="icon" type="image/png" href="erase-debt-logo.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" href="erase-debt-logo.png"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <style>
-    body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #003865, #005c97); color: #fff; margin: 0; min-height: 100vh; }
-    .nav { background: #12243c; color: #fff; display: flex; align-items: center; padding: 18px 32px; }
-    .nav-logo { height: 72px; margin-right: 36px; }
-    .nav-links { display: flex; gap: 30px; flex: 1; }
-    .nav-links { justify-content: flex-end;}
-    .nav-links a { color: #fff; text-decoration: none; font-weight: bold; padding: 7px 18px; border-radius: 10px; transition: background 0.15s; font-size: 1.08em;}
+    body { font-family: Arial, sans-serif; background: #19559e linear-gradient(135deg,#003865 0,#005c97 80%); color:#fff; margin:0; min-height:100vh;}
+    .nav { background: #12243c; color: #fff; display: flex; align-items: center; padding: 16px 32px; }
+    .nav-logo { height: 52px; margin-right: 24px; }
+    .nav-links { display: flex; gap: 26px; flex: 1; justify-content: flex-end;}
+    .nav-links a { color: #fff; text-decoration: none; font-weight: bold; padding: 8px 22px; border-radius: 10px; transition: background .15s; font-size: 1.1em;}
     .nav-links a:hover, .nav-links a.active { background: #2970ba; color: #fff; }
-
-    .hero-wrap { position: relative; padding: 0 0 0 0; }
-    .hero-row { display: flex; align-items: flex-start; justify-content: center; gap: 48px; position: relative; margin-bottom:0;}
-    .hero-side-img { width: 270px; border-radius: 32px; background: #fff; box-shadow: 0 12px 54px #2970ba44; transition: transform .24s cubic-bezier(.22,1.19,.37,1.08), box-shadow .19s; margin-top: 52px; margin-bottom: 18px;}
-    .hero-side-img:hover { transform: scale(1.13) translateY(-12px) rotate(-2deg); box-shadow: 0 20px 88px #2970ba77; }
-    @media (max-width:1200px) { .hero-side-img { width: 140px; } .hero-row{gap:12vw;} }
-    @media (max-width:950px) { .hero-row { flex-direction: column; gap:10px; } .hero-side-img{width:100px;} }
-    .center-col { flex: 1 1 700px; min-width: 0; max-width: 720px; }
-
-    .hero { background: linear-gradient(120deg, #11203c 65%, #317df5 100%); text-align: center; padding: 110px 2vw 60px 2vw; border-radius: 0 0 70px 70px; }
-    .hero-logo { width: 210px; margin-bottom: 24px; filter: drop-shadow(0 8px 45px #2970ba66); }
-    .hero-title { font-size: 3.2rem; font-weight: bold; margin-bottom: 22px; color: #fff; letter-spacing: -1px;}
-    .hero-desc { color: #dce8f7; font-size: 1.32rem; margin: 0 auto 42px auto; max-width: 620px; }
-    .hero-cta { display: flex; justify-content: center; gap: 38px; margin-top: 34px; flex-wrap: wrap; }
-    .hero-btn { display: flex; align-items: center; gap: 12px; background: #2970ba; color: #fff; border: none; border-radius: 34px; padding: 23px 50px; font-size: 1.23rem; font-weight: bold; cursor: pointer; box-shadow: 0 2px 16px #2970ba44; transition: transform 0.19s, box-shadow 0.17s, background 0.18s, color 0.16s; }
-    .hero-btn i { font-size: 1.29em; }
-    .hero-btn:hover { background: #fff; color: #2970ba; transform: scale(1.13) translateY(-11px); box-shadow: 0 12px 36px #2970ba88; }
-    @media (max-width:900px) { .hero-btn { padding:18px 12px; font-size:1em;} .hero-row {gap:4vw;} .hero-logo{width:110px;} }
-    @media (max-width:600px) { .hero-btn {padding:13px 7px; font-size:.92em;} .hero-title{font-size:2em;}}
-
-    /* Modal overlay and content */
-    .modal-overlay { position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(20,36,61,0.64);z-index:10000;display:none; }
-    .modal-overlay.active { display:block; }
-    .modal-content { position:fixed; top:50%; left:50%; width:540px; max-width:98vw; background:#fff; color:#14243b; border-radius:28px; box-shadow:0 15px 70px #2970ba55; padding:0; z-index:10001; transform:translate(-50%,-50%) scale(1); transition:width 0.22s, height 0.22s, transform 0.18s; min-height:120px;}
-    .modal-content.large { width:780px; min-height:470px; }
-    .modal-header { display:flex;justify-content:space-between;align-items:center;background:#2970ba;color:#fff;padding:24px 26px 14px 26px; border-radius:28px 28px 0 0; font-size:1.39em;}
-    .modal-header .icon-btn { background:none; border:none; color:#fff; font-size:1.8em; cursor:pointer; margin-left:12px; transition: color .13s;}
-    .modal-header .icon-btn:hover { color:#ffb0c7; }
-    .modal-body { padding:38px 34px 34px 34px;}
-    .modal-form label { font-weight:bold; display:block; margin-bottom:7px; }
-    .modal-form input, .modal-form textarea, .modal-form select { width:100%;padding:15px; margin-bottom:18px; border-radius:11px; border:1px solid #a3c7f7; font-size:1.11em;}
-    .modal-form button[type="submit"] { background:#2970ba;color:#fff;padding:15px;border:none;border-radius:9px;font-size:1.15rem;font-weight:bold;cursor:pointer;width:100%;margin-top:8px;}
-    .modal-form button[type="submit"]:hover { background:#19588d; }
-    .modal-form .success,.modal-form .error {display:none;padding:1.15rem;border-radius:8px;font-weight:bold;margin-bottom:1.3rem;}
-    .modal-form .success {background:#d1ffd6;color:#256029;}
-    .modal-form .error {background:#ffd6d6;color:#a10000;}
-    .modal-actions {text-align:right; padding:0 22px 24px 22px;}
-    .modal-actions button {margin-left:10px; background:#eee; color:#2970ba; border:none; border-radius:9px; font-weight:bold; padding:10px 19px; cursor:pointer;}
-    .modal-actions button:hover {background:#2970ba;color:#fff;}
-
-    /* Features, testimonials, about, footer */
-    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 54px; margin: 90px 11vw 80px 11vw; justify-items: center; }
-    .feature-card { background: #133159e6; border-radius: 44px; box-shadow: 0 15px 46px #2970ba22; display: flex; flex-direction: column; align-items: center; padding: 54px 33px 40px 33px; position: relative; overflow: hidden; min-width: 320px; max-width: 510px; transition: transform 0.22s, box-shadow 0.20s; cursor: pointer;}
-    .feature-card img { width: 200px; border-radius: 34px; margin-bottom: 28px; box-shadow: 0 4px 32px #59a1ef33; transition: transform 0.24s cubic-bezier(.24,1.18,.35,1.23);}
-    .feature-card:hover { transform: scale(1.12) translateY(-12px); box-shadow: 0 22px 72px #41b0fab7, 0 10px 40px #2970ba16; z-index: 2; }
-    .feature-card:hover img { transform: scale(1.16) rotate(-2.5deg); filter: brightness(1.12) drop-shadow(0 2px 18px #fff7); }
-    .feature-label { font-size: 1.33rem; font-weight: 700; color: #fff; margin-bottom: 7px; text-shadow: 0 2px 11px #1d355d52; letter-spacing: 0.7px; }
-    .feature-desc { color: #b8dbfa; font-size: 1.17rem; text-align: center; margin-bottom: 0; min-height: 54px; }
-    .about-wrap { max-width: 1100px; margin: 90px auto 0 auto; background: rgba(255,255,255,0.13); border-radius: 40px; padding: 65px 46px 62px 46px; box-shadow: 0 9px 80px #2970ba13; color: #e6f3ff; text-align: center; }
-    .about-wrap h2 { font-size: 2.6rem; font-weight: 800; color: #a3c7f7; margin-bottom: 24px; letter-spacing: -1.1px; }
-    .about-wrap p { font-size: 1.23rem; color: #e8effa; max-width: 900px; margin: 0 auto 38px auto; }
-    .usp-list { display: flex; flex-wrap: wrap; gap: 42px; justify-content: center; margin-top: 18px; }
-    .usp-item { background: rgba(41,112,186,0.22); color: #fff; border-radius: 24px; padding: 28px 45px; min-width: 220px; display: flex; align-items: center; font-weight: 600; font-size: 1.19rem; box-shadow: 0 8px 28px #2970ba12; margin-bottom: 8px; gap: 13px; }
-    .usp-icon { background: #fff2; color: #a3c7f7; font-size: 1.26em; border-radius: 100%; padding: 8px 12px 8px 10px; margin-right: 9px; border: 1.6px solid #41b0fa66; }
-    /* Testimonials with larger side images */
-    .testimonials-row { margin: 70px 0 0 0; display: flex; align-items: center; justify-content: center; gap: 46px;}
-    .test-side-img { width: 170px; border-radius: 22px; background: #fff; box-shadow: 0 4px 22px #2970ba33; transition:transform .19s;}
-    .test-side-img:hover { transform: scale(1.16) translateY(-12px); box-shadow: 0 14px 40px #2970ba77; }
-    .center-col { flex: 1 1 900px; min-width: 0; max-width: 900px; }
-    .testimonials { max-width: 900px; margin: 0 auto 0 auto; text-align: center; padding-bottom: 30px; }
-    .testimonials h3 { color: #a3c7f7; font-size: 1.65rem; font-weight: 700; margin-bottom: 36px; letter-spacing: -0.5px; }
-    .testimonial-card { background: #173c5fef; color: #e6f3ff; border-radius: 30px; margin: 0 auto 26px auto; padding: 42px 28px 40px 28px; box-shadow: 0 5px 30px #2970ba27; max-width: 660px; position: relative; min-height: 175px; transition: box-shadow 0.16s; display: flex; flex-direction: column; align-items: center; }
-    .testimonial-img { width: 69px; height: 69px; border-radius: 50%; object-fit: cover; margin-bottom: 14px; border: 4px solid #a3c7f7; box-shadow: 0 2px 10px #2970ba22; }
-    .testimonial-quote { font-size: 1.21rem; font-weight: 500; margin-bottom: 18px; color: #e8effa; }
-    .testimonial-name { font-weight: 700; color: #fff; margin-bottom: 0; }
-    /* Disclaimer block */
-    .disclaimer-box {
-      background: #ffeab7;
-      color: #644400;
-      border-left: 7px solid #ffb800;
-      border-radius: 18px;
-      padding: 22px 30px 20px 18px;
-      font-size: 1.15rem;
-      margin: 60px auto 52px auto;
-      max-width: 970px;
-      box-shadow: 0 1px 16px #f5bc0044;
-      text-align:left;
-    }
-    /* Contact Us */
-    .contact-section { background:#fff; color:#14243b; border-radius:30px; max-width:700px; margin:68px auto 36px auto; box-shadow:0 4px 32px #2970ba24; padding:36px 32px 32px 32px; text-align:center;}
-    .contact-section h2{ color:#2970ba; margin-top:0; font-size:2.1em;}
-    .contact-info { font-size:1.13em; line-height:2.15em;}
-    .contact-info a{color:#2970ba;text-decoration:none;font-weight:bold;}
-    .contact-info a:hover{text-decoration:underline;}
-    .footer { background: #12243c; color: #c4d7ec; text-align: center; padding: 50px 4vw 16px 4vw; margin-top: 100px; border-radius: 50px 50px 0 0; font-size: 1.09rem; }
-    .footer-logo { width: 138px; margin-bottom: 18px; filter: drop-shadow(0 2px 16px #2970ba22); }
-    .footer-links { margin: 18px 0 22px 0; display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
+    .hero-flex { display:flex; align-items:stretch; justify-content:center; gap:40px; margin-top:38px; margin-bottom:22px;}
+    .hero-side { width:270px; border-radius:32px; background: #fff; box-shadow: 0 12px 54px #2970ba33; }
+    .hero-center { flex:1; min-width:300px; max-width:570px; text-align:center;}
+    .hero-center img { width:110px; margin-bottom:18px;}
+    .hero-title { font-size:2.6rem; font-weight:800; color:#e6f3ff; letter-spacing:-1px; margin-bottom:10px;}
+    .hero-desc { font-size:1.15rem; color:#d8e6f7; margin-bottom:32px;}
+    .hero-btns { display:flex; flex-wrap:wrap; gap:16px; justify-content:center; }
+    .hero-btn { background:#298dff; color:#fff; border:none; border-radius:32px; padding:18px 44px; font-size:1.12rem; font-weight:bold; cursor:pointer; margin:6px 0;}
+    .hero-btn:hover { background:#003865; }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 38px; margin: 54px auto 28px auto; max-width:1160px;}
+    .feature-card { background:#fff; color:#233c63; border-radius:30px; box-shadow:0 7px 26px #2970ba27; text-align:center; padding:38px 20px 24px 20px;}
+    .feature-card img { width:90px; margin-bottom:17px;}
+    .feature-label { font-weight:700; font-size:1.21rem; margin-bottom:11px;}
+    .feature-desc { color:#3c5777; font-size:1.05rem;}
+    .feature-row2 { grid-column:2/span 1;}
+    .about-block { max-width:940px; background:#184e99; border-radius:30px; box-shadow:0 9px 32px #2970ba23; color:#d6ecff; margin:60px auto 32px auto; padding:56px 38px 44px 38px;}
+    .about-block h2 { color:#d0f0fd; margin-bottom:21px;}
+    .about-block .about-icons { display:flex; flex-wrap:wrap; gap:30px; justify-content:center; margin-top:23px;}
+    .about-icon { background:#fff3; border-radius:22px; padding:17px 31px; font-size:1.08rem; display:flex; align-items:center; gap:13px;}
+    .about-icon i { font-size:1.43em; color:#38b6ff; background:#fff; border-radius:16px; padding:6px;}
+    .testimonials-row { display:flex; align-items:center; justify-content:center; gap:50px; margin-top:58px;}
+    .testimonial-side { width:180px; }
+    .testimonial-center { flex:1; }
+    .testimonial-card { background:#183968; color:#fff; border-radius:25px; padding:33px 23px; box-shadow:0 3px 18px #2970ba15; margin-bottom:18px; }
+    .testimonial-img { width:58px; height:58px; border-radius:50%; object-fit:cover; margin-bottom:10px;}
+    .testimonial-name { font-weight:700;}
+    .notice-block { max-width:720px; background:#ffecb7; color:#634e00; border-radius:17px; margin:40px auto 17px auto; padding:23px 18px 19px 18px; font-size:1.11em;}
+    .contact-block { max-width:560px; margin:40px auto 24px auto; background:#fff; color:#144486; border-radius:22px; padding:33px 28px; text-align:center;}
+    .footer { background: #12243c; color: #c4d7ec; text-align: center; padding: 36px 2vw 16px 2vw; margin-top: 100px; border-radius: 50px 50px 0 0; font-size: 1.09rem; }
+    .footer-logo { width: 128px; margin-bottom: 13px; }
+    .footer-links { margin: 12px 0 16px 0; display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; }
     .footer-links a { color: #f8fcff; font-weight: 500; text-decoration: none; border-bottom: 1.5px dotted #59a1ef; margin: 0 10px; transition: color 0.13s, transform 0.14s, box-shadow 0.15s; padding: 2px 9px; border-radius: 8px; }
-    .footer-links a:hover, .footer-links a.active { color: #76c0ff; background: rgba(41, 112, 186, 0.13); transform: scale(1.08) translateY(-3px); box-shadow: 0 2px 8px #2970ba33; text-decoration: underline; text-underline-offset: 6px; }
-    @media (max-width:1150px) { .hero-side-img, .test-side-img { width: 120px;} .testimonials-row{gap:16px;} }
-    @media (max-width:800px) { .testimonials-row {flex-direction:column;gap:18px;} .test-side-img {margin:0 auto;display:block;} }
-    @media (max-width:700px) { .hero-title { font-size: 2.0rem; } .hero-logo { width: 110px; } }
+    .footer-links a:hover { color: #76c0ff; background: rgba(41, 112, 186, 0.13);}
+    .modal-overlay { position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(20,36,61,0.64);z-index:10000;display:none; }
+    .modal-overlay.active { display:flex; align-items:center; justify-content:center;}
+    .modal-content { background:#fff; color:#233c63; border-radius:23px; box-shadow:0 11px 55px #2970ba66; padding:36px 29px 28px 29px; min-width:300px; width:100%; max-width:380px; position:relative;}
+    .modal-content label { font-weight:bold; margin-bottom:5px; display:block;}
+    .modal-content input, .modal-content textarea, .modal-content select { width:100%;padding:12px; border-radius:8px; border:1px solid #a3c7f7; font-size:1em; margin-bottom:11px;}
+    .modal-content button[type="submit"] { background:#2970ba;color:#fff;border:none;border-radius:8px;padding:14px;font-size:1.13rem;font-weight:bold;width:100%;margin-top:5px; }
+    .modal-close { position:absolute;top:11px;right:15px;background:none;border:none;font-size:1.6rem;color:#a3c7f7;cursor:pointer;}
+    .modal-msg {margin:12px 0 0 0;text-align:center;font-weight:bold;}
+    .otp-section { display:none; }
+    .result-table { width:100%; margin-top:12px; border-collapse:collapse; background:#f7faff; border-radius:9px; overflow:hidden;}
+    .result-table th, .result-table td { padding:9px 6px; border-bottom:1px solid #dde3ef; text-align:left; }
+    .result-table th { background:#e1f0ff; color:#2560a3;}
+    .result-table tr:last-child td { border-bottom:none;}
+    @media (max-width:900px) { .features-grid{grid-template-columns:1fr;}.hero-flex{flex-direction:column;gap:20px;} }
+    @media (max-width:650px) { .about-block,.contact-block,.notice-block{padding:13px 4vw;}}
   </style>
 </head>
 <body>
-  <!-- Navigation -->
+  <!-- NAVIGATION -->
   <nav class="nav">
     <img src="erase-debt-logo.png" class="nav-logo" alt="Erase Debt SA Logo" />
     <div class="nav-links">
@@ -117,131 +72,98 @@
       <a href="#about">About Us</a>
       <a href="#features">Services</a>
       <a href="#contact">Contact Us</a>
-      <a href="staff-login.html">Staff Login</a>
+      <a href="staff-login1.html">Staff Login</a>
       <a href="#" id="openQueryNavBtn"><i class="fa-solid fa-envelope-open-text"></i> Submit a Query</a>
-      <a href="#" id="openFollowupNavBtn"><i class="fa-solid fa-clipboard-check"></i> Follow Up on Your Application</a>
+      <a href="#" id="openFollowupNavBtn"><i class="fa-solid fa-clipboard-check"></i> Follow Up on a Query</a>
     </div>
   </nav>
-  <!-- HERO WITH IMAGES -->
-  <div class="hero-wrap">
-    <div class="hero-row">
-      <img src="click-away-support.png" class="hero-side-img" alt="Left Hero" />
-      <div class="center-col">
-        <section class="hero">
-          <img src="erase-debt-logo.png" class="hero-logo" alt="Erase Debt SA Logo" />
-          <h1 class="hero-title">Welcome to Erase Debt SA</h1>
-          <div class="hero-desc">
-            South Africa’s trusted portal for ITC clearance, debt review support, and professional credit solutions.<br>
-            <b>Take control of your future. We make it easy, secure, and life-changing!</b>
-          </div>
-          <div class="hero-cta">
-            <button class="hero-btn" id="openQueryBtn"><i class="fa-solid fa-envelope-open-text"></i>Submit a Query</button>
-            <button class="hero-btn" id="openSupportBtn"><i class="fa-solid fa-headset"></i>Click-Away Support</button>
-            <button class="hero-btn" id="openTrackBtn"><i class="fa-solid fa-magnifying-glass-chart"></i>Track Application</button>
-            <button class="hero-btn" id="openFollowBtn"><i class="fa-solid fa-clipboard-check"></i>Follow up on Your Application</button>
-          </div>
-        </section>
+  <!-- HERO ROW -->
+  <div class="hero-flex">
+    <img src="click-away-support-image.png" class="hero-side" alt="Consultant" />
+    <div class="hero-center">
+      <img src="erase-debt-logo.png" alt="Erase Debt SA" />
+      <div class="hero-title">Welcome to Erase Debt SA</div>
+      <div class="hero-desc">South Africa’s trusted portal for ITC clearance, debt review support, and professional credit solutions.<br>
+      <b>Take control of your future. We make it easy, secure, and life-changing!</b></div>
+      <div class="hero-btns">
+        <button class="hero-btn" id="openQueryBtn">Submit a Query</button>
+        <button class="hero-btn" id="openSupportBtn">Click-Away Support</button>
+        <button class="hero-btn" id="openTrackBtn">Track Application</button>
+        <button class="hero-btn" id="openFollowBtn">Follow up on Your Application</button>
       </div>
-      <img src="submit-a-query.png" class="hero-side-img" alt="Right Hero" />
     </div>
+    <img src="submit-query-image.png" class="hero-side" alt="Track Application" />
   </div>
   <!-- FEATURES GRID -->
-  <section class="features-grid" id="features">
-    <div class="feature-card" onclick="openTrackAppModal()">
-      <img src="track-your-application-image.png" alt="Track your Application" />
+  <div class="features-grid" id="features">
+    <div class="feature-card">
+      <img src="track-your-application-image.png" alt="Track App" />
       <div class="feature-label">Track your Application</div>
       <div class="feature-desc">Follow your progress, payment status, and all updates—live and transparent.</div>
     </div>
-    <div class="feature-card" onclick="openQueryModal()">
-      <img src="submit-query-image.png" alt="Submit a Query" />
+    <div class="feature-card">
+      <img src="submit-query-image.png" alt="Submit Query" />
       <div class="feature-label">Submit a Query</div>
       <div class="feature-desc">Get instant support for any credit, debt review, or ITC issue. Our experts respond fast.</div>
     </div>
-    <div class="feature-card" onclick="openSupportModal()">
-      <img src="professional-secure-compliant-image.png" alt="Professional, Secure & Compliant" />
-      <div class="feature-label">Professional, Secure &amp; Compliant</div>
+    <div class="feature-card">
+      <img src="professional-secure-compliant-image.png" alt="Secure & Compliant" />
+      <div class="feature-label">Professional, Secure & Compliant</div>
       <div class="feature-desc">Bank-grade security, POPIA compliance, and NCR registration for your peace of mind.</div>
     </div>
-    <div class="feature-card" onclick="openQueryModal()">
-      <img src="click-away-support-image.png" alt="Click-Away Support" />
+    <div class="feature-card feature-row2">
+      <img src="click-away-support-image.png" alt="Support" />
       <div class="feature-label">Click-Away Support</div>
       <div class="feature-desc">Friendly staff and AI help are always a click away. The support you need, whenever you need it.</div>
     </div>
-  </section>
-  <!-- About Section -->
-  <div class="about-wrap" id="about">
+  </div>
+  <!-- ABOUT BLOCK -->
+  <div class="about-block" id="about">
     <h2>About Erase Debt SA</h2>
     <p>
-      We’re registered debt counsellors and ITC clearance experts helping thousands of South Africans restore their credit, get finance-ready, and change their lives.<br>
-      <b>Integrity. Excellence. Privacy. Support.</b>
-      <br><br>
-      <b>Erase Debt SA is your partner for a fresh start. Trust our experience, enjoy our care.</b>
+      We're registered debt counsellors and ITC clearance experts helping thousands of South Africans restore their credit, get finance-ready, and change their lives.<br>
+      <b>Integrity. Excellence. Privacy. Support.</b><br>
+      Erase Debt SA is your partner for a fresh start. Trust our experience, enjoy our care.
     </p>
-    <div class="usp-list">
-      <div class="usp-item"><span class="usp-icon">✅</span> NCR Registered & POPIA Compliant</div>
-      <div class="usp-item"><span class="usp-icon">💎</span> “Expensive” Service, Affordable Cost</div>
-      <div class="usp-item"><span class="usp-icon">🔒</span> Confidential & Secure, Always</div>
-      <div class="usp-item"><span class="usp-icon">🧑‍💼</span> Professional Agents & AI 24/7</div>
+    <div class="about-icons">
+      <div class="about-icon"><i class="fa-solid fa-certificate"></i> NCR Registered & POPIA Compliant</div>
+      <div class="about-icon"><i class="fa-solid fa-gem"></i> "Expensive" Service, Affordable Cost</div>
+      <div class="about-icon"><i class="fa-solid fa-lock"></i> Confidential & Secure, Always</div>
+      <div class="about-icon"><i class="fa-solid fa-user-tie"></i> Professional Agents & AI 24/7</div>
     </div>
   </div>
-  <!-- Testimonials with side images (centered between testimonials) -->
+  <!-- TESTIMONIALS -->
   <div class="testimonials-row">
-    <img src="track-your-application.png" class="test-side-img" alt="Testimonial Left" />
-    <div class="center-col">
-      <div class="testimonials">
-        <h3>Client Success Stories</h3>
-        <div class="testimonial-card">
-          <img src="client1.jpg" class="testimonial-img" alt="Client" />
-          <div class="testimonial-quote">“Erase Debt SA cleared my credit in just 3 months. I bought a new car and my family is so grateful. The support is real.”</div>
-          <div class="testimonial-name">Nomsa M., Durban</div>
-        </div>
-        <div class="testimonial-card">
-          <img src="client2.jpg" class="testimonial-img" alt="Client" />
-          <div class="testimonial-quote">“The AI answered all my questions instantly. The service was professional and secure. Highly recommended!”</div>
-          <div class="testimonial-name">James P., Cape Town</div>
-        </div>
+    <img src="client1.jpg" class="testimonial-side" alt="Testimonial Left" />
+    <div class="testimonial-center">
+      <div class="testimonial-card">
+        <img src="client1.jpg" class="testimonial-img" alt="Client" />
+        <div class="testimonial-quote">"Erase Debt SA cleared my credit in just 3 months. I bought a new car and my family is so grateful. The support is real."</div>
+        <div class="testimonial-name">Nomsa M., Durban</div>
+      </div>
+      <div class="testimonial-card">
+        <img src="client2.jpg" class="testimonial-img" alt="Client" />
+        <div class="testimonial-quote">"The AI answered all my questions instantly. The service was professional and secure. Highly recommended!"</div>
+        <div class="testimonial-name">James P., Cape Town</div>
       </div>
     </div>
-    <img src="track-your-application-2.png" class="test-side-img" alt="Testimonial Right" />
+    <img src="client2.jpg" class="testimonial-side" alt="Testimonial Right" />
   </div>
-  <!-- Disclaimer (above footer) -->
-  <div class="disclaimer-box">
-    <b>Please Note:</b><br>
-    Erase Debt SA does not use a business WhatsApp number for any part of our client admin or support process. All communication is conducted strictly through our secure client portal, direct phone calls, or official email addresses.<br><br>
+  <!-- DISCLAIMER / NOTICE -->
+  <div class="notice-block">
+    <b>Please Note:</b> Erase Debt SA does not use a business WhatsApp number for any part of our client admin or support process. All communication is conducted strictly through our secure client portal, direct phone calls, or official email addresses.<br><br>
     We are not a registered financial services provider. Our services are focused exclusively on credit profile advice, credit report assistance, and helping clients address their credit records. We do not offer lending or any financial products. For all credit profile matters, advice, and dispute assistance, you are in the right place!
   </div>
-  <!-- Contact Us Section -->
-  <div class="contact-section" id="contact">
-    <h2>Contact Us</h2>
-    <div class="contact-info">
-      <b>Phone:</b>
-      <a href="tel:0315002220">031 500 2220</a> /
-      <a href="tel:0311095560">031 109 5560</a><br>
-      <b>Email:</b>
-      <a href="mailto:admin@erasedebtsa.co.za">admin@erasedebtsa.co.za</a>,
-      <a href="mailto:queries@erasedebtsa.co.za">queries@erasedebtsa.co.za</a><br>
-      <b>Websites:</b>
-      <a href="https://www.erasedebtsa.co.za" target="_blank">www.erasedebtsa.co.za</a> (Information Website),
-      <a href="https://www.erasedebtsa.net" target="_blank">www.erasedebtsa.net</a> (Client Query Portal)<br>
-      <b>Address:</b>
-      23 Whetstone Drive, Unit 11, Phoenix, Durban, 4068
-    </div>
-  </div>
-  <!-- Modal overlay (for all forms) -->
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal-content" id="modalContent" tabindex="-1">
-      <div class="modal-header">
-        <span id="modalTitle">Submit a Query</span>
-        <div>
-          <button class="icon-btn" id="modalMaxBtn" title="Maximize"><i class="fa-regular fa-square-plus"></i></button>
-          <button class="icon-btn" id="modalMinBtn" title="Minimize"><i class="fa-regular fa-square-minus"></i></button>
-          <button class="icon-btn" id="modalCloseBtn" title="Close"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-      </div>
-      <div class="modal-body" id="modalBody">
-        <!-- Form will be injected here -->
-      </div>
-    </div>
+  <!-- CONTACT -->
+  <div class="contact-block" id="contact">
+    <h3 style="color:#144486;margin-bottom:13px;">Contact Us</h3>
+    <div><b>Phone:</b> <a href="tel:0315002220" style="color:#2970ba;font-weight:bold;">031 500 2220</a> /
+      <a href="tel:0311095560" style="color:#2970ba;font-weight:bold;">031 109 5560</a></div>
+    <div><b>Email:</b> <a href="mailto:admin@erasedebtsa.co.za" style="color:#2970ba;font-weight:bold;">admin@erasedebtsa.co.za</a>,
+      <a href="mailto:queries@erasedebtsa.co.za" style="color:#2970ba;font-weight:bold;">queries@erasedebtsa.co.za</a></div>
+    <div><b>Websites:</b> <a href="https://www.erasedebtsa.co.za" style="color:#2970ba;font-weight:bold;">www.erasedebtsa.co.za</a> (Information),
+      <a href="https://www.erasedebtsa.net" style="color:#2970ba;font-weight:bold;">www.erasedebtsa.net</a> (Client Portal)</div>
+    <div><b>Address:</b> 23 Whetstone Drive, Unit 11, Phoenix, Durban, 4068</div>
   </div>
   <!-- FOOTER -->
   <footer class="footer">
@@ -268,199 +190,143 @@
       &copy; 2025 Erase Debt SA. All rights reserved. POPIA compliant | NCR Registered | Secure Platform
     </div>
   </footer>
-<script type="module">
-// MODAL JS
-const overlay = document.getElementById('modalOverlay');
-const content = document.getElementById('modalContent');
-const modalBody = document.getElementById('modalBody');
-const modalTitle = document.getElementById('modalTitle');
-const maxBtn = document.getElementById('modalMaxBtn');
-const minBtn = document.getElementById('modalMinBtn');
-const closeBtn = document.getElementById('modalCloseBtn');
-let modalState = "normal";
-function showModal(title, inner) {
-  modalTitle.textContent = title;
-  modalBody.innerHTML = "";
-  modalBody.appendChild(inner);
-  overlay.classList.add("active");
-  content.classList.remove("large");
-  modalState = "normal";
-  content.focus();
-}
-function closeModal() { overlay.classList.remove("active"); }
-maxBtn.onclick = function() { content.classList.add("large"); modalState="large"; };
-minBtn.onclick = function() { content.classList.remove("large"); modalState="normal"; };
-closeBtn.onclick = closeModal;
-overlay.onclick = function(e) { if(e.target===overlay) closeModal(); };
-window.addEventListener("keydown",e=>{if(e.key==="Escape") closeModal();});
+  <!-- SUASHA AI BUBBLE -->
+  <div id="suasha-bubble" onclick="toggleSuasha()" style="position:fixed;bottom:30px;right:30px;width:60px;height:60px;background:#fff;border-radius:50%;box-shadow:0 0 15px #2970ba44;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:30px;z-index:20000;">💬</div>
+  <iframe id="suasha-chat" src="https://chat.openai.com" title="Suasha AI Assistant" style="position:fixed;bottom:100px;right:30px;width:350px;height:480px;display:none;border-radius:10px;overflow:hidden;box-shadow:0 0 20px rgba(0,0,0,0.3);border:none;z-index:20001;"></iframe>
 
-// BUTTON OPENERS
-document.getElementById('openQueryBtn').onclick = openQueryModal;
-document.getElementById('openSupportBtn').onclick = openQueryModal;
-document.getElementById('openTrackBtn').onclick = openTrackAppModal;
-document.getElementById('openFollowBtn').onclick = openFollowupModal;
-document.getElementById('openQueryNavBtn').onclick = function(e){ e.preventDefault(); openQueryModal();};
-document.getElementById('openFollowupNavBtn').onclick = function(e){ e.preventDefault(); openFollowupModal();};
-
-// SUPABASE LOGIC
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-const SUPABASE_URL = 'https://xzjunkpxvfdpuogoflzh.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ';
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// Query Form (for Query & Click-Away Support)
-function openQueryModal() {
-  let form = document.createElement('form');
-  form.className = "modal-form";
-  form.innerHTML = `
-    <label for="first_name">First Name</label>
-    <input type="text" id="first_name" name="first_name" required>
-    <label for="last_name">Last Name</label>
-    <input type="text" id="last_name" name="last_name" required>
-    <label for="id_number">ID Number</label>
-    <input type="text" id="id_number" name="id_number" required>
-    <label for="email">Email Address</label>
-    <input type="email" id="email" name="email" required>
-    <label for="query_type">Query Type</label>
-    <select id="query_type" name="query_type" required>
-      <option value="">-- Select a Query --</option>
-      <option>I Need a Callback</option>
-      <option>I Have a Complaint</option>
-      <option>I Have Fully Paid My Fees</option>
-      <option>I Have Submitted Documents And Am Awaiting a Reply</option>
-      <option>I Want to Pay My Outstanding Funds</option>
-      <option>I Want To Settle My Arrears</option>
-      <option>I Need A Follow Up On My Process</option>
-      <option>I Did Not Get a Welcome Email</option>
-    </select>
-    <label for="additional_text">Additional Information</label>
-    <textarea id="additional_text" name="additional_text" rows="4"></textarea>
-    <input type="hidden" id="branch_name" name="branch_name" value="Erase Debt SA - MP">
-    <button type="submit">Submit Query</button>
-    <div class="success" id="modal-success"></div>
-    <div class="error" id="modal-error"></div>
-  `;
-  form.onsubmit = async function(e){
-    e.preventDefault();
-    document.getElementById('modal-success').style.display = 'none';
-    document.getElementById('modal-error').style.display = 'none';
-    // validation
-    let valid = true;
-    const required = ['first_name','last_name','id_number','email','query_type'];
-    for (let field of required) {
-      if (!form[field].value.trim()) { valid = false; break; }
+  <!-- MODALS -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-content" id="modalContent" tabindex="-1">
+      <button class="modal-close" id="modalCloseBtn" title="Close">&times;</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script>
+    // Suasha AI logic
+    function toggleSuasha(){ const chat=document.getElementById("suasha-chat"); chat.style.display=chat.style.display==="block"?"none":"block"; }
+    // Modal logic
+    function showModal(formHTML){
+      document.getElementById('modalBody').innerHTML = formHTML;
+      document.getElementById('modalOverlay').classList.add('active');
     }
-    if (!valid) {
-      document.getElementById('modal-error').textContent = "Please fill in all required fields correctly.";
-      document.getElementById('modal-error').style.display = 'block';
-      return;
-    }
-    const payload = {
-      reference_number: 'EDSA' + Date.now(),
-      id_number: form.id_number.value.trim(),
-      first_name: form.first_name.value.trim(),
-      last_name: form.last_name.value.trim(),
-      email: form.email.value.trim(),
-      query_text: form.query_type.value,
-      additional_text: form.additional_text.value.trim(),
-      branch_name: form.branch_name.value
+    document.getElementById('modalCloseBtn').onclick = function() {
+      document.getElementById('modalOverlay').classList.remove('active');
     };
-    const { error } = await supabase.from('QUERIES').insert([payload]);
-    if (error) {
-      document.getElementById('modal-error').textContent = 'Submission failed. ' + (error.message || '');
-      document.getElementById('modal-error').style.display = 'block';
-    } else {
-      document.getElementById('modal-success').innerHTML = `Submitted successfully! Reference#: ${payload.reference_number}`;
-      document.getElementById('modal-success').style.display = 'block';
-      form.reset();
-    }
-  };
-  showModal("Submit a Query", form);
-}
-// Track Application Modal
-function openTrackAppModal() {
-  let form = document.createElement('form');
-  form.className = "modal-form";
-  form.innerHTML = `
-    <label for="track_id">ID Number</label>
-    <input type="text" id="track_id" name="track_id" required>
-    <label for="track_email">Email Address</label>
-    <input type="email" id="track_email" name="track_email" required>
-    <button type="submit">Track Application</button>
-    <div class="success" id="modal-success"></div>
-    <div class="error" id="modal-error"></div>
-  `;
-  form.onsubmit = async function(e){
-    e.preventDefault();
-    document.getElementById('modal-success').style.display = 'none';
-    document.getElementById('modal-error').style.display = 'none';
-    const id = form.track_id.value.trim();
-    const email = form.track_email.value.trim();
-    if(!id||!email) {
-      document.getElementById('modal-error').textContent = "Please enter both your ID and email.";
-      document.getElementById('modal-error').style.display = 'block';
-      return;
-    }
-    const { data, error } = await supabase.from('QUERIES').select().eq('id_number', id).eq('email', email).order('created_at', {ascending:false}).limit(1);
-    if(error || !data || data.length===0) {
-      document.getElementById('modal-error').textContent = "No matching application found. Please check your details.";
-      document.getElementById('modal-error').style.display = 'block';
-    } else {
-      const q = data[0];
-      let statusClass = "status-new";
-      if((q.status||"").toLowerCase().includes("process")) statusClass = "status-inprocess";
-      else if((q.status||"").toLowerCase().includes("resolved")) statusClass = "status-resolved";
-      document.getElementById('modal-success').innerHTML =
-        `<div style="margin-bottom:6px;"><b>Status:</b> <span class="status-tag ${statusClass}">${q.status||"New"}</span></div>
-         <div><b>Process:</b> ${q.query_text}</div>
-         <div><b>Admin Response:</b> ${q.response_text||"<em>(pending)</em>"}</div>`;
-      document.getElementById('modal-success').style.display = 'block';
-    }
-  };
-  showModal("Track your Application", form);
-}
-// Follow Up on Query Modal
-function openFollowupModal() {
-  let form = document.createElement('form');
-  form.className = "modal-form";
-  form.innerHTML = `
-    <label for="follow_ref">Reference Number</label>
-    <input type="text" id="follow_ref" name="follow_ref" required placeholder="e.g. EDSA123456...">
-    <button type="submit">Check Status</button>
-    <div class="success" id="modal-success"></div>
-    <div class="error" id="modal-error"></div>
-  `;
-  form.onsubmit = async function(e){
-    e.preventDefault();
-    document.getElementById('modal-success').style.display = 'none';
-    document.getElementById('modal-error').style.display = 'none';
-    const ref = form.follow_ref.value.trim();
-    if(!ref) {
-      document.getElementById('modal-error').textContent = "Please enter your reference number.";
-      document.getElementById('modal-error').style.display = 'block';
-      return;
-    }
-    const { data, error } = await supabase.from('QUERIES').select().eq('reference_number', ref).limit(1);
-    if(error || !data || data.length===0) {
-      document.getElementById('modal-error').textContent = "No matching query found. Please check your reference number.";
-      document.getElementById('modal-error').style.display = 'block';
-    } else {
-      const q = data[0];
-      let statusClass = "status-new";
-      if((q.status||"").toLowerCase().includes("process")) statusClass = "status-inprocess";
-      else if((q.status||"").toLowerCase().includes("resolved")) statusClass = "status-resolved";
-      document.getElementById('modal-success').innerHTML =
-        `<div style="margin-bottom:6px;"><b>Status:</b> <span class="status-tag ${statusClass}">${q.status||"New"}</span></div>
-         <div><b>Your Query:</b> ${q.query_text}</div>
-         <div><b>Admin Response:</b> ${q.response_text||"<em>(pending)</em>"}</div>`;
-      document.getElementById('modal-success').style.display = 'block';
-    }
-  };
-  showModal("Follow up on Your Application", form);
-}
-window.openQueryModal=openQueryModal;
-window.openTrackAppModal=openTrackAppModal;
-window.openSupportModal=openQueryModal;
-</script>
+    // SUPABASE SETUP
+    const supabase = supabase.createClient(
+      'https://xzjunkpxvfdpuogoflzh.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ'
+    );
+    // Submit a Query modal
+    document.getElementById('openQueryBtn').onclick = function(){
+      let formHTML = `
+        <form id="queryForm">
+          <label>First Name</label><input name="first_name" required>
+          <label>Last Name</label><input name="last_name" required>
+          <label>ID Number</label><input name="id_number" required>
+          <label>Email</label><input name="email" type="email" required>
+          <label>Query Type</label>
+          <select name="query_type" required>
+            <option value="">-- Select a Query --</option>
+            <option>I Need a Callback</option>
+            <option>I Have a Complaint</option>
+            <option>I Have Fully Paid My Fees</option>
+            <option>I Have Submitted Documents And Am Awaiting a Reply</option>
+            <option>I Want to Pay My Outstanding Funds</option>
+            <option>I Want To Settle My Arrears</option>
+            <option>I Need A Follow Up On My Process</option>
+            <option>I Did Not Get a Welcome Email</option>
+          </select>
+          <label>Additional Information</label>
+          <textarea name="additional_text" rows="3"></textarea>
+          <button type="submit">Submit Query</button>
+          <div class="modal-msg" id="queryFormMsg"></div>
+        </form>`;
+      showModal(formHTML);
+      document.getElementById('queryForm').onsubmit = async function(e){
+        e.preventDefault();
+        let f = e.target, msg = document.getElementById('queryFormMsg');
+        msg.textContent = "";
+        const payload = {
+          reference_number: 'EDSA' + Date.now(),
+          first_name: f.first_name.value.trim(),
+          last_name: f.last_name.value.trim(),
+          id_number: f.id_number.value.trim(),
+          email: f.email.value.trim(),
+          query_type: f.query_type.value,
+          query_text: f.additional_text.value.trim(),
+        };
+        const { error } = await supabase.from('QUERIES').insert([payload]);
+        if (error) {
+          msg.textContent = "Submission failed. "+error.message;
+          msg.style.color = "#d32f2f";
+        } else {
+          msg.textContent = "Your query was submitted! Reference number: "+payload.reference_number;
+          msg.style.color = "#256029";
+          f.reset();
+        }
+      }
+    };
+    document.getElementById('openQueryNavBtn').onclick = function(e){e.preventDefault();document.getElementById('openQueryBtn').click();};
+    document.getElementById('openSupportBtn').onclick = function(){document.getElementById('openQueryBtn').click();};
+    // Follow up modal with OTP
+    document.getElementById('openFollowBtn').onclick = function(){
+      let formHTML = `
+        <form id="followForm">
+          <label>Reference Number</label><input name="ref" required>
+          <button type="submit">Search</button>
+          <div class="modal-msg" id="followError"></div>
+        </form>
+        <form id="otpSection" style="display:none;">
+          <label>Enter OTP sent to your email</label><input name="otp" required maxlength="6">
+          <button type="submit">Verify OTP</button>
+          <div class="modal-msg" id="otpError"></div>
+        </form>
+        <div id="followupResults"></div>
+      `;
+      showModal(formHTML);
+      let realOTP = null, foundQuery = null;
+      document.getElementById('followForm').onsubmit = async function(e){
+        e.preventDefault();
+        let f = e.target, err = document.getElementById('followError');
+        err.textContent = "";
+        const ref = f.ref.value.trim();
+        const { data, error } = await supabase.from('QUERIES').select().eq('reference_number', ref).limit(1);
+        if(error || !data || data.length === 0) {
+          err.textContent = "No query found for that reference number."; err.style.color = "#d32f2f"; return;
+        }
+        foundQuery = data[0];
+        realOTP = Math.floor(100000 + Math.random()*900000)+"";
+        alert("OTP sent to email: "+realOTP); // Replace with production email
+        document.getElementById('otpSection').style.display = "block";
+        f.style.display = "none";
+      }
+      document.getElementById('otpSection').onsubmit = function(e){
+        e.preventDefault();
+        let f = e.target, err = document.getElementById('otpError'), results = document.getElementById('followupResults');
+        err.textContent = results.textContent = "";
+        if(f.otp.value.trim() !== realOTP) {
+          err.textContent = "Incorrect OTP."; err.style.color = "#d32f2f"; return;
+        }
+        let q = foundQuery;
+        results.innerHTML = `
+          <table class="result-table">
+            <tr><th>Reference</th><td>${q.reference_number}</td></tr>
+            <tr><th>Name</th><td>${q.first_name} ${q.last_name}</td></tr>
+            <tr><th>ID Number</th><td>${q.id_number}</td></tr>
+            <tr><th>Email</th><td>${q.email}</td></tr>
+            <tr><th>Query Type</th><td>${q.query_type}</td></tr>
+            <tr><th>Query Details</th><td>${q.query_text}</td></tr>
+            <tr><th>Status</th><td>${q.status||'New'}</td></tr>
+            <tr><th>Responded By</th><td>${q.responded_by||'(pending)'}</td></tr>
+            <tr><th>Latest Update</th><td>${q.response_text||'(pending)'}</td></tr>
+            <tr><th>Date Created</th><td>${q.created_at?new Date(q.created_at).toLocaleString():'-'}</td></tr>
+          </table>
+        `;
+      }
+    };
+    document.getElementById('openFollowupNavBtn').onclick = function(e){e.preventDefault();document.getElementById('openFollowBtn').click();};
+  </script>
 </body>
 </html>
