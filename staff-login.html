@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Staff Login - Erase Debt SA</title>
+  <link rel="icon" type="image/png" href="erase-debt-logo.png"/>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Montserrat', Arial, sans-serif;
+      background: linear-gradient(120deg, #003865, #005c97 85%);
+      min-height: 100vh;
+      margin: 0;
+      color: #222;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .logo-container {
+      margin-top: 40px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    .logo-container img {
+      height: 90px;
+      border-radius: 18px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.07);
+      background: #fff;
+      padding: 10px 28px;
+    }
+    h1 {
+      color: #fff;
+      letter-spacing: 1px;
+      font-weight: 700;
+      text-align: center;
+      margin-top: 10px;
+      margin-bottom: 30px;
+      font-size: 2.2rem;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    }
+    .role-blocks {
+      display: grid;
+      grid-template-columns: repeat(2, 240px);
+      gap: 36px;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+    .role-block {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 4px 18px 2px rgba(30, 56, 90, 0.14);
+      padding: 36px 0 30px 0;
+      text-align: center;
+      cursor: pointer;
+      transition: box-shadow 0.18s, transform 0.15s;
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: #005c97;
+      border: 3px solid #f3f7fb;
+      position: relative;
+    }
+    .role-block:hover {
+      box-shadow: 0 8px 28px 4px rgba(0,92,151,0.22);
+      transform: translateY(-4px) scale(1.04);
+      border-color: #005c97;
+      background: linear-gradient(115deg, #fafdff 60%, #e3edff 100%);
+    }
+    .role-icon {
+      font-size: 2.7rem;
+      margin-bottom: 16px;
+      color: #0084c2;
+      display: block;
+    }
+    .login-modal-bg {
+      display: none;
+      position: fixed;
+      top:0; left:0; right:0; bottom:0;
+      background: rgba(0,0,0,0.22);
+      z-index: 50;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-modal-bg.active { display: flex; }
+    .login-modal {
+      background: #fff;
+      padding: 34px 30px 24px 30px;
+      border-radius: 18px;
+      min-width: 320px;
+      box-shadow: 0 8px 40px 2px rgba(0,50,101,0.20);
+      text-align: center;
+      position: relative;
+      z-index: 999;
+      animation: fadeInModal 0.25s;
+    }
+    @keyframes fadeInModal {
+      from { opacity:0; transform: scale(0.9);}
+      to { opacity:1; transform: scale(1);}
+    }
+    .login-modal h2 { font-size: 1.32rem; margin-bottom: 14px; color: #005c97; }
+    .login-modal label { font-weight: 700; font-size: 1rem; margin-right: 6px; }
+    .login-modal input {
+      width: 90%; padding: 10px; border-radius: 8px;
+      margin-bottom: 15px; font-size: 1rem; border: 1.2px solid #d6e3f7;
+      transition: border-color 0.13s;
+    }
+    .login-modal input:focus { outline:none; border-color: #005c97; }
+    .login-modal button {
+      background: #005c97; color: #fff; border: none; border-radius: 8px;
+      padding: 10px 30px; font-size: 1rem; cursor: pointer;
+      font-weight: 700; margin-top: 8px; transition: background 0.13s;
+      box-shadow: 0 1px 8px 1px rgba(0,70,151,0.09);
+    }
+    .login-modal button:hover { background: #003865; }
+    .close-modal {
+      position: absolute; top: 14px; right: 16px; font-size: 1.5rem;
+      color: #888; cursor: pointer; background: none; border: none;
+      transition: color 0.18s;
+    }
+    .close-modal:hover { color: #003865;}
+    .login-error { color: #c70039; font-size: 0.98rem; margin-bottom: 8px;}
+    .reset-link {
+      display: inline-block;
+      font-size: 0.95rem;
+      color: #2970ba;
+      margin-top: 4px;
+      margin-bottom: 10px;
+      text-decoration: underline;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      font-weight: 500;
+      transition: color 0.15s;
+    }
+    .reset-link:hover { color: #c70039;}
+    .reset-form {
+      display: none;
+      text-align: left;
+      margin-top: 6px;
+      margin-bottom: 10px;
+      padding: 10px 10px 14px 10px;
+      background: #f4f8ff;
+      border-radius: 9px;
+    }
+    .reset-form label { font-size: 0.98rem;}
+    .reset-form input {
+      width: 90%; padding: 7px; border-radius: 7px;
+      font-size: 0.99rem; border: 1px solid #d6e3f7;
+      margin-bottom: 8px;
+    }
+    .reset-confirm { color: #1e824c; font-size: 1rem; margin-top: 8px;}
+    .action-row {
+      display: flex; gap: 14px; justify-content: center; margin-bottom: 40px;
+    }
+    .back-btn, .reset-btn {
+      background: #2970ba; color: #fff; border: none; border-radius: 7px; padding: 10px 24px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background 0.14s;
+    }
+    .back-btn:hover, .reset-btn:hover { background: #003865; }
+    @media (max-width: 600px) {
+      .role-blocks { grid-template-columns: 1fr; gap: 20px;}
+      .login-modal { min-width: 92vw;}
+      .logo-container img { height: 60px;}
+    }
+    /* Suasha AI */
+    #suasha-bubble {
+      position: fixed; bottom: 30px; right: 30px; width: 62px; height: 62px;
+      background: #fff; border-radius: 50%; box-shadow: 0 0 18px rgba(41,112,186,0.18);
+      display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 2.3rem; z-index:99999; color:#2970ba;
+      border:2.5px solid #2970ba;
+      transition: box-shadow 0.17s, border 0.15s;
+    }
+    #suasha-bubble:hover { box-shadow:0 3px 22px #2970ba44; border:2.5px solid #005c97;}
+    #suasha-chat { position: fixed; bottom: 100px; right: 30px; width: 350px; height: 480px; display: none; border-radius: 10px; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.3); border: none; z-index: 11112;}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+<body>
+  <div class="logo-container">
+    <img src="erase-debt-logo.png" alt="Erase Debt SA Logo"/>
+  </div>
+  <h1>Staff Login Portal</h1>
+  <div class="action-row">
+    <button class="back-btn" onclick="window.location.href='index.html'">← Back to Homepage</button>
+  </div>
+  <div class="role-blocks">
+    <div class="role-block" data-role="agent">
+      <span class="role-icon">👩‍💼</span>
+      Agent / Feeder
+    </div>
+    <div class="role-block" data-role="admin">
+      <span class="role-icon">🛡️</span>
+      Admin
+    </div>
+    <div class="role-block" data-role="admin_manager">
+      <span class="role-icon">👔</span>
+      Admin Manager
+    </div>
+    <div class="role-block" data-role="super">
+      <span class="role-icon">🌟</span>
+      Super User
+    </div>
+  </div>
+  <!-- Login Modal -->
+  <div class="login-modal-bg" id="modal-bg">
+    <form class="login-modal" id="loginModal" onsubmit="return false;">
+      <button class="close-modal" type="button" onclick="closeModal()">×</button>
+      <h2 id="modal-title">Agent Login</h2>
+      <div class="login-error" id="login-error" style="display:none;"></div>
+      <div id="login-fields">
+        <label>Username<br/>
+          <input type="text" id="username" autocomplete="username" required />
+        </label>
+        <br/>
+        <label>Password<br/>
+          <input type="password" id="password" autocomplete="current-password" required />
+        </label>
+        <br/>
+        <button type="submit" onclick="submitLogin()">Login</button>
+        <br/>
+        <button type="button" class="reset-link" onclick="showResetForm()">Forgot Password?</button>
+      </div>
+      <div id="reset-fields" class="reset-form">
+        <label>ID Number<br/>
+          <input type="text" id="reset-id" autocomplete="off" required />
+        </label>
+        <label>Email Address<br/>
+          <input type="email" id="reset-email" autocomplete="off" required />
+        </label>
+        <button type="button" onclick="submitReset()">Send Reset Email</button>
+        <div class="reset-confirm" id="reset-confirm" style="display:none;"></div>
+        <button type="button" class="reset-link" style="margin-top:7px;" onclick="showLoginForm()">Back to Login</button>
+      </div>
+    </form>
+  </div>
+  <!-- Suasha AI Chat -->
+  <div id="suasha-bubble" onclick="toggleSuasha()">💬</div>
+  <iframe id="suasha-chat" src="https://chat.openai.com" title="Suasha AI Assistant"></iframe>
+  <script>
+    // Replace with real user logic (use Supabase Auth in production!)
+    const userDashboards = {
+      agent:    "agent-dashboard.html",
+      admin:    "admin-dashboard.html",
+      admin_manager: "admin-manager-dashboard.html",
+      super:    "super-dashboard.html"
+    };
+    let currentRole = "agent";
+    document.querySelectorAll('.role-block').forEach(block => {
+      block.onclick = function() {
+        currentRole = block.getAttribute('data-role');
+        document.getElementById('modal-title').textContent =
+          block.textContent.trim() + " Login";
+        document.getElementById('modal-bg').classList.add('active');
+        showLoginForm();
+        setTimeout(()=>{ document.getElementById('username').focus(); }, 130);
+      };
+    });
+    function closeModal() {
+      document.getElementById('modal-bg').classList.remove('active');
+    }
+    function showResetForm() {
+      document.getElementById('login-fields').style.display = "none";
+      document.getElementById('reset-fields').style.display = "block";
+      document.getElementById('reset-confirm').style.display = "none";
+      document.getElementById('reset-id').value = "";
+      document.getElementById('reset-email').value = "";
+    }
+    function showLoginForm() {
+      document.getElementById('login-fields').style.display = "block";
+      document.getElementById('reset-fields').style.display = "none";
+      document.getElementById('login-error').style.display = "none";
+    }
+    // Demo login logic (replace with Supabase Auth in production)
+    function submitLogin() {
+      var uname = document.getElementById('username').value.trim();
+      var pwd   = document.getElementById('password').value.trim();
+      var errorDiv = document.getElementById('login-error');
+      errorDiv.style.display = "none";
+      if (uname && pwd) {
+        // Simulate login (replace with Supabase Auth fetch)
+        sessionStorage.setItem('user_role', currentRole);
+        window.location.href = userDashboards[currentRole];
+      } else {
+        errorDiv.textContent = "Incorrect username or password.";
+        errorDiv.style.display = "block";
+      }
+    }
+    // Password reset logic (real system should query Supabase Auth via Edge Function)
+    async function submitReset() {
+      var id = document.getElementById('reset-id').value.trim();
+      var email = document.getElementById('reset-email').value.trim();
+      var confirmDiv = document.getElementById('reset-confirm');
+      confirmDiv.style.display = "none";
+      if (!id || !email) {
+        confirmDiv.style.display = "block";
+        confirmDiv.textContent = "Please enter both your ID number and email address.";
+        confirmDiv.style.color = "#c70039";
+        return;
+      }
+      // Replace below with real password reset logic via Edge Function or Supabase Admin API!
+      // This is a demo only.
+      setTimeout(function() {
+        confirmDiv.style.display = "block";
+        confirmDiv.textContent = "If your ID and email match our records, you will receive a password reset link shortly.";
+        confirmDiv.style.color = "#1e824c";
+      }, 600);
+    }
+    document.getElementById('loginModal').addEventListener('keydown', function(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        if(document.getElementById('login-fields').style.display !== "none") submitLogin();
+        else submitReset();
+      }
+    });
+    function toggleSuasha() {
+      const chat = document.getElementById("suasha-chat");
+      chat.style.display = chat.style.display === "block" ? "none" : "block";
+    }
+  </script>
+</body>
+</html>
