@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Dashboard - Erase Debt SA</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <style>
+    /* CSS omitted for brevity; use same CSS from earlier dashboards */
+    body {font-family: Arial, sans-serif; background: linear-gradient(135deg, #005c97, #003865); color: #333; padding: 2rem; margin: 0;}
+    header {display: flex; align-items: center; justify-content: space-between; background: #ffffff; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);}
+    header img { height: 50px; }
+    h1 { color: #003865; margin-left: 1rem; }
+    nav {background: #1c4669; padding: 1rem; border-radius: 8px; margin-top: 1rem; text-align: center;}
+    nav a {color: #ffffff; margin: 0 1rem; font-weight: bold; text-decoration: none;}
+    .summary-bar {background: #0084c2; color: #fff; border-radius: 8px; padding: 1rem; margin: 1rem 0 2rem 0; font-weight: bold; text-align: center; font-size: 1.2rem;}
+    .container { margin-top: 2rem; }
+    .filter-container {margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;}
+    .filter-container select, .filter-container input[type='date'] {padding: 0.5rem; border-radius: 5px; border: 1px solid #ccc; font-size: 1rem;}
+    .chart-container {display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;}
+    .chart-box {flex: 1; background: #ffffff; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); min-width: 300px;}
+    .client-list {margin-top: 2rem; background: #ffffff; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);}
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 0.5rem; border-bottom: 1px solid #ddd; }
+    th { background: #005c97; color: #ffffff; }
+    td { color: #333; }
+    .multi-select { width: auto; }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="erase-debt-logo.jpg" alt="Erase Debt SA Logo">
+    <h1>Agent Dashboard</h1>
+  </header>
+  <nav>
+    <a href="client_capture_form_final_with_suasha_ai.html">Client Capture Form</a>
+    <a href="logout.html">Logout</a>
+  </nav>
+  <div class="summary-bar" id="dailySummary">Loading...</div>
+  <div class="container">
+    <div class="filter-container">
+      <label>Fields to show:</label>
+      <select id="fieldSelector" class="multi-select" multiple size="6">
+        <option value="client_name" selected>Client Name</option>
+        <option value="gender" selected>Gender</option>
+        <option value="service_type" selected>Service Type</option>
+        <option value="status" selected>Status</option>
+        <option value="branch_name">Branch Name</option>
+        <option value="sale_date">Sale Date</option>
+        <option value="monthly_payment" selected>Monthly Payment</option>
+        <option value="province">Province</option>
+        <option value="payment_plan_months">Payment Plan</option>
+        <option value="nupay_reference">Nupay Reference</option>
+        <option value="total_no_payments_made"># Payments Made</option>
+        <option value="total_no_missed_payments"># Missed Payments</option>
+      </select>
+      <label>Show</label>
+      <select id="showCount">
+        <option>5</option><option>10</option><option selected>25</option><option>50</option><option>100</option>
+      </select>
+      <label>Period:</label>
+      <select id="period">
+        <option>Today</option>
+        <option>This Week</option>
+        <option>This Month</option>
+        <option>Custom</option>
+      </select>
+      <input type="date" id="startDate" style="display:none;">
+      <input type="date" id="endDate" style="display:none;">
+    </div>
+    <div class="chart-container">
+      <div class="chart-box"><canvas id="pieChart"></canvas></div>
+      <div class="chart-box"><canvas id="barChart"></canvas></div>
+      <div class="chart-box"><canvas id="lineChart"></canvas></div>
+    </div>
+    <div class="client-list">
+      <table id="clientTable">
+        <thead>
+          <tr id="clientTableHead"></tr>
+        </thead>
+        <tbody id="clientTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    const supabaseUrl = 'https://xzjunkpxvfdpuogoflzh.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ';
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+    const allFields = {
+      client_name: 'Client Name', gender: 'Gender', service_type: 'Service Type', status: 'Status',
+      branch_name: 'Branch Name', sale_date: 'Sale Date', monthly_payment: 'Monthly Payment',
+      province: 'Province', payment_plan_months: 'Payment Plan', nupay_reference: 'Nupay Reference',
+      total_no_payments_made: '# Payments Made', total_no_missed_payments: '# Missed Payments'
+    };
+
+    let clients = [], filteredClients = [];
+    function getSelectedFields() {
+      const select = document.getElementById('fieldSelector');
+      return Array.from(select.selectedOptions).map(opt => opt.value);
+    }
+    function renderClientTable() {
+      const fields = getSelectedFields();
+      const count = parseInt(document.getElementById('showCount').value, 10);
+      let tableData = filteredClients.slice(0, count);
+      const head = document.getElementById('clientTableHead');
+      head.innerHTML = fields.map(f => `<th>${allFields[f]}</th>`).join('');
+      const body = document.getElementById('clientTableBody');
+      body.innerHTML = tableData.map(row => (
+        `<tr>${fields.map(f => `<td>${row[f]||''}</td>`).join('')}</tr>`
+      )).join('');
+    }
+    function applyPeriodFilter(allClients) {
+      const period = document.getElementById('period').value;
+      const today = new Date();
+      return allClients.filter(c => {
+        let sale = c.sale_date ? new Date(c.sale_date) : null;
+        if (!sale) return false;
+        if (period === 'Today') return sale.toDateString() === today.toDateString();
+        else if (period === 'This Week') {
+          const weekStart = new Date(today); weekStart.setDate(today.getDate() - today.getDay());
+          const weekEnd = new Date(weekStart); weekEnd.setDate(weekEnd.getDate() + 6);
+          return sale >= weekStart && sale <= weekEnd;
+        }
+        else if (period === 'This Month') return sale.getMonth() === today.getMonth() && sale.getFullYear() === today.getFullYear();
+        else if (period === 'Custom') {
+          const start = new Date(document.getElementById('startDate').value);
+          const end = new Date(document.getElementById('endDate').value);
+          return sale >= start && sale <= end;
+        }
+        return true;
+      });
+    }
+    function updateSummaryBar() {
+      document.getElementById('dailySummary').textContent =
+        `You captured ${filteredClients.length} client${filteredClients.length === 1 ? '' : 's'} for this period.`;
+    }
+    let pieChart, barChart, lineChart;
+    function updateCharts() {
+      let serviceCounts = {}, monthlyCounts = {};
+      filteredClients.forEach(c => {
+        let st = c.service_type || 'Unknown'; serviceCounts[st] = (serviceCounts[st] || 0) + 1;
+        let m = (c.sale_date || '').slice(0,7); if (m) monthlyCounts[m] = (monthlyCounts[m] || 0) + 1;
+      });
+      const pieCtx = document.getElementById('pieChart').getContext('2d');
+      if (pieChart) pieChart.destroy();
+      pieChart = new Chart(pieCtx, {
+        type: 'pie',
+        data: {labels: Object.keys(serviceCounts),datasets: [{data: Object.values(serviceCounts),backgroundColor: ['#005c97','#003865','#0084c2','#ffc300','#ff5733','#c70039','#581845']}]},
+        options: { responsive: true }
+      });
+      const barCtx = document.getElementById('barChart').getContext('2d');
+      if (barChart) barChart.destroy();
+      barChart = new Chart(barCtx, {
+        type: 'bar',
+        data: {labels: Object.keys(serviceCounts),datasets: [{label: 'Services Sold',data: Object.values(serviceCounts),backgroundColor: '#005c97'}]},
+        options: { responsive: true }
+      });
+      const months = Object.keys(monthlyCounts).sort();
+      const lineCtx = document.getElementById('lineChart').getContext('2d');
+      if (lineChart) lineChart.destroy();
+      lineChart = new Chart(lineCtx, {
+        type: 'line',
+        data: {labels: months,datasets: [{label: 'Monthly Sales',data: months.map(m => monthlyCounts[m]),borderColor: '#003865',backgroundColor: 'rgba(0, 56, 101, 0.3)',fill: true}]},
+        options: { responsive: true }
+      });
+    }
+    async function fetchClients() {
+      document.getElementById('dailySummary').textContent = 'Loading...';
+      let { data, error } = await supabase.from('edsa_client_database').select('*');
+      if (error) { document.getElementById('dailySummary').textContent = 'Error loading data!'; clients = []; }
+      else {
+        // --- AGENT FILTERING: only see their branch ---
+        const agentBranch = sessionStorage.getItem("branch_name");
+        data = (data || []).filter(c => c.branch_name === agentBranch);
+        clients = (data || []).map(c => ({
+          ...c,
+          client_name: (c.first_name || '') + ' ' + (c.last_name || ''),
+          monthly_payment: c.monthly_payment ? `R${c.monthly_payment}` : '',
+          sale_date: c.sale_date || '',
+        }));
+      }
+      applyFiltersAndRender();
+    }
+    function applyFiltersAndRender() { filteredClients = applyPeriodFilter(clients); renderClientTable(); updateSummaryBar(); updateCharts(); }
+    document.getElementById('fieldSelector').addEventListener('change', renderClientTable);
+    document.getElementById('showCount').addEventListener('change', renderClientTable);
+    document.getElementById('period').addEventListener('change', function() {
+      const val = this.value;
+      document.getElementById('startDate').style.display = val === 'Custom' ? '' : 'none';
+      document.getElementById('endDate').style.display = val === 'Custom' ? '' : 'none';
+      applyFiltersAndRender();
+    });
+    document.getElementById('startDate').addEventListener('change', applyFiltersAndRender);
+    document.getElementById('endDate').addEventListener('change', applyFiltersAndRender);
+    fetchClients();
+  </script>
+</body>
+</html>

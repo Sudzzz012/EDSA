@@ -1,0 +1,270 @@
+from pathlib import Path
+
+dashboard_html = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Dashboard - Erase Debt SA</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #005c97, #003865);
+      color: #333;
+      padding: 2rem;
+      margin: 0;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #ffffff;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    header img { height: 50px; }
+    h1 { color: #003865; margin-left: 1rem; }
+    nav {
+      background: #1c4669;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+      text-align: center;
+    }
+    nav a {
+      color: #ffffff;
+      margin: 0 1rem;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .summary-bar {
+      background: #0084c2;
+      color: #fff;
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1rem 0 2rem 0;
+      font-weight: bold;
+      text-align: center;
+      font-size: 1.2rem;
+    }
+    .container { margin-top: 2rem; }
+    .filter-container {
+      margin-bottom: 1rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .filter-container select, .filter-container input[type='date'] {
+      padding: 0.5rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    .chart-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .chart-box {
+      flex: 1;
+      background: #ffffff;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      min-width: 300px;
+    }
+    .client-list {
+      margin-top: 2rem;
+      background: #ffffff;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 0.5rem; border-bottom: 1px solid #ddd; }
+    th { background: #005c97; color: #ffffff; }
+    td { color: #333; }
+    .multi-select { width: auto; }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="erase-debt-logo.jpg" alt="Erase Debt SA Logo">
+    <h1>Agent Dashboard</h1>
+  </header>
+  <nav>
+    <a href="client-capture-form.html">Client Capture Form</a>
+    <a href="logout.html">Logout</a>
+  </nav>
+  <div class="summary-bar" id="dailySummary">
+    You captured 2 clients today.
+  </div>
+  <div class="container">
+    <div class="filter-container">
+      <label>Fields to show:</label>
+      <select id="fieldSelector" class="multi-select" multiple size="6">
+        <option value="client_name" selected>Client Name</option>
+        <option value="gender" selected>Gender</option>
+        <option value="service_type" selected>Service Type</option>
+        <option value="status" selected>Status</option>
+        <option value="branch_name">Branch Name</option>
+        <option value="sale_date">Sale Date</option>
+        <option value="monthly_payment" selected>Monthly Payment</option>
+        <option value="province">Province</option>
+        <option value="payment_plan_months">Payment Plan</option>
+        <option value="nupay_reference">Nupay Reference</option>
+        <option value="total_no_payments_made"># Payments Made</option>
+        <option value="total_no_missed_payments"># Missed Payments</option>
+      </select>
+      <label>Show</label>
+      <select id="showCount">
+        <option>5</option><option>10</option><option selected>25</option><option>50</option><option>100</option>
+      </select>
+      <label>Period:</label>
+      <select id="period">
+        <option>Today</option>
+        <option>This Week</option>
+        <option>This Month</option>
+        <option>Custom</option>
+      </select>
+      <input type="date" id="startDate" style="display:none;">
+      <input type="date" id="endDate" style="display:none;">
+    </div>
+    <div class="chart-container">
+      <div class="chart-box"><canvas id="pieChart"></canvas></div>
+      <div class="chart-box"><canvas id="barChart"></canvas></div>
+      <div class="chart-box"><canvas id="lineChart"></canvas></div>
+    </div>
+    <div class="client-list">
+      <table id="clientTable">
+        <thead>
+          <tr id="clientTableHead"></tr>
+        </thead>
+        <tbody id="clientTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    // Demo data for illustration
+    const clients = [
+      {
+        client_name: 'John Doe',
+        gender: 'Male',
+        service_type: 'SERVICE 1 - DRR(C & D3) - NP',
+        status: 'Active',
+        branch_name: 'Erase Debt SA - ADMIN',
+        sale_date: '2025-07-12',
+        monthly_payment: 'R1,200',
+        province: 'Gauteng',
+        payment_plan_months: 6,
+        nupay_reference: 'NP-1234',
+        total_no_payments_made: '3',
+        total_no_missed_payments: '0'
+      },
+      {
+        client_name: 'Jane Smith',
+        gender: 'Female',
+        service_type: 'SERVICE 3 - D4 - AITC',
+        status: 'Pending',
+        branch_name: 'Credifix SA',
+        sale_date: '2025-07-12',
+        monthly_payment: 'R850',
+        province: 'KZN',
+        payment_plan_months: 12,
+        nupay_reference: 'NP-2345',
+        total_no_payments_made: '8',
+        total_no_missed_payments: '1'
+      }
+    ];
+
+    // Available columns & labels
+    const allFields = {
+      client_name: 'Client Name',
+      gender: 'Gender',
+      service_type: 'Service Type',
+      status: 'Status',
+      branch_name: 'Branch Name',
+      sale_date: 'Sale Date',
+      monthly_payment: 'Monthly Payment',
+      province: 'Province',
+      payment_plan_months: 'Payment Plan',
+      nupay_reference: 'Nupay Reference',
+      total_no_payments_made: '# Payments Made',
+      total_no_missed_payments: '# Missed Payments'
+    };
+
+    function getSelectedFields() {
+      const select = document.getElementById('fieldSelector');
+      return Array.from(select.selectedOptions).map(opt => opt.value);
+    }
+
+    function renderClientTable() {
+      const fields = getSelectedFields();
+      const count = parseInt(document.getElementById('showCount').value, 10);
+      let filtered = clients.slice(0, count);
+
+      const head = document.getElementById('clientTableHead');
+      head.innerHTML = fields.map(f => `<th>${allFields[f]}</th>`).join('');
+      const body = document.getElementById('clientTableBody');
+      body.innerHTML = filtered.map(row => (
+        `<tr>${fields.map(f => `<td>${row[f]||''}</td>`).join('')}</tr>`
+      )).join('');
+    }
+
+    document.getElementById('fieldSelector').addEventListener('change', renderClientTable);
+    document.getElementById('showCount').addEventListener('change', renderClientTable);
+
+    document.getElementById('period').addEventListener('change', function() {
+      const val = this.value;
+      document.getElementById('startDate').style.display = val === 'Custom' ? '' : 'none';
+      document.getElementById('endDate').style.display = val === 'Custom' ? '' : 'none';
+    });
+
+    renderClientTable();
+
+    document.getElementById('dailySummary').textContent =
+      `You captured ${clients.length} client${clients.length === 1 ? '' : 's'} today.`;
+
+    new Chart(document.getElementById('pieChart'), {
+      type: 'pie',
+      data: {
+        labels: ['SERVICE 1', 'SERVICE 3', 'SERVICE 5'],
+        datasets: [{ data: [30, 20, 50], backgroundColor: ['#005c97', '#003865', '#0084c2'] }]
+      },
+      options: { responsive: true }
+    });
+    new Chart(document.getElementById('barChart'), {
+      type: 'bar',
+      data: {
+        labels: ['SERVICE 1', 'SERVICE 2', 'SERVICE 3', 'SERVICE 4', 'SERVICE 5', 'SERVICE 6', 'SERVICE 7'],
+        datasets: [{ label: 'Services Sold', data: [12, 19, 3, 5, 2, 7, 8], backgroundColor: '#005c97' }]
+      },
+      options: { responsive: true }
+    });
+    new Chart(document.getElementById('lineChart'), {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+        datasets: [{
+          label: 'Monthly Sales',
+          data: [10, 15, 8, 12, 20],
+          borderColor: '#003865',
+          backgroundColor: 'rgba(0, 56, 101, 0.3)',
+          fill: true
+        }]
+      },
+      options: { responsive: true }
+    });
+  </script>
+</body>
+</html>
+"""
+
+dashboard_path = "/mnt/data/agent-dashboard.html"
+Path(dashboard_path).write_text(dashboard_html)
+dashboard_path
