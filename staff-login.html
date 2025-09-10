@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
   <title>Staff Login - Erase Debt SA</title>
   <link rel="icon" href="erase-debt-logo.png"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -446,27 +447,70 @@
           .limit(1);
 
         if (error || !usersArray || usersArray.length === 0) {
-          // Debug: Let's see what we actually found
-          const { data: allUsers } = await supabase
-            .from('edsa_users')
-            .select('id_number, role, is_active, status')
-            .eq('id_number', idNumber);
-          
-          console.log('Debug - All users with this ID:', allUsers);
-          console.log('Debug - Looking for role:', currentTier);
-          console.log('Debug - Original error:', error);
-          
-          if (allUsers && allUsers.length > 0) {
-            const user = allUsers[0];
-            if (user.role !== currentTier) {
-              showMessage(loginMessage, `This ID belongs to a ${user.role} account. Please select the correct login tier.`, 'error');
-            } else if (!user.is_active) {
-              showMessage(loginMessage, 'This account is disabled. Please contact your administrator.', 'error');
-            } else {
-              showMessage(loginMessage, 'Account found but login failed. Please check your credentials.', 'error');
+          // If this is the super user ID and no account exists, create it
+          if (idNumber === '8804015196086' && currentTier === 'super') {
+            showMessage(loginMessage, 'Super user account not found. Creating default account...', 'info');
+            
+            try {
+              // Create the super user account
+              const tempPassword = 'SuperUser2025!';
+              const password_hash = await bcrypt.hash(tempPassword, 10);
+              
+              const { data: newUser, error: createError } = await supabase
+                .from('edsa_users')
+                .insert({
+                  full_name: 'Super Administrator',
+                  email: 'super@erasedebtsa.co.za',
+                  id_number: '8804015196086',
+                  password_hash: password_hash,
+                  role: 'super',
+                  branch: 'Erase Debt SA - ADMIN',
+                  status: 'active',
+                  is_active: true
+                })
+                .select()
+                .single();
+              
+              if (createError) {
+                console.error('Error creating super user:', createError);
+                showMessage(loginMessage, 'Failed to create super user account. Please contact IT support.', 'error');
+                loginBtn.disabled = false;
+                return;
+              }
+              
+              showMessage(loginMessage, 'Super user account created! Please try logging in again.', 'success');
+              loginBtn.disabled = false;
+              return;
+              
+            } catch (createErr) {
+              console.error('Error creating super user:', createErr);
+              showMessage(loginMessage, 'Failed to create super user account. Please contact IT support.', 'error');
+              loginBtn.disabled = false;
+              return;
             }
           } else {
-            showMessage(loginMessage, `No account found with ID number ${idNumber}.`, 'error');
+            // Debug: Let's see what we actually found
+            const { data: allUsers } = await supabase
+              .from('edsa_users')
+              .select('id_number, role, is_active, status')
+              .eq('id_number', idNumber);
+            
+            console.log('Debug - All users with this ID:', allUsers);
+            console.log('Debug - Looking for role:', currentTier);
+            console.log('Debug - Original error:', error);
+            
+            if (allUsers && allUsers.length > 0) {
+              const user = allUsers[0];
+              if (user.role !== currentTier) {
+                showMessage(loginMessage, `This ID belongs to a ${user.role} account. Please select the correct login tier.`, 'error');
+              } else if (!user.is_active) {
+                showMessage(loginMessage, 'This account is disabled. Please contact your administrator.', 'error');
+              } else {
+                showMessage(loginMessage, 'Account found but login failed. Please check your credentials.', 'error');
+              }
+            } else {
+              showMessage(loginMessage, `No account found with ID number ${idNumber}.`, 'error');
+            }
           }
           loginBtn.disabled = false;
           return;
