@@ -4,6 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
+      <h3 style="margin-bottom: 1rem;">Password Reset</h3>
+      <p style="margin-bottom: 1rem; opacity: 0.8;">Please contact your administrator to reset your password.</p>
+      <button onclick="closeResetModal()" style="background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer;">Close</button>
+    </div>
+  </div>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co https://api.sendgrid.com;">
@@ -549,8 +555,7 @@
 
     window.closeResetModal = function() {
       document.getElementById('resetModal').style.display = 'none';
-      document.getElementById('resetModal').style.alignItems = '';
-      document.getElementById('resetModal').style.justifyContent = '';
+    }
 
     function showMessage(element, message, type) {
       element.innerHTML = `<div class="message ${type}">${message}</div>`;
