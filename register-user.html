@@ -332,46 +332,86 @@
       const status     = document.getElementById('status').value;
 
       try {
+        // Check if ID number already exists
+        setStatus('⏳ Checking ID number availability…');
+        const { data: existingUser, error: checkError } = await supabase
+          .from('edsa_users')
+          .select('id_number')
+          .eq('id_number', id_number)
+          .maybeSingle();
+
+        if (checkError) {
+          console.error('Error checking existing user:', checkError);
+          setDbStatus(`<span class='err'>❌ Database Error</span><br><code>${checkError.message}</code>`);
+          setStatus('❌ Failed to check ID number availability.');
+          return;
+        }
+
+        if (existingUser) {
+          setDbStatus(`<span class='err'>❌ Duplicate ID Number</span><br>A user with ID number <strong>${id_number}</strong> already exists.`);
+          setStatus('❌ This ID number is already registered. Please use a different ID number.');
+          return;
+        }
+
+        // Check if email already exists
+        const { data: existingEmail, error: emailCheckError } = await supabase
+          .from('edsa_users')
+          .select('email')
+          .eq('email', email)
+          .maybeSingle();
+
+        if (emailCheckError) {
+          console.error('Error checking existing email:', emailCheckError);
+          setDbStatus(`<span class='err'>❌ Database Error</span><br><code>${emailCheckError.message}</code>`);
+          setStatus('❌ Failed to check email availability.');
+          return;
+        }
+
+        if (existingEmail) {
+          setDbStatus(`<span class='err'>❌ Duplicate Email</span><br>A user with email <strong>${email}</strong> already exists.`);
+          setStatus('❌ This email address is already registered. Please use a different email.');
+          return;
+        }
+
+        setStatus('⏳ Creating user…');
         // generate a temp password (never emailed from frontend; server trigger handles welcome email content)
         const tempPassword  = randomTempString(16);
         const password_hash = await bcrypt.hash(tempPassword, 10);
 
-        // Insert into edsa_users (must match your schema)
-        const insertRes = await insertUser({
-          full_name,
-          email,
-          id_number,
-          password_hash,
-          role,
-          branch,
-          status,
-          is_active: status === 'active'
-        });
+        // Insert into edsa_users using Supabase client instead of raw fetch
+        const { data: insertData, error: insertError } = await supabase
+          .from('edsa_users')
+          .insert({
+            full_name,
+            email,
+            id_number,
+            password_hash,
+            role,
+            branch,
+            status,
+            is_active: status === 'active'
+          })
+          .select()
+          .single();
 
-        if (!insertRes.ok) {
-          await showHttpError(insertRes, "DB Insert ");
+        if (insertError) {
+          console.error('Insert error:', insertError);
+          setDbStatus(`<span class='err'>❌ Insert Error</span><br><code>${insertError.message}</code>`);
           setStatus('❌ Failed to create user.');
           return;
         }
 
-        const data = await insertRes.json();
+        const userData = insertData;
+        setDbStatus(`<span class='ok'>✅ User Created</span><br>ID: ${userData.id}`);
+        setStatus('⏳ User created successfully! Sending welcome email...');
         
-        if (data && data.length > 0) {
-          const userData = data[0];
-          setDbStatus(`<span class='ok'>✅ User Created</span><br>ID: ${userData.id}`);
-          setStatus('⏳ User created successfully! Sending welcome email...');
-          
-          try {
-            await sendWelcomeEmail(userData);
-            setStatus('✅ User created and welcome email sent successfully!');
-          } catch (emailError) {
-            console.error('Email error:', emailError);
-            setStatus('⚠️ User created successfully, but welcome email failed to send. Please send manually.');
-            setDbStatus(`<span class='ok'>✅ User Created</span><br>⚠️ Email Error: ${emailError.message}`);
-          }
-        } else {
-          setDbStatus(`<span class='ok'>✅ User Created</span>`);
-          setStatus('✅ User created successfully!');
+        try {
+          await sendWelcomeEmail(userData);
+          setStatus('✅ User created and welcome email sent successfully!');
+        } catch (emailError) {
+          console.error('Email error:', emailError);
+          setStatus('⚠️ User created successfully, but welcome email failed to send. Please send manually.');
+          setDbStatus(`<span class='ok'>✅ User Created</span><br>⚠️ Email Error: ${emailError.message}`);
         }
         
         form.reset();
