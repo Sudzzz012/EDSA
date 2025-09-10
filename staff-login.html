@@ -437,15 +437,15 @@
 
       try {
         // Look up user
-        const { data: users, error } = await supabase
+        const { data: usersArray, error } = await supabase
           .from('edsa_users')
           .select('*')
           .eq('id_number', idNumber)
           .eq('role', currentTier)
           .eq('is_active', true)
-          .single();
+          .limit(1);
 
-        if (error || !users) {
+        if (error || !usersArray || usersArray.length === 0) {
           // Debug: Let's see what we actually found
           const { data: allUsers } = await supabase
             .from('edsa_users')
@@ -471,6 +471,8 @@
           loginBtn.disabled = false;
           return;
         }
+
+        const users = usersArray[0];
 
         // Verify password
         const isValidPassword = await bcrypt.compare(password, users.password_hash);
