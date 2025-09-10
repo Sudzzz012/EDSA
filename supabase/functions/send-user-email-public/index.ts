@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-edsa-token',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-edsa-token, Authorization',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 }
 
@@ -13,13 +13,17 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Received email request:', req.method)
+    
     const { to, subject, body, from = 'noreply@erasedebtsa.co.za' } = await req.json()
+    
+    console.log('Email details:', { to, subject: subject ? 'Present' : 'Missing', from })
 
     // Get SendGrid API key from environment
     const SENDGRID_API_KEY = Deno.env.get('SENDGRIDFINAL') || Deno.env.get('SENDGRID_API_KEY')
     
     if (!SENDGRID_API_KEY) {
-      console.error('SendGrid API key not found')
+      console.error('SendGrid API key not found in environment variables')
       return new Response(
         JSON.stringify({ error: 'Email service not configured' }),
         { 
@@ -28,6 +32,8 @@ serve(async (req) => {
         }
       )
     }
+
+    console.log('SendGrid API key found, sending email...')
 
     // Send email via SendGrid
     const emailData = {
@@ -49,6 +55,8 @@ serve(async (req) => {
       ]
     }
 
+    console.log('Sending to SendGrid API...')
+
     const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
       method: 'POST',
       headers: {
@@ -60,7 +68,7 @@ serve(async (req) => {
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error('SendGrid error:', errorText)
+      console.error('SendGrid error:', response.status, response.statusText, errorText)
       return new Response(
         JSON.stringify({ error: 'Failed to send email', details: errorText }),
         { 
@@ -69,6 +77,8 @@ serve(async (req) => {
         }
       )
     }
+
+    console.log('Email sent successfully!')
 
     return new Response(
       JSON.stringify({ success: true, message: 'Email sent successfully' }),

@@ -158,6 +158,115 @@
     const SUPABASE_URL = "https://xzjunkpxvfdpuogoflzh.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ";
 
+    // Generate a random password reset token for the welcome email
+    function generateResetToken() {
+      return Math.random().toString(36).substr(2, 32) + Math.random().toString(36).substr(2, 32);
+    }
+
+    // Send welcome email with password setup link
+    async function sendWelcomeEmail(userData) {
+      try {
+        // Generate reset token
+        const resetToken = generateResetToken();
+        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // 24 hours
+
+        // Insert password reset record
+        const { error: resetError } = await supabase
+          .from('password_resets')
+          .insert({
+            user_id: userData.id,
+            reset_token: resetToken,
+            expires_at: expiresAt,
+            used: false
+          });
+
+        if (resetError) {
+          console.error('Error creating reset token:', resetError);
+          throw resetError;
+        }
+
+        // Create password setup link
+        const setupLink = `${window.location.origin}/set-password.html?user=${encodeURIComponent(userData.id_number)}&token=${encodeURIComponent(resetToken)}`;
+        
+        // Send email via the edge function
+        const emailResponse = await fetch(`${SUPABASE_URL}/functions/v1/send-user-email-public`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          },
+          body: JSON.stringify({
+            to: userData.email,
+            subject: 'Welcome to Erase Debt SA - Set Your Password',
+            body: `
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <meta charset="utf-8">
+                <title>Welcome to Erase Debt SA</title>
+                <style>
+                  body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                  .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                  .header { background: #2970ba; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+                  .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px; }
+                  .button { display: inline-block; background: #2970ba; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+                  .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #666; }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <div class="header">
+                    <h1>Welcome to Erase Debt SA</h1>
+                  </div>
+                  <div class="content">
+                    <p>Hi ${userData.full_name},</p>
+                    
+                    <p>Welcome to the Erase Debt SA team! Your staff account has been created with the following details:</p>
+                    
+                    <ul>
+                      <li><strong>Role:</strong> ${userData.role}</li>
+                      <li><strong>Branch:</strong> ${userData.branch}</li>
+                      <li><strong>ID Number (Username):</strong> ${userData.id_number}</li>
+                    </ul>
+                    
+                    <p>To get started, please click the button below to set up your password:</p>
+                    
+                    <a href="${setupLink}" class="button">Set Up My Password</a>
+                    
+                    <p>Or copy and paste this link into your browser:</p>
+                    <p style="word-break: break-all; background: #fff; padding: 10px; border-radius: 4px;">${setupLink}</p>
+                    
+                    <p><strong>This link will expire in 24 hours.</strong></p>
+                    
+                    <p>Once you've set your password, you can login to the staff portal at:</p>
+                    <p><a href="${window.location.origin}/staff-login.html">${window.location.origin}/staff-login.html</a></p>
+                    
+                    <p>If you have any questions, please contact your administrator.</p>
+                    
+                    <p>Best regards,<br>Erase Debt SA IT Team</p>
+                  </div>
+                  <div class="footer">
+                    <p>Erase Debt SA | 23 Whetstone Drive, Unit 11, Phoenix, Durban, 4068</p>
+                  </div>
+                </div>
+              </body>
+              </html>
+            `
+          })
+        });
+
+        if (!emailResponse.ok) {
+          const errorText = await emailResponse.text();
+          throw new Error(`Email failed: ${emailResponse.status} ${errorText}`);
+        }
+
+        return true;
+      } catch (error) {
+        console.error('Error sending welcome email:', error);
+        throw error;
+      }
+    }
+
     const msg      = document.getElementById('msg');
     const form     = document.getElementById('registerForm');
     const dbStatus = document.getElementById('dbStatus');
@@ -242,8 +351,25 @@
         }
 
         const data = await insertRes.json();
-        setDbStatus(`<span class='ok'>✅ Inserted</span><br><code>${JSON.stringify(data, null, 2).replace(/</g,'&lt;')}</code>`);
-        setStatus('✅ User created. Welcome email will be sent by the server trigger.');
+        
+        if (data && data.length > 0) {
+          const userData = data[0];
+          setDbStatus(`<span class='ok'>✅ User Created</span><br>ID: ${userData.id}`);
+          setStatus('⏳ User created successfully! Sending welcome email...');
+          
+          try {
+            await sendWelcomeEmail(userData);
+            setStatus('✅ User created and welcome email sent successfully!');
+          } catch (emailError) {
+            console.error('Email error:', emailError);
+            setStatus('⚠️ User created successfully, but welcome email failed to send. Please send manually.');
+            setDbStatus(`<span class='ok'>✅ User Created</span><br>⚠️ Email Error: ${emailError.message}`);
+          }
+        } else {
+          setDbStatus(`<span class='ok'>✅ User Created</span>`);
+          setStatus('✅ User created successfully!');
+        }
+        
         form.reset();
 
       } catch (err) {
