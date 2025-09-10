@@ -79,13 +79,13 @@
     <div class="loading">Loading Queries Dashboard...</div>
   </div>
   <script>
-    const supabase = supabase.createClient(
+    const supabaseClient = supabase.createClient(
       "https://xzjunkpxvfdpuogoflzh.supabase.co",
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ"
     );
 
     async function load() {
-      const { data, error } = await supabase.from('QUERIES').select('first_name, last_name, email, query_type, status, created_at, reference_number').order('created_at', { ascending: false });
+      const { data, error } = await supabaseClient.from('QUERIES').select('first_name, last_name, email, query_type, status, created_at, reference_number').order('created_at', { ascending: false });
       
       if (error) {
         console.error('Error loading queries:', error);
@@ -103,6 +103,7 @@
           <td>${q.email}</td>
           <td>${q.query_type || 'N/A'}</td>
           <td>${q.reference_number || 'N/A'}</td>
+          <td><span class="status-tag status-${(q.status || 'new').toLowerCase()}">${q.status || 'new'}</span></td>
           <td><span class="status-tag status-${(q.status || 'new').toLowerCase()}">${q.status || 'new'}</span></td>
           <td>${q.created_at ? new Date(q.created_at).toLocaleDateString() : 'N/A'}</td>
         </tr>`).join('');
