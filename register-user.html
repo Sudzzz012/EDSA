@@ -1,566 +1,257 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Staff Login - Erase Debt SA</title>
+  <title>Register Staff User | Erase Debt SA</title>
   <link rel="icon" href="erase-debt-logo.png"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+  <!-- Content Security Policy (allows Supabase + jsDelivr + inline styles) -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.supabase.co https://*.supabase.in;
+    script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline';
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data:;
+    font-src 'self' data:;
+  ">
+
   <style>
-    :root {
-      --primary: #2970ba;
-      --primary-dark: #003865;
-      --secondary: #005c97;
-      --success: #28a745;
-      --warning: #ffc107;
-      --danger: #dc3545;
-      --info: #17a2b8;
+    :root{
+      --blue:#2970ba; --blueDark:#003865; --ink:#14243b;
+      --card:#ffffff; --muted:#445; --ring:#c7d8ef; --shadow:#2970ba33;
+      --ok:#1b7e4e; --err:#c41111;
     }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    *{box-sizing:border-box}
+    body { font-family: Arial, sans-serif; background: linear-gradient(135deg,#003865,#005c97); margin:0; padding:24px; color:var(--ink); }
+    .wrap { max-width: 880px; margin: 0 auto; }
+    .header { display:flex; align-items:center; gap:16px; margin-bottom:14px; }
+    .logo { width:110px; border-radius:12px; box-shadow:0 6px 24px #2970ba55; background:#fff; padding:6px; }
+    .title { color:#fff; font-size:1.9rem; font-weight:800; letter-spacing:-.2px; }
+    .card { background:var(--card); border-radius:18px; box-shadow:0 16px 46px var(--shadow); padding:22px; }
+    .desc { color:var(--muted); text-align:center; margin:6px 0 18px; }
+    label { display:block; font-weight:700; margin:10px 0 6px; }
+    input, select {
+      width:100%; padding:12px; border-radius:10px; border:1px solid var(--ring); font-size:1rem;
+      transition:border-color .15s, box-shadow .15s;
     }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
-      color: #fff;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    input:focus, select:focus{ outline:none; border-color:var(--blue); box-shadow:0 0 0 3px rgba(41,112,186,.12); }
+    .row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    @media(max-width:820px){ .row { grid-template-columns:1fr; } }
+    .actions { display:flex; gap:12px; align-items:center; margin-top:16px; flex-wrap:wrap; }
+    button {
+      padding:14px 18px; border:none; border-radius:12px; background:var(--blue); color:#fff; font-weight:800; cursor:pointer;
+      box-shadow:0 8px 24px var(--shadow); transition:background .15s, transform .08s;
     }
-
-    .login-container {
-      max-width: 1000px;
-      width: 100%;
-      padding: 2rem;
-    }
-
-    .header {
-      text-align: center;
-      margin-bottom: 3rem;
-    }
-
-    .logo {
-      height: 80px;
-      margin-bottom: 1rem;
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-    }
-
-    .header h1 {
-      font-size: 2.5rem;
-      margin-bottom: 0.5rem;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    }
-
-    .header p {
-      font-size: 1.1rem;
-      opacity: 0.9;
-    }
-
-    .tier-selection {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-    }
-
-    .tier-card {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      padding: 2rem;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      border: 2px solid transparent;
-      backdrop-filter: blur(10px);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .tier-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-      transition: left 0.5s;
-    }
-
-    .tier-card:hover::before {
-      left: 100%;
-    }
-
-    .tier-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-      border-color: rgba(255,255,255,0.3);
-    }
-
-    .tier-card.selected {
-      border-color: #fff;
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    .tier-icon {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-      display: block;
-    }
-
-    .tier-agent { color: #28a745; }
-    .tier-admin { color: #17a2b8; }
-    .tier-admin_manager { color: #ffc107; }
-    .tier-super { color: #dc3545; }
-
-    .tier-title {
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-    }
-
-    .tier-description {
-      font-size: 0.9rem;
-      opacity: 0.8;
-      line-height: 1.4;
-    }
-
-    .login-form {
-      display: none;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      padding: 2rem;
-      backdrop-filter: blur(10px);
-      margin-top: 2rem;
-    }
-
-    .login-form.show {
-      display: block;
-      animation: slideIn 0.3s ease-out;
-    }
-
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-    }
-
-    .form-group input {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-radius: 8px;
-      background: rgba(255,255,255,0.1);
-      color: #fff;
-      font-size: 1rem;
-      transition: border-color 0.3s;
-    }
-
-    .form-group input::placeholder {
-      color: rgba(255,255,255,0.6);
-    }
-
-    .form-group input:focus {
-      outline: none;
-      border-color: #fff;
-      background: rgba(255,255,255,0.15);
-    }
-
-    .login-btn {
-      width: 100%;
-      padding: 0.75rem;
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      margin-bottom: 1rem;
-    }
-
-    .login-btn:hover:not(:disabled) {
-      background: var(--primary-dark);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    }
-
-    .login-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .forgot-password {
-      text-align: center;
-      margin-top: 1rem;
-    }
-
-    .forgot-password a {
-      color: rgba(255,255,255,0.8);
-      text-decoration: none;
-      font-size: 0.9rem;
-    }
-
-    .forgot-password a:hover {
-      color: #fff;
-      text-decoration: underline;
-    }
-
-    .message {
-      padding: 1rem;
-      border-radius: 8px;
-      margin: 1rem 0;
-      text-align: center;
-      font-weight: 600;
-    }
-
-    .message.success {
-      background: rgba(40, 167, 69, 0.2);
-      border: 1px solid rgba(40, 167, 69, 0.5);
-      color: #d4edda;
-    }
-
-    .message.error {
-      background: rgba(220, 53, 69, 0.2);
-      border: 1px solid rgba(220, 53, 69, 0.5);
-      color: #f8d7da;
-    }
-
-    .message.info {
-      background: rgba(23, 162, 184, 0.2);
-      border: 1px solid rgba(23, 162, 184, 0.5);
-      color: #d1ecf1;
-    }
-
-    .back-link {
-      position: absolute;
-      top: 2rem;
-      left: 2rem;
-      color: rgba(255,255,255,0.8);
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-weight: 600;
-      transition: color 0.3s;
-    }
-
-    .back-link:hover {
-      color: #fff;
-    }
-
-    @media (max-width: 768px) {
-      .tier-selection {
-        grid-template-columns: 1fr;
-      }
-      
-      .header h1 {
-        font-size: 2rem;
-      }
-      
-      .login-container {
-        padding: 1rem;
-      }
-      
-      .back-link {
-        position: static;
-        margin-bottom: 2rem;
-        justify-content: center;
-      }
-    }
+    button:hover{ background:var(--blueDark); }
+    .link { color:var(--blue); font-weight:700; text-decoration:none; }
+    .msg { margin-top:14px; font-weight:700; text-align:center; white-space:pre-wrap; }
+    .status { display:grid; grid-template-columns:1fr; gap:10px; margin-top:16px; }
+    .panel { background:#f6f9ff; border:1px solid #d9e7fb; border-radius:10px; padding:12px; font-size:.95rem; }
+    .panel b { color:#0a3a6b; }
+    .ok { color:var(--ok); }
+    .err{ color:var(--err); }
+    .footer-row{margin-top:10px; text-align:center;}
   </style>
 </head>
 <body>
-  <a href="index.html" class="back-link">
-    <i class="fas fa-arrow-left"></i>
-    Back to Homepage
-  </a>
-
-  <div class="login-container">
+  <div class="wrap">
     <div class="header">
-      <img src="erase-debt-logo.png" alt="Erase Debt SA" class="logo">
-      <h1>Staff Portal</h1>
-      <p>Select your access level to continue</p>
+      <img src="erase-debt-logo.png" alt="Erase Debt SA" class="logo"/>
+      <div class="title">Erase Debt SA • Staff Registration</div>
     </div>
 
-    <div class="tier-selection">
-      <div class="tier-card" data-tier="agent">
-        <i class="fas fa-user-edit tier-icon tier-agent"></i>
-        <div class="tier-title">Agent/Feeder</div>
-        <div class="tier-description">Client capture and data entry</div>
+    <div class="card">
+      <div class="desc">
+        Username = <b>ID Number</b>. There's no password field. After creating the user, your <b>Supabase trigger</b> sends the welcome email with instructions to set/Reset password via OTP.
       </div>
 
-      <div class="tier-card" data-tier="admin">
-        <i class="fas fa-user-cog tier-icon tier-admin"></i>
-        <div class="tier-title">Admin</div>
-        <div class="tier-description">Client management and workflows</div>
-      </div>
-
-      <div class="tier-card" data-tier="admin_manager">
-        <i class="fas fa-users-cog tier-icon tier-admin_manager"></i>
-        <div class="tier-title">Admin Manager</div>
-        <div class="tier-description">Staff oversight and reporting</div>
-      </div>
-
-      <div class="tier-card" data-tier="super">
-        <i class="fas fa-crown tier-icon tier-super"></i>
-        <div class="tier-title">Super User</div>
-        <div class="tier-description">Full system administration</div>
-      </div>
-    </div>
-
-    <div class="login-form" id="loginForm">
-      <h2 id="loginTitle">Login</h2>
-      <form id="staffLoginForm">
-        <div class="form-group">
-          <label for="idNumber">ID Number</label>
-          <input type="text" id="idNumber" name="idNumber" required placeholder="Enter your ID number">
+      <form id="registerForm" autocomplete="off">
+        <div class="row">
+          <div>
+            <label>Full Name</label>
+            <input id="full_name" required />
+          </div>
+          <div>
+            <label>Email Address</label>
+            <input id="email" type="email" required />
+          </div>
         </div>
-        
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" name="password" required placeholder="Enter your password">
+
+        <div class="row">
+          <div>
+            <label>ID Number (Username)</label>
+            <input id="id_number" required />
+          </div>
+          <div>
+            <label>Role</label>
+            <!-- must match DB CHECK: agent | admin | admin_manager | super -->
+            <select id="role" required>
+              <option value="">Select Role</option>
+              <option value="agent">Agent</option>
+              <option value="admin">Admin</option>
+              <option value="admin_manager">Admin Manager</option>
+              <option value="super">Super User</option>
+            </select>
+          </div>
         </div>
-        
-        <button type="submit" class="login-btn" id="loginBtn">
-          <i class="fas fa-sign-in-alt"></i>
-          Login
-        </button>
-        
-        <div class="forgot-password">
-          <a href="#" id="forgotPasswordLink">Forgot your password?</a>
+
+        <div class="row">
+          <div>
+            <label>Branch</label>
+            <select id="branch" required>
+              <option value="">Select Branch</option>
+              <option>Boost My Credit Score</option>
+              <option>Clean Credit Consultants</option>
+              <option>Clean Slate Solutions - MSJ</option>
+              <option>Clean Slate Solutions - RSJ</option>
+              <option>Credifix SA</option>
+              <option>Credit Boost SA</option>
+              <option>Credit Renew SA</option>
+              <option>Erase Debt SA - ADMIN</option>
+              <option>Erase Debt SA - MP</option>
+              <option>Erase Debt SA - SS</option>
+              <option>Fix My Credit Score</option>
+              <option>Get Credit SA</option>
+              <option>Increase My Credit Score</option>
+              <option>National Credit Solutions</option>
+              <option>SA Blacklisting Busters</option>
+              <option>SAZZ Debt Solutions</option>
+              <option>Shield Credit Solutions</option>
+              <option>South African Credit Score Experts - AA</option>
+              <option>South African Credit Score Experts - QAA</option>
+            </select>
+          </div>
+          <div>
+            <label>Status</label>
+            <select id="status" required>
+              <option value="active" selected>Active</option>
+              <option value="disabled">Disabled</option>
+            </select>
+          </div>
         </div>
-        
-        <div id="loginMessage"></div>
+
+        <div class="actions">
+          <button type="submit">Create User</button>
+          <a class="link" href="super-dashboard.html">← Back to Super Dashboard</a>
+        </div>
+
+        <div id="msg" class="msg"></div>
+
+        <!-- Optional: live debug panel so you can see insert responses -->
+        <div class="status">
+          <div class="panel" id="dbPanel"><b>Database Insert:</b> <span id="dbStatus">–</span></div>
+        </div>
       </form>
+
+      <div class="footer-row">
+        <small>Tip: ensure RLS policy allows <code>INSERT</code> for <b>anon</b> on <code>public.edsa_users</code>, and your <b>AFTER INSERT</b> trigger is deployed.</small>
+      </div>
     </div>
   </div>
 
-  <!-- Password Reset Modal -->
-  <div id="resetModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
-    <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 16px; padding: 2rem; max-width: 400px; width: 90%;">
-      <h3 style="margin-bottom: 1rem; text-align: center;">Password Reset</h3>
-      <p style="margin-bottom: 1rem; opacity: 0.8; text-align: center;">Please contact your administrator to reset your password.</p>
-      <button onclick="closeResetModal()" style="background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; width: 100%;">Close</button>
-    </div>
-  </div>
-
+  <!-- bcryptjs via ESM for hashing the temporary password -->
   <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
     import bcrypt from 'https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/+esm';
 
-    const supabase = createClient(
-      "https://xzjunkpxvfdpuogoflzh.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ"
-    );
+    // Supabase project config (your anon key)
+    const SUPABASE_URL = "https://xzjunkpxvfdpuogoflzh.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ";
 
-    let currentTier = null;
+    const msg      = document.getElementById('msg');
+    const form     = document.getElementById('registerForm');
+    const dbStatus = document.getElementById('dbStatus');
 
-    const tierConfig = {
-      agent: { title: 'Agent/Feeder', dashboard: 'agent-dashboard.html' },
-      admin: { title: 'Admin', dashboard: 'admin-dashboard.html' },
-      admin_manager: { title: 'Admin Manager', dashboard: 'admin-manager-dashboard.html' },
-      super: { title: 'Super User', dashboard: 'super-dashboard.html' }
-    };
+    function setStatus(text){ msg.textContent = text; }
+    function setDbStatus(html){ dbStatus.innerHTML = html; }
 
-    // Tier selection
-    document.querySelectorAll('.tier-card').forEach(card => {
-      card.addEventListener('click', () => {
-        // Remove selected class from all cards
-        document.querySelectorAll('.tier-card').forEach(c => c.classList.remove('selected'));
-        
-        // Add selected class to clicked card
-        card.classList.add('selected');
-        
-        // Set current tier
-        currentTier = card.dataset.tier;
-        
-        // Update login form
-        document.getElementById('loginTitle').textContent = `${tierConfig[currentTier].title} Login`;
-        document.getElementById('loginBtn').innerHTML = `<i class="fas fa-sign-in-alt"></i> Login as ${tierConfig[currentTier].title}`;
-        
-        // Show login form
-        document.getElementById('loginForm').classList.add('show');
+    // Check authentication
+    (function(){
+      try {
+        const sess = JSON.parse(localStorage.getItem('edsa_staff_session') || 'null');
+        if (!sess || sess.role !== 'super') { 
+          window.location.href = 'staff-login.html'; 
+          return; 
+        }
+      } catch(e) {
+        console.error(e);
+        window.location.href = 'staff-login.html';
+      }
+    })();
+
+    // Friendly, strong temporary string (user will set their real password via OTP)
+    function randomTempString(len=16){
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789@#$!";
+      let s=""; for(let i=0;i<len;i++) s += chars[Math.floor(Math.random()*chars.length)];
+      return s;
+    }
+
+    async function insertUser(payload){
+      return fetch(`${SUPABASE_URL}/rest/v1/edsa_users`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify(payload)
       });
-    });
+    }
 
-    // Login form submission
-    document.getElementById('staffLoginForm').addEventListener('submit', async (e) => {
+    async function showHttpError(res, prefix=""){
+      let body = "";
+      try { body = await res.text(); } catch {}
+      setDbStatus(`<span class='err'>❌ ${prefix}HTTP ${res.status} ${res.statusText}</span><br><code>${body.replace(/</g,'&lt;')}</code>`);
+    }
+
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      
-      if (!currentTier) {
-        showMessage(document.getElementById('loginMessage'), 'Please select your access level first.', 'error');
-        return;
-      }
+      setStatus('⏳ Creating user…');
+      setDbStatus('Working…');
 
-      const idNumber = document.getElementById('idNumber').value.trim();
-      const password = document.getElementById('password').value;
-      const loginBtn = document.getElementById('loginBtn');
-      const loginMessage = document.getElementById('loginMessage');
-
-      if (!idNumber || !password) {
-        showMessage(loginMessage, 'Please enter both ID number and password.', 'error');
-        return;
-      }
-
-      loginBtn.disabled = true;
-      showMessage(loginMessage, 'Verifying credentials...', 'info');
+      const full_name  = document.getElementById('full_name').value.trim();
+      const email      = document.getElementById('email').value.trim().toLowerCase();
+      const id_number  = document.getElementById('id_number').value.trim();
+      const role       = document.getElementById('role').value;     // agent|admin|admin_manager|super
+      const branch     = document.getElementById('branch').value;
+      const status     = document.getElementById('status').value;
 
       try {
-        // Look up user
-        const { data: usersArray, error } = await supabase
-          .from('edsa_users')
-          .select('*')
-          .eq('id_number', idNumber)
-          .eq('role', currentTier)
-          .eq('is_active', true)
-          .limit(1);
+        // generate a temp password (never emailed from frontend; server trigger handles welcome email content)
+        const tempPassword  = randomTempString(16);
+        const password_hash = await bcrypt.hash(tempPassword, 10);
 
-        if (error || !usersArray || usersArray.length === 0) {
-          // If this is the super user ID and no account exists, create it
-          if (idNumber === '8804015196086' && currentTier === 'super') {
-            showMessage(loginMessage, 'Super user account not found. Creating default account...', 'info');
-            
-            try {
-              // Create the super user account
-              const tempPassword = 'SuperUser2025!';
-              const password_hash = await bcrypt.hash(tempPassword, 10);
-              
-              const { data: newUser, error: createError } = await supabase
-                .from('edsa_users')
-                .insert({
-                  full_name: 'Super Administrator',
-                  email: 'super@erasedebtsa.co.za',
-                  id_number: '8804015196086',
-                  password_hash: password_hash,
-                  role: 'super',
-                  branch: 'Erase Debt SA - ADMIN',
-                  status: 'active',
-                  is_active: true
-                })
-                .select()
-                .single();
-              
-              if (createError) {
-                console.error('Error creating super user:', createError);
-                showMessage(loginMessage, 'Failed to create super user account. Please contact IT support.', 'error');
-                loginBtn.disabled = false;
-                return;
-              }
-              
-              showMessage(loginMessage, 'Super user account created! Please try logging in again.', 'success');
-              loginBtn.disabled = false;
-              return;
-              
-            } catch (createErr) {
-              console.error('Error creating super user:', createErr);
-              showMessage(loginMessage, 'Failed to create super user account. Please contact IT support.', 'error');
-              loginBtn.disabled = false;
-              return;
-            }
-          } else {
-            // Debug: Let's see what we actually found
-            const { data: allUsers } = await supabase
-              .from('edsa_users')
-              .select('id_number, role, is_active, status')
-              .eq('id_number', idNumber);
-            
-            console.log('Debug - All users with this ID:', allUsers);
-            console.log('Debug - Looking for role:', currentTier);
-            console.log('Debug - Original error:', error);
-            
-            if (allUsers && allUsers.length > 0) {
-              const user = allUsers[0];
-              if (user.role !== currentTier) {
-                showMessage(loginMessage, `This ID belongs to a ${user.role} account. Please select the correct login tier.`, 'error');
-              } else if (!user.is_active) {
-                showMessage(loginMessage, 'This account is disabled. Please contact your administrator.', 'error');
-              } else {
-                showMessage(loginMessage, 'Account found but login failed. Please check your credentials.', 'error');
-              }
-            } else {
-              showMessage(loginMessage, `No account found with ID number ${idNumber}.`, 'error');
-            }
-          }
-          loginBtn.disabled = false;
+        // Insert into edsa_users (must match your schema)
+        const insertRes = await insertUser({
+          full_name,
+          email,
+          id_number,
+          password_hash,
+          role,
+          branch,
+          status,
+          is_active: status === 'active'
+        });
+
+        if (!insertRes.ok) {
+          await showHttpError(insertRes, "DB Insert ");
+          setStatus('❌ Failed to create user.');
           return;
         }
 
-        const users = usersArray[0];
+        const data = await insertRes.json();
+        setDbStatus(`<span class='ok'>✅ Inserted</span><br><code>${JSON.stringify(data, null, 2).replace(/</g,'&lt;')}</code>`);
+        setStatus('✅ User created. Welcome email will be sent by the server trigger.');
+        form.reset();
 
-        // Verify password
-        const isValidPassword = await bcrypt.compare(password, users.password_hash);
-        
-        if (!isValidPassword) {
-          showMessage(loginMessage, 'Invalid password. Please try again. (If this is your first login, you may need to reset your password)', 'error');
-          loginBtn.disabled = false;
-          return;
-        }
-
-        console.log('Login successful for:', users.full_name);
-        
-        // Store session
-        const session = {
-          id: users.id,
-          name: users.full_name,
-          email: users.email,
-          role: users.role,
-          branch: users.branch,
-          loginTime: new Date().toISOString()
-        };
-        
-        localStorage.setItem('edsa_staff_session', JSON.stringify(session));
-        
-        showMessage(loginMessage, `Welcome ${users.full_name}! Redirecting...`, 'success');
-        
-        // Redirect to appropriate dashboard
-        setTimeout(() => {
-          window.location.href = tierConfig[users.role].dashboard;
-        }, 1500);
-
-      } catch (error) {
-        console.error('Login error:', error);
-        showMessage(loginMessage, 'An error occurred during login. Please try again.', 'error');
-        loginBtn.disabled = false;
+      } catch (err) {
+        console.error(err);
+        setDbStatus(`<span class='err'>❌ JS Error</span><br><code>${(err?.message||err).toString().replace(/</g,'&lt;')}</code>`);
+        setStatus('❌ Something went wrong.');
       }
     });
-
-    // Password reset functionality
-    document.getElementById('forgotPasswordLink').addEventListener('click', (e) => {
-      e.preventDefault();
-      document.getElementById('resetModal').style.display = 'flex';
-    });
-
-    window.closeResetModal = function() {
-      document.getElementById('resetModal').style.display = 'none';
-    }
-
-    function showMessage(element, message, type) {
-      element.innerHTML = `<div class="message ${type}">${message}</div>`;
-    }
   </script>
 </body>
 </html>
