@@ -96,34 +96,25 @@
       }
       
       if (!data) return;
-  // Direct database lookup instead of using edge function
-  const { createClient } = supabase;
-  const client = createClient(PROJECT_URL, ANON_KEY);
-  
-  const { data, error } = await client
-    .from('edsa_client_database')
-    .select('sale_reference, first_name, last_name')
-    .eq('client_id_number', idn)
-    .eq('email', email)
-    .single();
-    
-  if (error || !data) {
-    throw new Error('No matching client found for this ID and email combination.');
-          <td><span class="status-tag status-${(q.status || 'new').toLowerCase()}">${q.status || 'new'}</span></td>
-  
-  if (!data.sale_reference) {
-    throw new Error('Client found but no sale reference available.');
-  }
-  
-  return data.sale_reference;
-        </tr>`).join('');
 
-// Add Supabase script if not already loaded
-if (typeof supabase === 'undefined') {
-  const script = document.createElement('script');
-  script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js';
-  document.head.appendChild(script);
-}
+      const rows = data.map(q => `
+        <tr>
+          <td>${(q.first_name || '') + ' ' + (q.last_name || '')}</td>
+          <td>${q.email}</td>
+          <td>${q.query_type || 'N/A'}</td>
+          <td>${q.reference_number || 'N/A'}</td>
+          <td><span class="status-tag status-${(q.status || 'new').toLowerCase()}">${q.status || 'new'}</span></td>
+          <td><span class="status-tag status-${(q.status || 'new').toLowerCase()}">${q.status || 'new'}</span></td>
+
+      const rows = data.map(q => `
+        <tr>
+          <td>${(q.first_name || '') + ' ' + (q.last_name || '')}</td>
+          <td>${q.email}</td>
+          <td>${q.query_type || 'N/A'}</td>
+          <td>${q.reference_number || 'N/A'}</td>
+          <td><span class="status-tag status-${(q.status || 'new').toLowerCase()}">${q.status || 'new'}</span></td>
+          <td>${q.created_at ? new Date(q.created_at).toLocaleDateString() : 'N/A'}</td>
+        </tr>`).join('');
 
       document.getElementById('content').innerHTML = `
         <table>
