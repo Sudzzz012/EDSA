@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Agent/Feeder Accounts - Erase Debt SA</title>
+  <link rel="icon" href="erase-debt-logo.png"/>
+  <style>
+    body { font-family: Arial, sans-serif; background: linear-gradient(135deg,#003865,#005c97); margin:0; padding:24px; color:#14243b; }
+    .wrap { max-width: 1200px; margin: 0 auto; }
+    .header { display:flex; align-items:center; gap:16px; margin-bottom:14px; color:#fff; }
+    .logo { width:90px; border-radius:12px; box-shadow:0 6px 24px #2970ba55; }
+    .title { font-size:1.7rem; font-weight:800; letter-spacing:-.2px; }
+    .card { background:#fff; border-radius:16px; box-shadow:0 14px 44px #2970ba33; padding:22px; margin-bottom:20px; }
+    .btn { padding:12px 20px; background:#2970ba; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600; margin:5px; }
+    .btn:hover { background:#003865; }
+    .status { margin:10px 0; padding:10px; border-radius:8px; }
+    .success { background:#d4edda; color:#155724; }
+    .error { background:#f8d7da; color:#721c24; }
+    .info { background:#d1ecf1; color:#0c5460; }
+    .agent-list { display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:15px; margin-top:20px; }
+    .agent-card { background:#f8f9fa; border:1px solid #dee2e6; border-radius:8px; padding:15px; }
+    .agent-name { font-weight:bold; color:#2970ba; margin-bottom:5px; }
+    .agent-details { font-size:0.9rem; color:#666; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <img src="erase-debt-logo.png" alt="Erase Debt SA" class="logo"/>
+      <div class="title">Create Agent/Feeder Accounts</div>
+    </div>
+
+    <div class="card">
+      <h3>Bulk Create Agent Accounts</h3>
+      <p>This will create accounts for all agents/feeders from the provided list with their correct branch assignments.</p>
+      
+      <button class="btn" onclick="createAllAgents()">Create All Agent Accounts</button>
+      <button class="btn" onclick="showAgentList()">Show Agent List</button>
+      
+      <div id="status"></div>
+      
+      <div id="agentList" style="display:none;">
+        <h4>Agent/Feeder List:</h4>
+        <div class="agent-list" id="agentCards"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <a href="super-dashboard.html" style="color:#2970ba; text-decoration:none; font-weight:bold;">← Back to Super Dashboard</a>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    import bcrypt from 'https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/+esm';
+
+    const supabase = createClient(
+      "https://xzjunkpxvfdpuogoflzh.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ"
+    );
+
+    const agents = [
+      { branch: "SAZZ Debt Solutions", name: "Joran Reynolds Gaffar", id: "6901145146081", email: "sazz@erasedebtsa.co.za" },
+      { branch: "Credifix SA", name: "Ashira Vairuth", id: "8601290146080", email: "credifix@erasedebtsa.co.za" },
+      { branch: "SA Blacklisting Busters", name: "Caleb Dane Veerasamy", id: "9701305079083", email: "caleb@erasedebtsa.co.za" },
+      { branch: "Increase My Credit Score", name: "Amaara Mohamed", id: "9904045079084", email: "amaara@erasedebtsa.co.za" },
+      { branch: "Boost My Credit Score", name: "Marcus Parkkar", id: "8407155074080", email: "bmcs@erasedebtsa.co.za" },
+      { branch: "Shield Credit Solutions", name: "Trevolin Chellan", id: "9806145079088", email: "trevolin@erasedebtsa.co.za" },
+      { branch: "National Credit Solutions", name: "Semone Jordon Mursami", id: "9803170270084", email: "semone@erasedebtsa.co.za" },
+      { branch: "South African Credit Score Experts - AA", name: "Wayne Govender", id: "8412035051084", email: "sacrediitscoreexperts@erasedebtsa.co.za" },
+      { branch: "South African Credit Score Experts - QAA", name: "Sinjin Govender", id: "8812175109081", email: "sacrediitscoreexperts@erasedebtsa.co.za" },
+      { branch: "Clean Slate Solutions - MSJ", name: "Suraksha Joseph", id: "9307105079080", email: "suraksha@erasedebtsa.co.za" },
+      { branch: "Clean Slate Solutions - RSJ", name: "Alan Joseph", id: "6701155003087", email: "cleanslatesolutions@erasedebtsa.co.za" },
+      { branch: "Increase My Credit Score", name: "Amaan Mohammed", id: "0201055018080", email: "amaan@erasedebtsa.co.za" },
+      { branch: "Credit Boost SA", name: "Sharish Joseph", id: "9202155198086", email: "serisha@erasedebtsa.co.za" },
+      { branch: "Credit Renew SA", name: "Michelle Alicia Narmugam", id: "7810150210085", email: "michelle@erasedebtsa.co.za" },
+      { branch: "Fix My Credit Score", name: "Sebastian Papa", id: "7605075276088", email: "Sebastian@erasedebtsa.co.za" },
+      { branch: "Clean Credit Consultants", name: "Nicolene Gaffar", id: "9212030263083", email: "ccc@erasedebtsa.co.za" },
+      { branch: "Erase Debt SA", name: "Leshni", id: "8802240178088", email: "leshni@erasedebtsa.co.za" },
+      { branch: "Erase Debt SA", name: "Zoey", id: "9701030751089", email: "zoey@erasedebtsa.co.za" }
+    ];
+
+    window.showAgentList = function() {
+      const agentList = document.getElementById('agentList');
+      const agentCards = document.getElementById('agentCards');
+      
+      agentCards.innerHTML = agents.map(agent => `
+        <div class="agent-card">
+          <div class="agent-name">${agent.name}</div>
+          <div class="agent-details">
+            Branch: ${agent.branch}<br>
+            ID: ${agent.id}<br>
+            Email: ${agent.email}
+          </div>
+        </div>
+      `).join('');
+      
+      agentList.style.display = 'block';
+    };
+
+    window.createAllAgents = async function() {
+      const statusDiv = document.getElementById('status');
+      statusDiv.innerHTML = '<div class="info">Creating agent accounts...</div>';
+      
+      let successCount = 0;
+      let errorCount = 0;
+      let results = [];
+
+      for (const agent of agents) {
+        try {
+          // Check if user already exists
+          const { data: existingUser } = await supabase
+            .from('edsa_users')
+            .select('id')
+            .eq('id_number', agent.id)
+            .single();
+
+          if (existingUser) {
+            results.push(`⚠️ ${agent.name} - Already exists`);
+            continue;
+          }
+
+          // Generate temporary password
+          const tempPassword = 'Agent2025!' + Math.floor(Math.random() * 1000);
+          const password_hash = await bcrypt.hash(tempPassword, 10);
+
+          // Create user
+          const { error } = await supabase
+            .from('edsa_users')
+            .insert({
+              full_name: agent.name,
+              email: agent.email.toLowerCase(),
+              id_number: agent.id,
+              password_hash: password_hash,
+              role: 'agent',
+              branch: agent.branch,
+              status: 'active',
+              is_active: true
+            });
+
+          if (error) {
+            results.push(`❌ ${agent.name} - Error: ${error.message}`);
+            errorCount++;
+          } else {
+            results.push(`✅ ${agent.name} - Created (Password: ${tempPassword})`);
+            successCount++;
+          }
+
+        } catch (error) {
+          results.push(`❌ ${agent.name} - Error: ${error.message}`);
+          errorCount++;
+        }
+
+        // Small delay to avoid rate limiting
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+
+      statusDiv.innerHTML = `
+        <div class="success">✅ Successfully created: ${successCount} accounts</div>
+        <div class="error">❌ Errors: ${errorCount}</div>
+        <div style="margin-top:15px; max-height:400px; overflow-y:auto; background:#f8f9fa; padding:10px; border-radius:8px;">
+          ${results.map(result => `<div style="margin:5px 0; font-family:monospace; font-size:0.9rem;">${result}</div>`).join('')}
+        </div>
+      `;
+    };
+  </script>
+</body>
+</html>
