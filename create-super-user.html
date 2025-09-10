@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Super User - Erase Debt SA</title>
+  <link rel="icon" href="erase-debt-logo.png"/>
+  <style>
+    body { font-family: Arial, sans-serif; background: linear-gradient(135deg,#003865,#005c97); margin:0; padding:24px; color:#14243b; }
+    .wrap { max-width: 600px; margin: 0 auto; }
+    .header { display:flex; align-items:center; gap:16px; margin-bottom:14px; color:#fff; }
+    .logo { width:90px; border-radius:12px; box-shadow:0 6px 24px #2970ba55; }
+    .title { font-size:1.8rem; font-weight:800; letter-spacing:-.2px; }
+    .card { background:#fff; border-radius:16px; box-shadow:0 14px 44px #2970ba33; padding:22px; }
+    .desc { color:#445; text-align:center; margin:6px 0 18px; }
+    button { width:100%; margin-top:16px; padding:14px; border:none; border-radius:12px; background:#2970ba; color:#fff; font-weight:800; cursor:pointer; }
+    button:hover { background:#003865; }
+    .msg { margin-top:14px; font-weight:700; text-align:center; white-space:pre-wrap; background:#f6f9ff; border:1px solid #dce8fb; color:#173057; padding:12px; border-radius:10px; }
+    .ok { color:#0b6b2a; }
+    .err { color:#8b0000; }
+  </style>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"></script>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <img src="erase-debt-logo.png" alt="Erase Debt SA" class="logo"/>
+      <div class="title">Create Super User Account</div>
+    </div>
+
+    <div class="card">
+      <div class="desc">
+        This will create the initial Super User account for Sudeer Joseph with full system access.
+      </div>
+
+      <button id="createSuperUser">Create Super User Account</button>
+      <div id="msg" class="msg">Ready to create super user account.</div>
+    </div>
+  </div>
+
+  <script type="module">
+    import bcrypt from 'https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/+esm';
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    const supabase = createClient(
+      "https://xzjunkpxvfdpuogoflzh.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ"
+    );
+
+    const msg = document.getElementById('msg');
+
+    document.getElementById('createSuperUser').addEventListener('click', async () => {
+      try {
+        msg.textContent = '⏳ Creating super user account...';
+        msg.className = 'msg';
+
+        // Hash the default password
+        const defaultPassword = 'SuperUser2025!';
+        const password_hash = await bcrypt.hash(defaultPassword, 12);
+
+        // Create super user
+        const { data, error } = await supabase
+          .from('edsa_users')
+          .insert([{
+            full_name: 'Sudeer Joseph',
+            email: 'sudeer.joseph1@gmail.com',
+            id_number: '8804015169086',
+            password_hash: password_hash,
+            role: 'super',
+            branch: 'Erase Debt SA - ADMIN',
+            status: 'active',
+            is_active: true
+          }]);
+
+        if (error) {
+          msg.textContent = '❌ Error creating super user: ' + error.message;
+          msg.className = 'msg err';
+          return;
+        }
+
+        msg.textContent = `✅ Super User created successfully!
+
+Username: 8804015169086
+Password: ${defaultPassword}
+Email: sudeer.joseph1@gmail.com
+
+Please change the password after first login.`;
+        msg.className = 'msg ok';
+
+      } catch (err) {
+        msg.textContent = '❌ Unexpected error: ' + err.message;
+        msg.className = 'msg err';
+      }
+    });
+  </script>
+</body>
+</html>

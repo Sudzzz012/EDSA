@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Super User Dashboard - Erase Debt SA</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <style>
+    :root {
+      --primary: #2970ba;
+      --primary-dark: #003865;
+      --secondary: #005c97;
+      --success: #28a745;
+      --warning: #ffc107;
+      --danger: #dc3545;
+      --info: #17a2b8;
+      --light: #f8f9fa;
+      --dark: #343a40;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    .header {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(10px);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo {
+      height: 50px;
+      border-radius: 8px;
+    }
+
+    .header-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .user-info {
+      text-align: right;
+      font-size: 0.9rem;
+    }
+
+    .logout-btn {
+      background: var(--danger);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .logout-btn:hover {
+      background: #c82333;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .stats-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .stats-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .stats-card h3 {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .stats-card .number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .stats-card .label {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .management-section {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      margin-bottom: 2rem;
+    }
+
+    .management-section h2 {
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+
+    .action-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .action-card:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-3px);
+    }
+
+    .action-card i {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: var(--primary);
+    }
+
+    .action-card h4 {
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .action-card p {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .recent-activity {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+
+    .activity-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .activity-content {
+      flex: 1;
+    }
+
+    .activity-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .activity-time {
+      font-size: 0.8rem;
+      opacity: 0.7;
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+
+      .container {
+        padding: 1rem;
+      }
+
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .action-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-left">
+      <img src="erase-debt-logo.png" alt="Erase Debt SA" class="logo">
+      <div class="header-title">Super User Dashboard</div>
+    </div>
+    <div class="header-right">
+      <div class="user-info">
+        <div><strong id="userName">Sudeer Joseph</strong></div>
+        <div>Super User</div>
+      </div>
+      <button class="logout-btn" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- System Statistics -->
+    <div class="dashboard-grid">
+      <div class="stats-card">
+        <h3><i class="fas fa-users"></i> Total Clients</h3>
+        <div class="number" id="totalClients">0</div>
+        <div class="label">Active client accounts</div>
+      </div>
+      <div class="stats-card">
+        <h3><i class="fas fa-user-tie"></i> Staff Members</h3>
+        <div class="number" id="totalStaff">0</div>
+        <div class="label">Active staff accounts</div>
+      </div>
+      <div class="stats-card">
+        <h3><i class="fas fa-credit-card"></i> Monthly Revenue</h3>
+        <div class="number" id="monthlyRevenue">R 0</div>
+        <div class="label">This month's collections</div>
+      </div>
+      <div class="stats-card">
+        <h3><i class="fas fa-envelope"></i> Email Delivery</h3>
+        <div class="number" id="emailDelivery">0%</div>
+        <div class="label">Successful delivery rate</div>
+      </div>
+    </div>
+
+    <!-- Staff Management -->
+    <div class="management-section">
+      <h2><i class="fas fa-users-cog"></i> Staff Management</h2>
+      <div class="action-grid">
+        <div class="action-card" onclick="window.location.href='register-user.html'">
+          <i class="fas fa-user-plus"></i>
+          <h4>Create Staff Account</h4>
+          <p>Add new staff members to the system</p>
+        </div>
+        <div class="action-card" onclick="window.location.href='manage-staff.html'">
+          <i class="fas fa-users-cog"></i>
+          <h4>Manage Staff</h4>
+          <p>View, edit, and manage existing staff</p>
+        </div>
+        <div class="action-card" onclick="window.location.href='staff-permissions.html'">
+          <i class="fas fa-shield-alt"></i>
+          <h4>Permissions</h4>
+          <p>Configure role-based permissions</p>
+        </div>
+        <div class="action-card" onclick="window.location.href='login_edit_history_dashboard.html'">
+          <i class="fas fa-history"></i>
+          <h4>Login History</h4>
+          <p>View staff login and edit history</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Client Management -->
+    <div class="management-section">
+      <h2><i class="fas fa-users"></i> Client Management</h2>
+      <div class="action-grid">
+        <div class="action-card" onclick="window.location.href='client-capture.html'">
+          <i class="fas fa-user-plus"></i>
+          <h4>Capture Client</h4>
+          <p>Add new client to the system</p>
+        </div>
+        <div class="action-card" onclick="window.location.href='client-list.html'">
+          <i class="fas fa-list"></i>
+          <h4>Client Database</h4>
+          <p>View and manage all clients</p>
+        </div>
+        <div class="action-card" onclick="window.location.href='client-status-dashboard.html'">
+          <i class="fas fa-chart-line"></i>
+          <h4>Client Status</h4>
+          <p>Monitor client service progress</p>
+        </div>
+        <div class="action-card" onclick="window.location.href='payment-tracking.html'">
+          <i class="fas fa-credit-card"></i>
+          <h4>Payment Tracking</h4>
+          <p>Monitor payments and collections</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- System Management -->
+    <div class="management-section">
+      <h2><i class="fas fa-cogs"></i> System Management</h2>
+      <div class="action-grid">
+        <div class="action-card" onclick="window.location.href='queries-dashboard.html'">
+          <i class="fas fa-question-circle"></i>
+          <h4>Client Queries</h4>
+          <p>Manage client support requests</p>
+        </div>
+        <div class="action-card" onclick="window.location.href='email-dashboard.html'">
+          <i class="fas fa-envelope"></i>
+          <h4>Email Management</h4>
+          <p>Monitor email delivery and bounces</p>
+        </div>
+        <div class="action-card" onclick="window.location.href='audit-trail.html'">
+          <i class="fas fa-clipboard-list"></i>
+          <h4>Audit Trail</h4>
+          <p>View system activity logs</p>
+        </div>
+        <div class="action-card" onclick="window.location.href='system-settings.html'">
+          <i class="fas fa-cog"></i>
+          <h4>System Settings</h4>
+          <p>Configure system parameters</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="recent-activity">
+      <h2><i class="fas fa-clock"></i> Recent Activity</h2>
+      <div id="recentActivity">
+        <div class="activity-item">
+          <div class="activity-icon">
+            <i class="fas fa-user-plus"></i>
+          </div>
+          <div class="activity-content">
+            <div class="activity-title">New client captured by Agent Smith</div>
+            <div class="activity-time">2 minutes ago</div>
+          </div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-icon">
+            <i class="fas fa-credit-card"></i>
+          </div>
+          <div class="activity-content">
+            <div class="activity-title">Payment received - R2,500.00</div>
+            <div class="activity-time">15 minutes ago</div>
+          </div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-icon">
+            <i class="fas fa-envelope"></i>
+          </div>
+          <div class="activity-content">
+            <div class="activity-title">Welcome email sent to new client</div>
+            <div class="activity-time">1 hour ago</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"></script>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    const supabase = createClient(
+      "https://xzjunkpxvfdpuogoflzh.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ"
+    );
+
+    // Check authentication
+    (function(){
+      try {
+        const sess = JSON.parse(localStorage.getItem('edsa_staff_session') || 'null');
+        if (!sess || sess.role !== 'super') { 
+          window.location.href = 'staff-login.html'; 
+          return; 
+        }
+        document.getElementById('userName').textContent = sess.name || 'Super User';
+      } catch(e) {
+        console.error(e);
+        window.location.href = 'staff-login.html';
+      }
+    })();
+
+    // Load dashboard statistics
+    async function loadStats() {
+      try {
+        // Load total clients
+        const { data: clients, error: clientError } = await supabase
+          .from('edsa_client_database')
+          .select('id', { count: 'exact' });
+        
+        if (!clientError) {
+          document.getElementById('totalClients').textContent = clients?.length || 0;
+        }
+
+        // Load total staff
+        const { data: staff, error: staffError } = await supabase
+          .from('edsa_users')
+          .select('id', { count: 'exact' });
+        
+        if (!staffError) {
+          document.getElementById('totalStaff').textContent = staff?.length || 0;
+        }
+
+        // Calculate monthly revenue (placeholder)
+        document.getElementById('monthlyRevenue').textContent = 'R 125,000';
+        document.getElementById('emailDelivery').textContent = '94%';
+
+      } catch (error) {
+        console.error('Error loading stats:', error);
+      }
+    }
+
+    // Logout function
+    window.logout = function() {
+      localStorage.removeItem('edsa_staff_session');
+      window.location.href = 'staff-login.html';
+    };
+
+    // Load stats on page load
+    loadStats();
+  </script>
+</body>
+</html>

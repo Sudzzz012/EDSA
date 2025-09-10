@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manage Staff - Erase Debt SA</title>
+  <link rel="icon" href="erase-debt-logo.png"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #003865, #005c97);
+      margin: 0;
+      padding: 20px;
+      color: #333;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(10px);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .back-btn {
+      background: #2970ba;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background 0.3s;
+    }
+
+    .back-btn:hover {
+      background: #003865;
+    }
+
+    .staff-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .staff-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .staff-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .staff-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .staff-info h3 {
+      margin: 0 0 0.5rem 0;
+      color: #2970ba;
+      font-size: 1.2rem;
+    }
+
+    .staff-role {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .role-super {
+      background: #dc3545;
+      color: white;
+    }
+
+    .role-admin_manager {
+      background: #ffc107;
+      color: #212529;
+    }
+
+    .role-admin {
+      background: #17a2b8;
+      color: white;
+    }
+
+    .role-agent {
+      background: #28a745;
+      color: white;
+    }
+
+    .staff-details {
+      margin: 1rem 0;
+    }
+
+    .staff-details p {
+      margin: 0.5rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .staff-details i {
+      width: 16px;
+      color: #666;
+    }
+
+    .staff-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .btn-edit {
+      background: #17a2b8;
+      color: white;
+    }
+
+    .btn-edit:hover {
+      background: #138496;
+    }
+
+    .btn-disable {
+      background: #ffc107;
+      color: #212529;
+    }
+
+    .btn-disable:hover {
+      background: #e0a800;
+    }
+
+    .btn-enable {
+      background: #28a745;
+      color: white;
+    }
+
+    .btn-enable:hover {
+      background: #218838;
+    }
+
+    .btn-delete {
+      background: #dc3545;
+      color: white;
+    }
+
+    .btn-delete:hover {
+      background: #c82333;
+    }
+
+    .status-active {
+      color: #28a745;
+      font-weight: 600;
+    }
+
+    .status-disabled {
+      color: #dc3545;
+      font-weight: 600;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: white;
+      font-size: 1.1rem;
+    }
+
+    .no-staff {
+      text-align: center;
+      padding: 3rem;
+      background: white;
+      border-radius: 12px;
+      color: #666;
+    }
+
+    @media (max-width: 768px) {
+      .staff-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><i class="fas fa-users-cog"></i> Staff Management</h1>
+      <a href="super-dashboard.html" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+      </a>
+    </div>
+
+    <div id="staffContainer">
+      <div class="loading">
+        <i class="fas fa-spinner fa-spin"></i> Loading staff members...
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"></script>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    const supabase = createClient(
+      "https://xzjunkpxvfdpuogoflzh.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ"
+    );
+
+    // Check authentication
+    (function(){
+      try {
+        const sess = JSON.parse(localStorage.getItem('edsa_staff_session') || 'null');
+        if (!sess || (sess.role !== 'super' && sess.role !== 'admin_manager')) { 
+          window.location.href = 'staff-login.html'; 
+          return; 
+        }
+      } catch(e) {
+        console.error(e);
+        window.location.href = 'staff-login.html';
+      }
+    })();
+
+    async function loadStaff() {
+      try {
+        const { data: staff, error } = await supabase
+          .from('edsa_users')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('Error loading staff:', error);
+          document.getElementById('staffContainer').innerHTML = `
+            <div class="no-staff">
+              <i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: #dc3545; margin-bottom: 1rem;"></i>
+              <h3>Error Loading Staff</h3>
+              <p>Unable to load staff members. Please try again.</p>
+            </div>
+          `;
+          return;
+        }
+
+        if (!staff || staff.length === 0) {
+          document.getElementById('staffContainer').innerHTML = `
+            <div class="no-staff">
+              <i class="fas fa-users" style="font-size: 2rem; color: #666; margin-bottom: 1rem;"></i>
+              <h3>No Staff Members</h3>
+              <p>No staff members found in the system.</p>
+            </div>
+          `;
+          return;
+        }
+
+        const staffHTML = staff.map(member => `
+          <div class="staff-card">
+            <div class="staff-header">
+              <div class="staff-info">
+                <h3>${member.full_name}</h3>
+                <span class="staff-role role-${member.role}">${member.role.replace('_', ' ')}</span>
+              </div>
+            </div>
+            
+            <div class="staff-details">
+              <p><i class="fas fa-id-card"></i> ID: ${member.id_number}</p>
+              <p><i class="fas fa-envelope"></i> ${member.email}</p>
+              <p><i class="fas fa-building"></i> ${member.branch}</p>
+              <p><i class="fas fa-circle"></i> Status: <span class="status-${member.status}">${member.status}</span></p>
+              <p><i class="fas fa-calendar"></i> Created: ${new Date(member.created_at).toLocaleDateString()}</p>
+            </div>
+
+            <div class="staff-actions">
+              <button class="btn btn-edit" onclick="editStaff('${member.id}')">
+                <i class="fas fa-edit"></i> Edit
+              </button>
+              ${member.status === 'active' ? 
+                `<button class="btn btn-disable" onclick="toggleStatus('${member.id}', 'disabled')">
+                  <i class="fas fa-ban"></i> Disable
+                </button>` :
+                `<button class="btn btn-enable" onclick="toggleStatus('${member.id}', 'active')">
+                  <i class="fas fa-check"></i> Enable
+                </button>`
+              }
+              ${member.role !== 'super' ? 
+                `<button class="btn btn-delete" onclick="deleteStaff('${member.id}', '${member.full_name}')">
+                  <i class="fas fa-trash"></i> Delete
+                </button>` : ''
+              }
+            </div>
+          </div>
+        `).join('');
+
+        document.getElementById('staffContainer').innerHTML = `
+          <div class="staff-grid">
+            ${staffHTML}
+          </div>
+        `;
+
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('staffContainer').innerHTML = `
+          <div class="no-staff">
+            <i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: #dc3545; margin-bottom: 1rem;"></i>
+            <h3>System Error</h3>
+            <p>An unexpected error occurred. Please try again.</p>
+          </div>
+        `;
+      }
+    }
+
+    // Global functions for staff management
+    window.editStaff = function(id) {
+      // Redirect to edit page (to be created)
+      window.location.href = `edit-staff.html?id=${id}`;
+    };
+
+    window.toggleStatus = async function(id, newStatus) {
+      try {
+        const { error } = await supabase
+          .from('edsa_users')
+          .update({ 
+            status: newStatus,
+            is_active: newStatus === 'active'
+          })
+          .eq('id', id);
+
+        if (error) {
+          alert('Error updating staff status: ' + error.message);
+          return;
+        }
+
+        alert(`Staff member ${newStatus === 'active' ? 'enabled' : 'disabled'} successfully!`);
+        loadStaff(); // Reload the list
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    };
+
+    window.deleteStaff = async function(id, name) {
+      if (!confirm(`Are you sure you want to delete ${name}? This action cannot be undone.`)) {
+        return;
+      }
+
+      try {
+        const { error } = await supabase
+          .from('edsa_users')
+          .delete()
+          .eq('id', id);
+
+        if (error) {
+          alert('Error deleting staff member: ' + error.message);
+          return;
+        }
+
+        alert('Staff member deleted successfully!');
+        loadStaff(); // Reload the list
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    };
+
+    // Load staff on page load
+    loadStaff();
+  </script>
+</body>
+</html>
