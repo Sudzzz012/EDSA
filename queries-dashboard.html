@@ -3,115 +3,436 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Queries Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap" rel="stylesheet">
+  <title>Queries Dashboard - Erase Debt SA</title>
+  <link rel="icon" href="erase-debt-logo.png"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
   <style>
     body {
-      font-family: 'Inter', sans-serif;
-      background: #f0f4f8;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #003865, #005c97);
       margin: 0;
-      padding: 2rem;
+      padding: 20px;
+      color: #333;
+      min-height: 100vh;
     }
-    header {
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(10px);
+      color: white;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1.5rem;
     }
-    h2 {
-      color: #003865;
+
+    .header h1 {
       margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
-    button {
-      background: #003865;
-      color: #fff;
+
+    .btn {
+      padding: 0.75rem 1.5rem;
       border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
     }
-    button:hover {
-      background: #005c97;
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
     }
+
+    .btn-secondary:hover {
+      background: #545b62;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #2970ba;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .queries-table {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      overflow-x: auto;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      background: #fff;
-      border-radius: 8px;
-      overflow: hidden;
     }
-    th {
-      background: #003865;
-      color: #fff;
-      padding: 12px;
-    }
-    td {
-      padding: 10px;
+
+    th, td {
+      padding: 1rem;
+      text-align: left;
       border-bottom: 1px solid #eee;
     }
-    tr:nth-child(even) {
-      background: #f9f9f9;
+
+    th {
+      background: #f8f9fa;
+      font-weight: 600;
+      color: #2970ba;
     }
-    .status-tag {
-      font-weight: bold;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 0.85rem;
+
+    .status-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
     }
-    .status-new { background: #cce5ff; color: #003865; }
-    .status-pending { background: #fff3cd; color: #856404; }
-    .status-closed { background: #f8d7da; color: #721c24; }
+
+    .status-new {
+      background: rgba(40, 167, 69, 0.2);
+      color: #28a745;
+    }
+
+    .status-pending {
+      background: rgba(255, 193, 7, 0.2);
+      color: #ffc107;
+    }
+
+    .status-resolved {
+      background: rgba(23, 162, 184, 0.2);
+      color: #17a2b8;
+    }
+
+    .query-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn-sm {
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+    }
+
+    .btn-primary {
+      background: #2970ba;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #003865;
+    }
+
+    .btn-success {
+      background: #28a745;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #218838;
+    }
+
     .loading {
       text-align: center;
-      padding: 2rem;
-      font-size: 1.1rem;
-      color: #777;
+      padding: 3rem;
+      color: white;
+      font-size: 1.2rem;
+    }
+
+    .filters {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-select {
+      padding: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: white;
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .filters {
+        flex-direction: column;
+      }
     }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body>
-  <header>
-    <h2>Queries Dashboard</h2>
-    <button onclick="window.location.href='super-dashboard.html'">← Back to Dashboard</button>
-  </header>
-  <div id="content">
-    <div class="loading">Loading Queries Dashboard...</div>
+  <div class="container">
+    <div class="header">
+      <h1><i class="fas fa-question-circle"></i> Queries Dashboard</h1>
+      <a href="super-dashboard.html" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+      </a>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number" id="totalQueries">0</div>
+        <div class="stat-label">Total Queries</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="newQueries">0</div>
+        <div class="stat-label">New Queries</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="pendingQueries">0</div>
+        <div class="stat-label">Pending</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="resolvedQueries">0</div>
+        <div class="stat-label">Resolved</div>
+      </div>
+    </div>
+
+    <div class="filters">
+      <select class="filter-select" id="statusFilter">
+        <option value="">All Status</option>
+        <option value="new">New</option>
+        <option value="pending">Pending</option>
+        <option value="resolved">Resolved</option>
+      </select>
+      <select class="filter-select" id="typeFilter">
+        <option value="">All Types</option>
+        <option value="I Need a Callback">Callback Request</option>
+        <option value="I Have a Complaint">Complaint</option>
+        <option value="I Have Fully Paid My Fees">Payment Confirmation</option>
+        <option value="I Need A Follow Up On My Process">Follow Up</option>
+      </select>
+    </div>
+
+    <div id="loadingMessage" class="loading">
+      <i class="fas fa-spinner fa-spin"></i> Loading queries...
+    </div>
+
+    <div class="queries-table" id="queriesTable" style="display: none;">
+      <table>
+        <thead>
+          <tr>
+            <th>Reference</th>
+            <th>Client Name</th>
+            <th>Email</th>
+            <th>Query Type</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="queriesBody">
+          <!-- Queries will be loaded here -->
+        </tbody>
+      </table>
+    </div>
   </div>
-  <script>
-    const supabase = supabase.createClient(
+
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"></script>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    const supabase = createClient(
       "https://xzjunkpxvfdpuogoflzh.supabase.co",
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ"
     );
 
-    async function load() {
-      const { data, error } = await supabase.from('QUERIES').select('first_name, last_name, email, query_type, status, created_at, reference_number').order('created_at', { ascending: false });
+    let allQueries = [];
+
+    // Check authentication
+    (function(){
+      try {
+        const sess = JSON.parse(localStorage.getItem('edsa_staff_session') || 'null');
+        if (!sess) { 
+          window.location.href = 'staff-login.html'; 
+          return; 
+        }
+      } catch(e) {
+        console.error(e);
+        window.location.href = 'staff-login.html';
+      }
+    })();
+
+    async function loadQueries() {
+      try {
+        const { data: queries, error } = await supabase
+          .from('QUERIES')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('Error loading queries:', error);
+          document.getElementById('loadingMessage').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error loading queries.';
+          return;
+        }
+
+        allQueries = queries || [];
+        updateStats();
+        displayQueries(allQueries);
+
+        document.getElementById('loadingMessage').style.display = 'none';
+        document.getElementById('queriesTable').style.display = 'block';
+
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('loadingMessage').innerHTML = '<i class="fas fa-exclamation-triangle"></i> An unexpected error occurred.';
+      }
+    }
+
+    function updateStats() {
+      const total = allQueries.length;
+      const newQueries = allQueries.filter(q => q.status === 'new').length;
+      const pending = allQueries.filter(q => q.status === 'pending').length;
+      const resolved = allQueries.filter(q => q.status === 'resolved').length;
+
+      document.getElementById('totalQueries').textContent = total;
+      document.getElementById('newQueries').textContent = newQueries;
+      document.getElementById('pendingQueries').textContent = pending;
+      document.getElementById('resolvedQueries').textContent = resolved;
+    }
+
+    function displayQueries(queries) {
+      const tbody = document.getElementById('queriesBody');
       
-      if (error) {
-        console.error('Error loading queries:', error);
-        document.getElementById('content').innerHTML = `
-          <div class="loading" style="color: #d32f2f;">Error loading queries: ${error.message}</div>
-        `;
+      if (!queries || queries.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #666;">No queries found</td></tr>';
         return;
       }
-      
-      if (!data) return;
 
-      const rows = data.map(q => `
-        <tr>
-          <td>${(q.first_name || '') + ' ' + (q.last_name || '')}</td>
-          <td>${q.email}</td>
-          <td>${q.query_type || 'N/A'}</td>
-          <td>${q.reference_number || 'N/A'}</td>
-          <td><span class="status-tag status-${(q.status || 'new').toLowerCase()}">${q.status || 'new'}</span></td>
-          <td><span class="status-tag status-${(q.status || 'new').toLowerCase()}">${q.status || 'new'}</span></td>
-          <td>${q.created_at ? new Date(q.created_at).toLocaleDateString() : 'N/A'}</td>
-        </tr>`).join('');
+      const rows = queries.map(query => {
+        const statusClass = `status-${query.status || 'new'}`;
+        const date = query.created_at ? new Date(query.created_at).toLocaleDateString() : 'N/A';
+        
+        return `
+          <tr>
+            <td>${query.reference_number || 'N/A'}</td>
+            <td>${(query.first_name || '') + ' ' + (query.last_name || '')}</td>
+            <td>${query.email || 'N/A'}</td>
+            <td>${query.query_type || 'N/A'}</td>
+            <td><span class="status-badge ${statusClass}">${query.status || 'new'}</span></td>
+            <td>${date}</td>
+            <td>
+              <div class="query-actions">
+                <button class="btn btn-primary btn-sm" onclick="viewQuery('${query.id}')">
+                  <i class="fas fa-eye"></i> View
+                </button>
+                <button class="btn btn-success btn-sm" onclick="respondQuery('${query.id}')">
+                  <i class="fas fa-reply"></i> Respond
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
 
-      document.getElementById('content').innerHTML = `
-        <table>
-          <thead><tr><th>Full Name</th><th>Email</th><th>Query Type</th><th>Reference</th><th>Status</th><th>Date</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>`;
+      tbody.innerHTML = rows;
     }
-    load();</script></body></html>
+
+    // Filter functionality
+    document.getElementById('statusFilter').addEventListener('change', filterQueries);
+    document.getElementById('typeFilter').addEventListener('change', filterQueries);
+
+    function filterQueries() {
+      const statusFilter = document.getElementById('statusFilter').value;
+      const typeFilter = document.getElementById('typeFilter').value;
+
+      let filtered = allQueries;
+
+      if (statusFilter) {
+        filtered = filtered.filter(q => q.status === statusFilter);
+      }
+
+      if (typeFilter) {
+        filtered = filtered.filter(q => q.query_type === typeFilter);
+      }
+
+      displayQueries(filtered);
+    }
+
+    // Query actions
+    window.viewQuery = function(queryId) {
+      const query = allQueries.find(q => q.id === queryId);
+      if (query) {
+        alert(`Query Details:\n\nReference: ${query.reference_number}\nClient: ${query.first_name} ${query.last_name}\nEmail: ${query.email}\nType: ${query.query_type}\nMessage: ${query.query_text}\nStatus: ${query.status}`);
+      }
+    };
+
+    window.respondQuery = function(queryId) {
+      const response = prompt('Enter your response to this query:');
+      if (response) {
+        updateQueryStatus(queryId, 'resolved', response);
+      }
+    };
+
+    async function updateQueryStatus(queryId, status, response = '') {
+      try {
+        const { error } = await supabase
+          .from('QUERIES')
+          .update({ 
+            status: status,
+            response_text: response,
+            responded_by: 'Admin'
+          })
+          .eq('id', queryId);
+
+        if (error) {
+          alert('Error updating query: ' + error.message);
+          return;
+        }
+
+        alert('Query updated successfully!');
+        loadQueries(); // Reload queries
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
+    }
+
+    // Load queries on page load
+    loadQueries();
+  </script>
+</body>
+</html>
