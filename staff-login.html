@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Erase Debt SA — Staff Login (Connected)</title>
+  <link rel="icon" href="erase-debt-logo.png"/>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.supabase.co https://*.supabase.in;
+    script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline';
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    img-src 'self' data:;
+    font-src 'self' https://fonts.gstatic.com data:;
+  ">
+  <style>
+    body { font-family: 'Montserrat', Arial, sans-serif; background: linear-gradient(120deg,#003865,#005c97 85%); min-height:100vh; margin:0; color:#222; display:flex; flex-direction:column; align-items:center; }
+    .logo-container { margin-top:40px; margin-bottom:24px; text-align:center; }
+    .logo-container img { height:84px; border-radius:16px; background:#fff; padding:10px 24px; box-shadow:0 6px 24px rgba(0,0,0,0.08); }
+    h1 { color:#fff; text-shadow:0 2px 12px rgba(0,0,0,0.12); margin:8px 0 18px; }
+    .card { background:#fff; width:min(520px,92vw); border-radius:18px; box-shadow:0 10px 36px rgba(0,0,0,.18); padding:22px 22px 18px; }
+    label { font-weight:700; margin:8px 0 6px; display:block; }
+    input, select { width:100%; padding:12px; border-radius:10px; border:1px solid #cfe0f7; font-size:1rem; }
+    .btn { width:100%; margin-top:14px; padding:14px; border:none; border-radius:12px; background:#2970ba; color:#fff; font-weight:800; cursor:pointer; }
+    .btn:hover { background:#003865; }
+    .row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    @media (max-width:640px){ .row { grid-template-columns:1fr; } }
+    .msg { margin-top:12px; font-weight:700; white-space:pre-wrap; background:#f6f9ff; border:1px solid #dce8fb; color:#173057; padding:12px; border-radius:10px; min-height:46px; }
+    .footer { margin:18px 0 28px; text-align:center; }
+    a.link { color:#fff; text-decoration:none; font-weight:700; }
+    .small { color:#4c5d74; font-size:.95rem; }
+  </style>
+</head>
+<body>
+  <div class="logo-container">
+    <img src="erase-debt-logo.png" alt="Erase Debt SA Logo"/>
+  </div>
+  <h1>Staff Login</h1>
+
+  <div class="card">
+    <form id="loginForm" autocomplete="off">
+      <label>Supabase Anon Key (saved locally for future logins)</label>
+      <input id="anonKey" placeholder="Paste your anon key here"/>
+
+      <div class="row">
+        <div>
+          <label>ID Number (Username)</label>
+          <input id="id_number" inputmode="numeric" autocomplete="username" required/>
+        </div>
+        <div>
+          <label>Password</label>
+          <input id="password" type="password" autocomplete="current-password" required/>
+        </div>
+      </div>
+
+      <button class="btn" type="submit">Sign In</button>
+      <div id="msg" class="msg">Enter your details to sign in.</div>
+      <div class="small">Forgot password? Ask your Super/Admin to send a reset via the portal.</div>
+    </form>
+  </div>
+
+  <div class="footer">
+    <a class="link" href="index.html">← Back to Homepage</a>
+  </div>
+
+  <script type="module">
+    import bcrypt from 'https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/+esm';
+
+    const el = (id)=>document.getElementById(id);
+    const msg = el('msg');
+    const LS_KEY = 'edsa_anon_key';
+    const SESS_KEY = 'edsa_staff_session';
+
+    // Persist anon key
+    el('anonKey').value = localStorage.getItem(LS_KEY) || '';
+    el('anonKey').addEventListener('change', ()=> localStorage.setItem(LS_KEY, el('anonKey').value.trim()));
+
+    function say(t){ msg.textContent = t; }
+
+    function dashForRole(role){
+      // Map to YOUR actual filenames on disk:
+      switch (role) {
+        case 'agent': return 'agent_dashboard.html';
+        case 'admin': return 'admin_dashboard.html';
+        case 'admin_manager': return 'admin_manager_dashboard.html';
+        case 'super': return 'super_dashboard.html';
+        default: return 'admin_dashboard.html';
+      }
+    }
+
+    async function fetchUser(anonKey, idNumber){
+      const url = `https://xzjunkpxvfdpuogoflzh.supabase.co/rest/v1/edsa_users?select=id,full_name,email,id_number,password_hash,role,branch,status,is_active&limit=1&id_number=eq.${encodeURIComponent(idNumber)}`;
+      const res = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'apikey': anonKey,
+          'Authorization': 'Bearer ' + anonKey,
+          'Accept': 'application/json'
+        }
+      });
+      if (!res.ok) {
+        const t = await res.text().catch(()=>'');
+        throw new Error('REST error ' + res.status + ' ' + res.statusText + '\\n' + t);
+      }
+      const arr = await res.json();
+      return Array.isArray(arr) ? arr[0] : null;
+    }
+
+    function saveSession(u){
+      const session = {
+        id: u.id,
+        id_number: u.id_number,
+        name: u.full_name,
+        email: u.email,
+        role: u.role,
+        branch: u.branch,
+        logged_in_at: new Date().toISOString()
+      };
+      localStorage.setItem(SESS_KEY, JSON.stringify(session));
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      try {
+        say('⏳ Checking credentials...');
+        const anon = el('anonKey').value.trim();
+        if (!anon) { say('❌ Paste your Supabase anon key first.'); return; }
+
+        const idn = el('id_number').value.trim();
+        const pwd = el('password').value;
+        if (!/^[0-9]{6,}$/.test(idn)) { say('❌ Enter a valid ID number (6+ digits).'); return; }
+        if (!pwd) { say('❌ Enter your password.'); return; }
+
+        const user = await fetchUser(anon, idn);
+        if (!user) { say('❌ No user found for that ID number.'); return; }
+
+        // Enforce active status
+        if ((user.status || '').toLowerCase() !== 'active' || user.is_active === false) {
+          say('❌ Your account is not active. Please contact Admin.');
+          return;
+        }
+
+        // Check password
+        const ok = await bcrypt.compare(pwd, user.password_hash || '');
+        if (!ok) { say('❌ Incorrect password.'); return; }
+
+        // Save session & go
+        saveSession(user);
+        const dest = dashForRole(user.role);
+        say('✅ Login successful. Redirecting...');
+        setTimeout(()=> window.location.href = dest, 350);
+      } catch(err){
+        say('❌ ' + (err?.message || String(err)));
+      }
+    });
+  </script>
+</body>
+</html>

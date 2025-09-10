@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Track Your Application — OTP Login</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <style>
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#0c1f3b;color:#fff;margin:0}
+    .wrap{max-width:520px;margin:40px auto;padding:24px;background:#122a52;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+    h1{margin:0 0 12px;font-size:24px}
+    p.sub{margin:0 0 24px;color:#c9d7ff}
+    label{display:block;margin:12px 0 6px}
+    input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid #2e4b87;background:#0f2142;color:#fff;outline:none}
+    input::placeholder{color:#a8b4d7}
+    button{margin-top:16px;width:100%;padding:12px 16px;border:0;border-radius:12px;background:#3b82f6;color:#fff;font-weight:700;cursor:pointer}
+    button:disabled{opacity:.6;cursor:not-allowed}
+    .notice{margin-top:12px;padding:10px;border-radius:10px;background:#0b1a33;color:#cfe0ff;display:none}
+    .error{background:#331016;color:#ffd3d8}
+    .hidden{display:none}
+    .back{display:inline-block;margin-top:16px;color:#c9d7ff;text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Track Your Application</h1>
+    <p class="sub">Enter your ID & email. We’ll find your reference and send a one-time password (OTP) to your email.</p>
+
+    <div id="step1">
+      <label>South African ID Number</label>
+      <input id="idn" placeholder="e.g. 8804015196086" inputmode="numeric" autocomplete="off"/>
+
+      <label>Email Address</label>
+      <input id="email" type="email" placeholder="you@example.com" autocomplete="email"/>
+
+      <button id="sendBtn">Find & Send OTP</button>
+      <div id="msg1" class="notice"></div>
+    </div>
+
+    <div id="step2" class="hidden">
+      <label>Enter OTP</label>
+      <input id="otp" placeholder="6-digit code" inputmode="numeric" autocomplete="one-time-code"/>
+      <button id="verifyBtn">Verify & Continue</button>
+      <div id="msg2" class="notice"></div>
+    </div>
+
+    <a class="back" href="index.html">← Back</a>
+  </div>
+
+<script>
+const PROJECT_URL = "https://xzjunkpxvfdpuogoflzh.supabase.co";
+const ANON_KEY    = "YOUR_SUPABASE_ANON_KEY";     // replace with your real anon key
+const SHARED_TOKEN= "YOUR_SHARED_TOKEN";          // must match EDSA_FUNCTION_TOKEN in functions
+
+let REF_NUMBER = null; // will be populated by lookup-ref
+
+const sendBtn   = document.getElementById("sendBtn");
+const verifyBtn = document.getElementById("verifyBtn");
+const msg1      = document.getElementById("msg1");
+const msg2      = document.getElementById("msg2");
+const step1     = document.getElementById("step1");
+const step2     = document.getElementById("step2");
+
+function show(el, text, isError=false){
+  el.style.display = "block";
+  el.className = "notice" + (isError ? " error" : "");
+  el.textContent = text;
+}
+function hide(el){ el.style.display = "none"; el.textContent = ""; }
+
+async function lookupRef(idn, email){
+  const resp = await fetch(`${PROJECT_URL}/functions/v1/lookup-ref`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${ANON_KEY}`,
+      "x-edsa-token": SHARED_TOKEN
+    },
+    body: JSON.stringify({ id_number: idn, email })
+  });
+  const data = await resp.json();
+  if(!resp.ok || !data?.ok || !data?.ref_number){
+    throw new Error(data?.error || `Lookup failed (HTTP ${resp.status})`);
+  }
+  return data.ref_number;
+}
+
+sendBtn.addEventListener("click", async () => {
+  hide(msg1);
+  const idn = document.getElementById("idn").value.trim();
+  const email = document.getElementById("email").value.trim();
+
+  if(!idn || !email) {
+    return show(msg1, "Please fill in both ID and Email.", true);
+  }
+
+  sendBtn.disabled = true;
+  try {
+    // 1) Find the client's ref number securely
+    REF_NUMBER = await lookupRef(idn, email);
+
+    // 2) Send OTP tied to that ref
+    const resp = await fetch(`${PROJECT_URL}/functions/v1/send-otp`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${ANON_KEY}`,
+        "x-edsa-token": SHARED_TOKEN
+      },
+      body: JSON.stringify({ ref_number: REF_NUMBER, id_number: idn, email })
+    });
+    const data = await resp.json();
+    if (!resp.ok || !data.ok) {
+      show(msg1, data?.error || `Failed to send OTP (HTTP ${resp.status}).`, true);
+      sendBtn.disabled = false;
+      return;
+    }
+    show(msg1, `OTP sent for Ref ${REF_NUMBER}. Please check your email (valid for 10 minutes).`);
+    step1.classList.add("hidden");
+    step2.classList.remove("hidden");
+  } catch(e){
+    show(msg1, e?.message || "Lookup failed. Please check your details.", true);
+  } finally {
+    sendBtn.disabled = false;
+  }
+});
+
+verifyBtn.addEventListener("click", async () => {
+  hide(msg2);
+  const idn = document.getElementById("idn").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const otp = document.getElementById("otp").value.trim();
+
+  if(!otp) {
+    return show(msg2, "Enter the OTP from your email.", true);
+  }
+
+  if(!REF_NUMBER){
+    return show(msg2, "Reference not found. Please go back and try again.", true);
+  }
+
+  verifyBtn.disabled = true;
+  try {
+    const resp = await fetch(`${PROJECT_URL}/functions/v1/verify-otp`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${ANON_KEY}`,
+        "x-edsa-token": SHARED_TOKEN
+      },
+      body: JSON.stringify({ ref_number: REF_NUMBER, id_number: idn, email, otp })
+    });
+    const data = await resp.json();
+    if (!resp.ok || !data.ok) {
+      show(msg2, data?.error || `Could not verify OTP (HTTP ${resp.status}).`, true);
+      verifyBtn.disabled = false;
+      return;
+    }
+    // Redirect to portfolio with the looked-up ref
+    window.location.href = `track-portfolio.html?ref=${encodeURIComponent(REF_NUMBER)}`;
+  } catch(e){
+    show(msg2, e?.message || "Network error.", true);
+  } finally {
+    verifyBtn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

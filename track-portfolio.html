@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Track Portfolio - Erase Debt SA</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <style>
+    :root{
+      --bg1:#004080;
+      --bg2:#0073e6;
+      --panel:#ffffff;
+      --text:#003f7f;
+      --brand:#005cbf;
+      --brand-2:#3385ff;
+      --muted:#c9d7ff;
+      --chip:#e6f0ff;
+      --ok:#16a34a;
+      --warn:#f59e0b;
+      --bad:#ef4444;
+    }
+    *{box-sizing:border-box}
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, var(--bg1), var(--bg2));
+      color: #fff;
+      min-height:100vh;
+    }
+    header {
+      background-color: #002f5f;
+      padding: 18px 20px;
+      display:flex;
+      gap:16px;
+      align-items:center;
+      justify-content:center;
+      flex-wrap:wrap;
+    }
+    header img { height: 58px; border-radius:12px; }
+    header h1 { margin: 0; font-size: 26px; letter-spacing:.3px }
+    header .ref {
+      margin-left:auto;margin-right:auto;
+      background: rgba(255,255,255,.1);
+      padding:8px 12px;border-radius:10px;color:#dfe9ff;font-size:14px
+    }
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 16px;
+      padding: 24px;
+      max-width:1200px;
+      margin:0 auto;
+    }
+    .section {
+      background: var(--panel);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow:0 6px 22px rgba(0,0,0,.15);
+    }
+    .section h2 { margin:0 0 12px; display:flex; align-items:center; gap:10px }
+    .chip { display:inline-block; padding:4px 8px; border-radius:999px; font-size:12px; background:var(--chip); color:var(--text) }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px; border-bottom: 1px solid #e9eef7; text-align: left; }
+    th { background-color: var(--chip); }
+    .back-button, .btn {
+      display:inline-flex; align-items:center; gap:8px;
+      margin-top: 18px;
+      padding: 12px 16px;
+      background: var(--brand);
+      color: #fff; text-decoration: none; border-radius: 10px; font-weight: 600; transition: .25s;
+      border:0; cursor:pointer;
+    }
+    .back-button:hover, .btn:hover { background: var(--brand-2); }
+    .feedback-section { margin-top: 14px; }
+    textarea, input[type="file"] {
+      width: 100%; padding: 10px; margin-top: 10px; border-radius: 10px; border: 1px solid #cfd9ee; font-size: 15px;
+    }
+    .row { display:flex; gap:10px; flex-wrap:wrap }
+    .status-dot { width:10px; height:10px; border-radius:50% }
+    .dot-ok{ background:var(--ok) } .dot-warn{ background:var(--warn) } .dot-bad{ background:var(--bad) }
+    .muted{ color:#5b78a5; font-size:13px }
+    .notice{ background: #0b1a33; color:#cfe0ff; padding:10px 12px; border-radius:10px; display:none; margin-top:10px }
+    .err{ background:#331016; color:#ffd3d8 }
+    .topbar { display:flex; justify-content:center; padding:8px 20px }
+    .topbar a{ color:#dbe7ff; text-decoration:none; margin:0 8px; font-size:13px }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="suasha-ai.png" alt="Erase Debt SA" onerror="this.style.display='none'">
+    <h1>Track Your Application & Queries</h1>
+    <div id="refChip" class="ref">Ref: —</div>
+  </header>
+
+  <div class="topbar">
+    <a href="index.html">← Back to Homepage</a>
+  </div>
+
+  <div class="container">
+    <!-- Application Panel -->
+    <div class="section">
+      <h2><i class="fa-solid fa-file-contract"></i> Application Status <span id="statusChip" class="chip"></span></h2>
+      <table>
+        <tbody id="appTable">
+          <tr><th>Client</th><td id="clientName">—</td></tr>
+          <tr><th>Service Type</th><td id="serviceType">—</td></tr>
+          <tr><th>Total Payments Made</th><td id="paymentsMade">—</td></tr>
+          <tr><th>Missed Payments</th><td id="missedPayments">—</td></tr>
+          <tr><th>Remaining Payments</th><td id="remainingPayments">—</td></tr>
+          <tr><th>Monthly Payment</th><td id="monthlyPayment">—</td></tr>
+          <tr><th>Outstanding Balance</th><td id="outstanding">—</td></tr>
+          <tr><th>Next Payment Date</th><td id="nextPayment">—</td></tr>
+          <tr><th>Branch</th><td id="branch">—</td></tr>
+        </tbody>
+      </table>
+      <div class="muted" id="policyNote"></div>
+      <a href="index.html" class="back-button"><i class="fa-solid fa-circle-arrow-left"></i> Back</a>
+    </div>
+
+    <!-- Query Log Panel -->
+    <div class="section">
+      <h2><i class="fa-regular fa-comments"></i> Query Communication Log</h2>
+      <table>
+        <thead><tr><th>Date</th><th>Message</th><th>Admin Reply</th><th>Status</th></tr></thead>
+        <tbody id="queryBody">
+          <tr><td colspan="4" class="muted">Loading…</td></tr>
+        </tbody>
+      </table>
+
+      <div class="feedback-section">
+        <h3>Submit Feedback / Upload Document</h3>
+        <textarea id="feedbackText" rows="4" placeholder="Type your update or feedback…"></textarea>
+        <div class="row">
+          <input id="fileInput" type="file" />
+          <button id="submitBtn" class="btn"><i class="fa-solid fa-paper-plane"></i> Submit</button>
+        </div>
+        <div id="msg" class="notice"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supabase JS (browser) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <script>
+    // >>>>>>>>>>>>> CONFIG — REPLACE THESE <<<<<<<<<<<<<<
+    const SUPABASE_URL = "https://xzjunkpxvfdpuogoflzh.supabase.co"; // your project URL
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY"; // <-- replace with real anon key
+    // Storage bucket name for uploads:
+    const STORAGE_BUCKET = "edsa-queries"; // create this bucket in Supabase Storage
+
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    function qs(key){
+      const u = new URL(window.location.href);
+      return u.searchParams.get(key);
+    }
+
+    function show(el, text, isErr=false){
+      el.style.display = "block";
+      el.className = "notice" + (isErr ? " err" : "");
+      el.textContent = text;
+    }
+    function hide(el){ el.style.display="none"; el.textContent=""; }
+
+    function fmtDate(d){
+      try{ return new Date(d).toLocaleString(); }catch{return d||"—";}
+    }
+
+    function na(x){ return (x===null||x===undefined||x===\"\") ? \"—\" : x; }
+
+    const ref = qs(\"ref\"); // expected: track-portfolio.html?ref=EDSA-2025-000123
+    document.getElementById(\"refChip\").textContent = `Ref: ${ref || '—'}`;
+
+    if(!ref){
+      alert(\"Missing reference number. Please use the link from your email.\");
+    }
+
+    // ====== LOAD APPLICATION DATA ======
+    async function loadApplication(){
+      // We use sale_reference as the ref_number key (per your schema)
+      const { data, error } = await client
+        .from(\"edsa_client_database\")
+        .select(\"first_name,last_name,branch_name,service_type,monthly_payment,payment_plan_months,total_no_payments_made,total_no_missed_payments,salary_date,tracking_date,status\")
+        .eq(\"sale_reference\", ref)
+        .maybeSingle();
+
+      if(error){
+        console.error(error);
+        document.getElementById(\"policyNote\").textContent = \"Could not load application details.\";
+        return;
+      }
+      if(!data){
+        document.getElementById(\"policyNote\").textContent = \"No application found for this reference number.\";
+        return;
+      }
+
+      const fullName = [data.first_name, data.last_name].filter(Boolean).join(\" \");
+      const made = parseInt(data.total_no_payments_made||0,10);
+      const missed = parseInt(data.total_no_missed_payments||0,10);
+      const totalPlan = parseInt(data.payment_plan_months||0,10);
+      const remaining = Math.max(0, totalPlan - made);
+      const monthly = parseFloat(data.monthly_payment||0);
+      const outstanding = Math.max(0, Math.round((remaining * monthly + Number.EPSILON)*100)/100);
+
+      document.getElementById(\"clientName\").textContent = na(fullName);
+      document.getElementById(\"serviceType\").textContent = na(data.service_type);
+      document.getElementById(\"paymentsMade\").textContent = made;
+      document.getElementById(\"missedPayments\").textContent = missed;
+      document.getElementById(\"remainingPayments\").textContent = remaining;
+      document.getElementById(\"monthlyPayment\").textContent = monthly ? `R${monthly.toLocaleString()}` : \"—\";
+      document.getElementById(\"outstanding\").textContent = monthly ? `R${outstanding.toLocaleString()}` : \"—\";
+      document.getElementById(\"nextPayment\").textContent = na(data.salary_date || data.tracking_date);
+      document.getElementById(\"branch\").textContent = na(data.branch_name);
+
+      // status chip
+      const chip = document.getElementById(\"statusChip\");
+      chip.textContent = na(data.status || \"PENDING\").toUpperCase();
+    }
+
+    // ====== LOAD QUERIES THREAD ======
+    async function loadQueries(){
+      const body = document.getElementById(\"queryBody\");
+      body.innerHTML = `<tr><td colspan=\"4\" class=\"muted\">Loading…</td></tr>`;
+
+      // Assuming QUERIES table columns: created_at, ref_number, client_message, admin_reply, status
+      const { data, error } = await client
+        .from(\"QUERIES\")
+        .select(\"created_at, client_message, admin_reply, status\")
+        .eq(\"ref_number\", ref)
+        .order(\"created_at\", { ascending: true });
+
+      if(error){
+        console.error(error);
+        body.innerHTML = `<tr><td colspan=\"4\" class=\"muted\">Could not load queries.</td></tr>`;
+        return;
+      }
+      if(!data || !data.length){
+        body.innerHTML = `<tr><td colspan=\"4\" class=\"muted\">No messages yet.</td></tr>`;
+        return;
+      }
+
+      const rows = data.map(r => {
+        const status = (r.status||\"PENDING\").toUpperCase();
+        const dotClass = status.includes(\"NEW\")?\"dot-ok\" : status.includes(\"PENDING\")?\"dot-warn\":\"dot-bad\";
+        return `<tr>
+          <td>${fmtDate(r.created_at)}</td>
+          <td>${r.client_message ? r.client_message : \"—\"}</td>
+          <td>${r.admin_reply ? r.admin_reply : \"—\"}</td>
+          <td><span class=\"status-dot ${dotClass}\"></span> ${status}</td>
+        </tr>`;
+      }).join(\"\");
+      body.innerHTML = rows;
+    }
+
+    // ====== SUBMIT FEEDBACK / FILE ======
+    async function submitFeedback(){
+      const msgEl = document.getElementById(\"msg\");
+      hide(msgEl);
+      const text = document.getElementById(\"feedbackText\").value.trim();
+      const file = document.getElementById(\"fileInput\").files[0];
+
+      if(!text && !file){
+        return show(msgEl, \"Please type a message or attach a file.\", true);
+      }
+
+      let fileUrl = null;
+      if(file){
+        const path = `${ref}/${Date.now()}_${file.name}`;
+        const { data: up, error: upErr } = await client.storage.from(STORAGE_BUCKET).upload(path, file, {
+          upsert: false,
+          contentType: file.type || \"application/octet-stream\"
+        });
+        if(upErr){
+          console.error(upErr);
+          return show(msgEl, \"Upload failed. Please try again.\", true);
+        }
+        const { data: pub } = client.storage.from(STORAGE_BUCKET).getPublicUrl(path);
+        fileUrl = pub?.publicUrl || null;
+      }
+
+      // Insert into QUERIES
+      const payload = {
+        ref_number: ref,
+        client_message: text || null,
+        attachment_url: fileUrl || null,
+        status: \"PENDING\"
+      };
+      const { error } = await client.from(\"QUERIES\").insert(payload);
+      if(error){
+        console.error(error);
+        return show(msgEl, \"Could not submit. Please try again.\", true);
+      }
+
+      show(msgEl, \"Submitted. We’ll notify you by email when there’s an update.\");
+      document.getElementById(\"feedbackText\").value = \"\";
+      document.getElementById(\"fileInput\").value = \"\";
+      loadQueries();
+    }
+
+    document.getElementById(\"submitBtn\").addEventListener(\"click\", submitFeedback);
+
+    // INIT
+    (async () => {
+      if(!ref) return;
+      await loadApplication();
+      await loadQueries();
+    })();
+  </script>
+</body>
+</html>

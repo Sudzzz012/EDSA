@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register Staff User — Diagnostic Build</title>
+  <link rel="icon" href="erase-debt-logo.png"/>
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.supabase.co https://*.supabase.in https://*.functions.supabase.co https://api.sendgrid.com;
+    script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline';
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data:;
+    font-src 'self' data:;
+  ">
+  <style>
+    :root { --brand:#2970ba; --brandDark:#003865; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: linear-gradient(135deg,#003865,#005c97); margin:0; padding:24px; color:#14243b; }
+    .wrap { max-width: 980px; margin: 0 auto; }
+    .header { display:flex; align-items:center; gap:16px; margin-bottom:14px; color:#fff; }
+    .logo { width:90px; border-radius:12px; box-shadow:0 6px 24px #2970ba55; }
+    .title { font-size:1.7rem; font-weight:800; letter-spacing:-.2px; }
+    .card { background:#fff; border-radius:16px; box-shadow:0 14px 44px #2970ba33; padding:22px; }
+    .desc { color:#445; text-align:center; margin:6px 0 18px; }
+    label { display:block; font-weight:700; margin:10px 0 6px; }
+    input, select, textarea { width:100%; padding:12px; border-radius:10px; border:1px solid #c7d8ef; font-size:1rem; }
+    .row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    @media(max-width:780px){ .row { grid-template-columns:1fr; } }
+    button { width:100%; margin-top:16px; padding:14px; border:none; border-radius:12px; background:var(--brand); color:#fff; font-weight:800; cursor:pointer; }
+    button:hover { background:var(--brandDark); }
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .msg { margin-top:14px; font-weight:700; white-space:pre-wrap; background:#f6f9ff; border:1px solid #dce8fb; color:#173057; padding:12px; border-radius:10px; }
+    .ok { color:#0b6b2a; }
+    .warn { color:#915f00; }
+    .err { color:#8b0000; }
+    code.inline { background:#f0f4ff; padding:2px 6px; border-radius:8px; border:1px solid #dce8fb; }
+    .small { font-size:.95rem; color:#5b6b82; }
+    .back { display:inline-block; margin-top:14px; color:var(--brand); font-weight:700; text-decoration:none; }
+    .hr { height:1px; background:#e7eef9; margin:18px 0; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <img src="erase-debt-logo.png" alt="Erase Debt SA" class="logo"/>
+      <div class="title">Erase Debt SA — Staff Registration (Diagnostic)</div>
+    </div>
+
+    <div class="card">
+      <div class="desc">
+        Use this diagnostic build to pinpoint why the welcome email call is failing. It logs full request/response details below.
+      </div>
+
+      <div class="two-col">
+        <div>
+          <h3>Supabase Config</h3>
+          <label>Supabase URL</label>
+          <input id="sb_url" value="https://xzjunkpxvfdpuogoflzh.supabase.co"/>
+
+          <label>Anon Key</label>
+          <input id="sb_anon" placeholder="Paste your anon key" />
+
+          <label>Edge Function Name</label>
+          <input id="fn_name" value="send-user-email-public" />
+
+          <label>Edge Token (header <code class='inline'>x-edsa-token</code>)</label>
+          <input id="fn_token" placeholder=""/>
+
+          <div class="small">Tip: If you get 401, your token is missing/mismatched or your function is checking a different secret name.</div>
+        </div>
+
+        <div>
+          <h3>New Staff Details</h3>
+          <div class="row">
+            <div>
+              <label>Full Name</label>
+              <input id="full_name" />
+            </div>
+            <div>
+              <label>Email</label>
+              <input id="email" type="email"/>
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label>ID Number (username)</label>
+              <input id="id_number"/>
+            </div>
+            <div>
+              <label>Role</label>
+              <select id="role">
+                <option value="">Select Role</option>
+                <option value="agent">Agent</option>
+                <option value="admin">Admin</option>
+                <option value="admin_manager">Admin Manager</option>
+                <option value="super">Super User</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label>Branch</label>
+              <select id="branch">
+                <option value="">Select Branch</option>
+                <option>Erase Debt SA - ADMIN</option>
+                <option>Erase Debt SA - MP</option>
+                <option>Erase Debt SA - SS</option>
+                <option>Clean Slate Solutions - MSJ</option>
+                <option>Clean Slate Solutions - RSJ</option>
+                <option>Boost My Credit Score</option>
+                <option>Fix My Credit Score</option>
+                <option>Credit Boost SA</option>
+                <option>Credit Renew SA</option>
+                <option>National Credit Solutions</option>
+                <option>Get Credit SA</option>
+                <option>Shield Credit Solutions</option>
+                <option>SAZZ Debt Solutions</option>
+                <option>Clean Credit Consultants</option>
+                <option>SA Blacklisting Busters</option>
+                <option>Increase My Credit Score</option>
+                <option>South African Credit Score Experts - AA</option>
+                <option>South African Credit Score Experts - QAA</option>
+                <option>Credifix SA</option>
+              </select>
+            </div>
+            <div>
+              <label>Status</label>
+              <select id="status">
+                <option value="active" selected>Active</option>
+                <option value="disabled">Disabled</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="two-col">
+        <div>
+          <button id="btnCreate">Create User + Send Email</button>
+        </div>
+        <div>
+          <button id="btnTestOnly">Test Email Function Only (no DB insert)</button>
+        </div>
+      </div>
+
+      <div id="msg" class="msg">Ready.</div>
+      <a class="back" href="super-dashboard.html">← Back to Super Dashboard</a>
+    </div>
+  </div>
+
+  <script type="module">
+    import bcrypt from 'https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/+esm';
+    const el = (id) => document.getElementById(id);
+    const log = (t) => el('msg').textContent = t;
+
+    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+    function buildHeaders(anonKey, fnToken) {
+      const h = { 'Content-Type': 'application/json' };
+      if (fnToken) h['x-edsa-token'] = fnToken;
+      // For REST insert we also need anon auth headers:
+      h['apikey'] = anonKey;
+      h['Authorization'] = `Bearer ${anonKey}`;
+      return h;
+    }
+
+    function validateInputs() {
+      const email = el('email').value.trim();
+      if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) throw new Error('Please enter a valid email.');
+      const idnum = el('id_number').value.trim();
+      if (!/^[0-9]{6,}$/.test(idnum)) throw new Error('Please enter a valid ID number (6+ digits).');
+      if (!el('role').value) throw new Error('Please select a role.');
+      if (!el('branch').value) throw new Error('Please select a branch.');
+    }
+
+    async function tryCallEmail(fnUrl, body, headers) {
+      const res = await fetch(fnUrl, { method: 'POST', mode: 'cors', headers, body: JSON.stringify(body) });
+      const text = await res.text().catch(()=>''); // capture full body
+      return { ok: res.ok, status: res.status, statusText: res.statusText, text };
+    }
+
+    async function sendEmailFlow(anonKey, fnToken) {
+      const base = el('sb_url').value.trim().replace(/\\/$/,''); // strip trailing slash
+      const fn = el('fn_name').value.trim() || 'send-user-email-public';
+
+      const payload = {
+        to: el('email').value.trim().toLowerCase(),
+        id_number: el('id_number').value.trim(),
+        full_name: el('full_name').value.trim(),
+        branch: el('branch').value.trim() || 'Erase Debt SA - ADMIN'
+      };
+
+      const headers = { 'Content-Type': 'application/json' };
+      if (fnToken) headers['x-edsa-token'] = fnToken;
+
+      // Try both function endpoints (some setups prefer functions.supabase.co domain)
+      const urls = [
+        `${base}/functions/v1/${fn}`,
+        base.replace('.supabase.co', '.functions.supabase.co') + `/functions/v1/${fn}`
+      ];
+
+      let results = [];
+      for (const u of urls) {
+        try {
+          const r = await tryCallEmail(u, payload, headers);
+          results.push({ url: u, ...r });
+          if (r.ok) break; // stop on success
+        } catch (e) {
+          results.push({ url: u, ok: false, status: 0, statusText: 'Network/Fetch error', text: String(e) });
+        }
+        await sleep(100);
+      }
+
+      return results;
+    }
+
+    async function insertUser(anonKey) {
+      const base = el('sb_url').value.trim().replace(/\\/$/,''); // strip slash
+      const body = {
+        full_name: el('full_name').value.trim(),
+        email: el('email').value.trim().toLowerCase(),
+        id_number: el('id_number').value.trim(),
+        password_hash: await bcrypt.hash(Math.random().toString(36).slice(2), 10),
+        role: el('role').value,
+        branch: el('branch').value,
+        status: el('status').value,
+        is_active: el('status').value === 'active'
+      };
+
+      const res = await fetch(`${base}/rest/v1/edsa_users`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'apikey': anonKey,
+          'Authorization': `Bearer ${anonKey}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify(body)
+      });
+      const text = await res.text().catch(()=>'');
+      return { ok: res.ok, status: res.status, statusText: res.statusText, text };
+    }
+
+    function renderResults(title, arr) {
+      const lines = [title];
+      for (const r of arr) {
+        lines.push(`→ ${r.url || ''}`.trim());
+        lines.push(`   HTTP ${r.status} ${r.statusText}`);
+        if (r.text) {
+          lines.push(`   Body: ${r.text.slice(0, 2000)}`);
+        }
+      }
+      log(lines.join('\\n'));
+    }
+
+    el('btnTestOnly').addEventListener('click', async () => {
+      try {
+        const anon = el('sb_anon').value.trim();
+        const token = el('fn_token').value.trim();
+        if (!token) throw new Error('Paste your Edge Function token first.');
+        const results = await sendEmailFlow(anon, token);
+        renderResults('Test Email Function Results:', results);
+      } catch (e) {
+        log('❌ ' + e.message);
+      }
+    });
+
+    el('btnCreate').addEventListener('click', async () => {
+      try {
+        validateInputs();
+        const anon = el('sb_anon').value.trim();
+        if (!anon) throw new Error('Paste your Supabase anon key first.');
+        const token = el('fn_token').value.trim();
+        if (!token) throw new Error('Paste your Edge Function token first.');
+
+        log('⏳ Inserting user...');
+        const ins = await insertUser(anon);
+        if (!ins.ok) {
+          log(`❌ Failed to insert user. HTTP ${ins.status} ${ins.statusText}\n${ins.text}`);
+          return;
+        }
+        log('✅ User inserted. Now sending email...');
+        const results = await sendEmailFlow(anon, token);
+        renderResults('Email Function Results:', results);
+      } catch (e) {
+        log('❌ ' + e.message);
+      }
+    });
+  </script>
+</body>
+</html>
