@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
   <title>Staff Login - Erase Debt SA</title>
   <link rel="icon" href="erase-debt-logo.png"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -624,52 +625,9 @@
             },
             body: JSON.stringify({
               to: user.email,
-              subject: 'Password Reset - Erase Debt SA Staff Portal',
-              body: `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                  <meta charset="utf-8">
-                  <title>Password Reset - Erase Debt SA</title>
-                  <style>
-                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-                    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                    .header { background: #2970ba; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-                    .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px; }
-                    .button { display: inline-block; background: #2970ba; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
-                    .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #666; }
-                  </style>
-                </head>
-                <body>
-                  <div class="container">
-                    <div class="header">
-                      <h1>Password Reset Request</h1>
-                    </div>
-                    <div class="content">
-                      <p>Hi ${user.full_name},</p>
-                      
-                      <p>You requested a password reset for your Erase Debt SA staff account (ID: ${user.id_number}).</p>
-                      
-                      <p>Click the button below to set a new password:</p>
-                      
-                      <a href="${window.location.origin}/set-password.html?user=${encodeURIComponent(user.id_number)}&token=${encodeURIComponent(resetToken)}" class="button">Reset My Password</a>
-                      
-                      <p>Or copy and paste this link into your browser:</p>
-                      <p style="word-break: break-all; background: #fff; padding: 10px; border-radius: 4px;">${window.location.origin}/set-password.html?user=${encodeURIComponent(user.id_number)}&token=${encodeURIComponent(resetToken)}</p>
-                      
-                      <p><strong>This link will expire in 24 hours.</strong></p>
-                      
-                      <p>If you didn't request this password reset, please ignore this email.</p>
-                      
-                      <p>Best regards,<br>Erase Debt SA IT Team</p>
-                    </div>
-                    <div class="footer">
-                      <p>Erase Debt SA | 23 Whetstone Drive, Unit 11, Phoenix, Durban, 4068</p>
-                    </div>
-                  </div>
-                </body>
-                </html>
-              `
+              full_name: user.full_name,
+              id_number: user.id_number,
+              reset_token: resetToken
             })
           });
 
@@ -678,12 +636,12 @@
           } else {
             // Email failed, show reset link directly
             const resetLink = `${window.location.origin}/set-password.html?user=${encodeURIComponent(user.id_number)}&token=${encodeURIComponent(resetToken)}`;
-            showMessage(resetMessage, `Email service unavailable. Use this link to reset your password: <a href="${resetLink}" target="_blank" style="color: #fff; text-decoration: underline;">Reset Password</a>`, 'success');
+            showMessage(resetMessage, `Email service unavailable. Use this link to reset your password: <a href="${resetLink}" target="_blank" style="color: #fff; text-decoration: underline;">Reset Password</a>`, 'error');
           }
         } catch (emailError) {
           // Email failed, show reset link directly
           const resetLink = `${window.location.origin}/set-password.html?user=${encodeURIComponent(user.id_number)}&token=${encodeURIComponent(resetToken)}`;
-          showMessage(resetMessage, `Email service unavailable. Use this link to reset your password: <a href="${resetLink}" target="_blank" style="color: #fff; text-decoration: underline;">Reset Password</a>`, 'success');
+          showMessage(resetMessage, `Email service unavailable. Use this link to reset your password: <a href="${resetLink}" target="_blank" style="color: #fff; text-decoration: underline;">Reset Password</a>`, 'error');
         }
 
       } catch (error) {
