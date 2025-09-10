@@ -3,522 +3,113 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
-  <title>Staff Login - Erase Debt SA</title>
+  <title>Staff Management - Erase Debt SA</title>
   <link rel="icon" href="erase-debt-logo.png"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <style>
-    :root {
-      --primary: #2970ba;
-      --primary-dark: #003865;
-      --secondary: #005c97;
-      --success: #28a745;
-      --warning: #ffc107;
-      --danger: #dc3545;
-      --info: #17a2b8;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
-      color: #fff;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #003865, #005c97);
+      margin: 0;
+      padding: 20px;
+      color: white;
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
-
-    .login-container {
-      max-width: 1000px;
-      width: 100%;
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.1);
+      border-radius: 16px;
       padding: 2rem;
     }
-
-    .header {
+    h1 {
       text-align: center;
-      margin-bottom: 3rem;
-    }
-
-    .logo {
-      height: 80px;
-      margin-bottom: 1rem;
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-    }
-
-    .header h1 {
-      font-size: 2.5rem;
-      margin-bottom: 0.5rem;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    }
-
-    .header p {
-      font-size: 1.1rem;
-      opacity: 0.9;
-    }
-
-    .tier-selection {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.5rem;
       margin-bottom: 2rem;
     }
-
-    .tier-card {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      padding: 2rem;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      border: 2px solid transparent;
-      backdrop-filter: blur(10px);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .tier-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-      transition: left 0.5s;
-    }
-
-    .tier-card:hover::before {
-      left: 100%;
-    }
-
-    .tier-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-      border-color: rgba(255,255,255,0.3);
-    }
-
-    .tier-card.selected {
-      border-color: #fff;
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    .tier-icon {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-      display: block;
-    }
-
-    .tier-agent { color: #28a745; }
-    .tier-admin { color: #17a2b8; }
-    .tier-admin_manager { color: #ffc107; }
-    .tier-super { color: #dc3545; }
-
-    .tier-title {
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-    }
-
-    .tier-description {
-      font-size: 0.9rem;
-      opacity: 0.8;
-      line-height: 1.4;
-    }
-
-    .login-form {
-      display: none;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      padding: 2rem;
-      backdrop-filter: blur(10px);
-      margin-top: 2rem;
-    }
-
-    .login-form.show {
-      display: block;
-      animation: slideIn 0.3s ease-out;
-    }
-
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-    }
-
-    .form-group input {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-radius: 8px;
-      background: rgba(255,255,255,0.1);
-      color: #fff;
-      font-size: 1rem;
-      transition: border-color 0.3s;
-    }
-
-    .form-group input::placeholder {
-      color: rgba(255,255,255,0.6);
-    }
-
-    .form-group input:focus {
-      outline: none;
-      border-color: #fff;
-      background: rgba(255,255,255,0.15);
-    }
-
-    .login-btn {
-      width: 100%;
-      padding: 0.75rem;
-      background: var(--primary);
-      color: #fff;
+    .back-btn {
+      background: #2970ba;
+      color: white;
+      padding: 10px 20px;
       border: none;
       border-radius: 8px;
-      font-size: 1.1rem;
-      font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s;
-      margin-bottom: 1rem;
-    }
-
-    .login-btn:hover:not(:disabled) {
-      background: var(--primary-dark);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    }
-
-    .login-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .forgot-password {
-      text-align: center;
-      margin-top: 1rem;
-    }
-
-    .forgot-password a {
-      color: rgba(255,255,255,0.8);
       text-decoration: none;
-      font-size: 0.9rem;
+      display: inline-block;
+      margin-bottom: 20px;
     }
-
-    .forgot-password a:hover {
-      color: #fff;
-      text-decoration: underline;
+    .staff-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
     }
-
-    .message {
-      padding: 1rem;
-      border-radius: 8px;
-      margin: 1rem 0;
+    .staff-card {
+      background: rgba(255,255,255,0.2);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .loading {
       text-align: center;
-      font-weight: 600;
-    }
-
-    .message.success {
-      background: rgba(40, 167, 69, 0.2);
-      border: 1px solid rgba(40, 167, 69, 0.5);
-      color: #d4edda;
-    }
-
-    .message.error {
-      background: rgba(220, 53, 69, 0.2);
-      border: 1px solid rgba(220, 53, 69, 0.5);
-      color: #f8d7da;
-    }
-
-    .message.info {
-      background: rgba(23, 162, 184, 0.2);
-      border: 1px solid rgba(23, 162, 184, 0.5);
-      color: #d1ecf1;
-    }
-
-    .back-link {
-      position: absolute;
-      top: 2rem;
-      left: 2rem;
-      color: rgba(255,255,255,0.8);
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-weight: 600;
-      transition: color 0.3s;
-    }
-
-    .back-link:hover {
-      color: #fff;
-    }
-
-    @media (max-width: 768px) {
-      .tier-selection {
-        grid-template-columns: 1fr;
-      }
-      
-      .header h1 {
-        font-size: 2rem;
-      }
-      
-      .login-container {
-        padding: 1rem;
-      }
-      
-      .back-link {
-        position: static;
-        margin-bottom: 2rem;
-        justify-content: center;
-      }
+      padding: 40px;
+      font-size: 18px;
     }
   </style>
 </head>
 <body>
-  <a href="index.html" class="back-link">
-    <i class="fas fa-arrow-left"></i>
-    Back to Homepage
-  </a>
-
-  <div class="login-container">
-    <div class="header">
-      <img src="erase-debt-logo.png" alt="Erase Debt SA" class="logo">
-      <h1>Staff Portal</h1>
-      <p>Select your access level to continue</p>
-    </div>
-
-    <div class="tier-selection">
-      <div class="tier-card" data-tier="agent">
-        <i class="fas fa-user-edit tier-icon tier-agent"></i>
-        <div class="tier-title">Agent/Feeder</div>
-        <div class="tier-description">Client capture and data entry</div>
-      </div>
-
-      <div class="tier-card" data-tier="admin">
-        <i class="fas fa-user-cog tier-icon tier-admin"></i>
-        <div class="tier-title">Admin</div>
-        <div class="tier-description">Client management and workflows</div>
-      </div>
-
-      <div class="tier-card" data-tier="admin_manager">
-        <i class="fas fa-users-cog tier-icon tier-admin_manager"></i>
-        <div class="tier-title">Admin Manager</div>
-        <div class="tier-description">Staff oversight and reporting</div>
-      </div>
-
-      <div class="tier-card" data-tier="super">
-        <i class="fas fa-crown tier-icon tier-super"></i>
-        <div class="tier-title">Super User</div>
-        <div class="tier-description">Full system administration</div>
-      </div>
-    </div>
-
-    <div class="login-form" id="loginForm">
-      <h2 id="loginTitle">Login</h2>
-      <form id="staffLoginForm">
-        <div class="form-group">
-          <label for="idNumber">ID Number</label>
-          <input type="text" id="idNumber" name="idNumber" required placeholder="Enter your ID number">
-        </div>
-        
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" name="password" required placeholder="Enter your password">
-        </div>
-        
-        <button type="submit" class="login-btn" id="loginBtn">
-          <i class="fas fa-sign-in-alt"></i>
-          Login
-        </button>
-        
-        <div class="forgot-password">
-          <a href="#" id="forgotPasswordLink">Forgot your password?</a>
-        </div>
-        
-        <div id="loginMessage"></div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Password Reset Modal -->
-  <div id="resetModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
-    <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 16px; padding: 2rem; max-width: 400px; width: 90%;">
-      <h3 style="margin-bottom: 1rem; text-align: center;">Password Reset</h3>
-      <p style="margin-bottom: 1rem; opacity: 0.8; text-align: center;">Please contact your administrator to reset your password.</p>
-      <button onclick="closeResetModal()" style="background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; width: 100%;">Close</button>
+  <div class="container">
+    <a href="super-dashboard.html" class="back-btn">← Back to Dashboard</a>
+    <h1>Staff Management</h1>
+    <div id="content">
+      <div class="loading">Loading staff members...</div>
     </div>
   </div>
 
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-    import bcrypt from 'https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/+esm';
 
     const supabase = createClient(
       "https://xzjunkpxvfdpuogoflzh.supabase.co",
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ"
     );
 
-    let currentTier = null;
+    // Check authentication
+    const sess = JSON.parse(localStorage.getItem('edsa_staff_session') || 'null');
+    if (!sess) { 
+      window.location.href = 'staff-login.html'; 
+    }
 
-    const tierConfig = {
-      agent: { title: 'Agent/Feeder', dashboard: 'agent-dashboard.html' },
-      admin: { title: 'Admin', dashboard: 'admin-dashboard.html' },
-      admin_manager: { title: 'Admin Manager', dashboard: 'admin-manager-dashboard.html' },
-      super: { title: 'Super User', dashboard: 'super-dashboard.html' }
-    };
-
-    // Tier selection
-    document.querySelectorAll('.tier-card').forEach(card => {
-      card.addEventListener('click', () => {
-        // Remove selected class from all cards
-        document.querySelectorAll('.tier-card').forEach(c => c.classList.remove('selected'));
-        
-        // Add selected class to clicked card
-        card.classList.add('selected');
-        
-        // Set current tier
-        currentTier = card.dataset.tier;
-        
-        // Update login form
-        document.getElementById('loginTitle').textContent = `${tierConfig[currentTier].title} Login`;
-        document.getElementById('loginBtn').innerHTML = `<i class="fas fa-sign-in-alt"></i> Login as ${tierConfig[currentTier].title}`;
-        
-        // Show login form
-        document.getElementById('loginForm').classList.add('show');
-      });
-    });
-
-    // Login form submission
-    document.getElementById('staffLoginForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      if (!currentTier) {
-        showMessage(document.getElementById('loginMessage'), 'Please select your access level first.', 'error');
-        return;
-      }
-
-      const idNumber = document.getElementById('idNumber').value.trim();
-      const password = document.getElementById('password').value;
-      const loginBtn = document.getElementById('loginBtn');
-      const loginMessage = document.getElementById('loginMessage');
-
-      if (!idNumber || !password) {
-        showMessage(loginMessage, 'Please enter both ID number and password.', 'error');
-        return;
-      }
-
-      loginBtn.disabled = true;
-      showMessage(loginMessage, 'Verifying credentials...', 'info');
-
+    async function loadStaff() {
       try {
-        // Look up user
-        const { data: usersArray, error } = await supabase
+        const { data: staff, error } = await supabase
           .from('edsa_users')
           .select('*')
-          .eq('id_number', idNumber)
-          .eq('role', currentTier)
-          .eq('is_active', true)
-          .limit(1);
+          .order('full_name');
 
-        if (error || !usersArray || usersArray.length === 0) {
-          // If this is the super user ID and no account exists, create it
-          if (idNumber === '8804015196086' && currentTier === 'super') {
-            showMessage(loginMessage, 'Super user account not found. Creating default account...', 'info');
-            
-            try {
-              // Create the super user account
-              const tempPassword = 'SuperUser2025!';
-              const password_hash = await bcrypt.hash(tempPassword, 10);
-              
-              const { data: newUser, error: createError } = await supabase
-                .from('edsa_users')
-                .insert({
-                  full_name: 'Super Administrator',
-                  email: 'super@erasedebtsa.co.za',
-                  id_number: '8804015196086',
-                  password_hash: password_hash,
-                  role: 'super',
-                  branch: 'Erase Debt SA - ADMIN',
-                  status: 'active',
-                  is_active: true
-                })
-                .select()
-                .single();
-              
-              if (createError) {
-                console.error('Error creating super user:', createError);
-                showMessage(loginMessage, 'Failed to create super user account. Please contact IT support.', 'error');
-                loginBtn.disabled = false;
-                return;
-              }
-              
-              showMessage(loginMessage, 'Super user account created! Please try logging in again.', 'success');
-              loginBtn.disabled = false;
-<!DOCTYPE html>
-              return;
-<html lang="en">
-        const session = {
-<head>
-          id: users.id,
-  <meta charset="UTF-8" />
-          name: users.full_name,
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-          email: users.email,
-  <title>Staff Management - Erase Debt SA</title>
-          role: users.role,
-          branch: users.branch,
-          loginTime: new Date().toISOString()
-        };
-        
-        localStorage.setItem('edsa_staff_session', JSON.stringify(session));
-        
-        showMessage(loginMessage, `Welcome ${users.full_name}! Redirecting...`, 'success');
-        
-        // Redirect to appropriate dashboard
-        setTimeout(() => {
-          window.location.href = tierConfig[users.role].dashboard;
-        }, 1500);
+        if (error) throw error;
+
+        const content = document.getElementById('content');
+        if (!staff || staff.length === 0) {
+          content.innerHTML = '<div class="loading">No staff members found.</div>';
+          return;
+        }
+
+        const staffHtml = staff.map(member => `
+          <div class="staff-card">
+            <h3>${member.full_name}</h3>
+            <p><strong>ID:</strong> ${member.id_number}</p>
+            <p><strong>Email:</strong> ${member.email}</p>
+            <p><strong>Role:</strong> ${member.role}</p>
+            <p><strong>Branch:</strong> ${member.branch}</p>
+            <p><strong>Status:</strong> ${member.is_active ? 'Active' : 'Inactive'}</p>
+          </div>
+        `).join('');
+
+        content.innerHTML = `<div class="staff-grid">${staffHtml}</div>`;
 
       } catch (error) {
-        console.error('Login error:', error);
-        showMessage(loginMessage, 'An error occurred during login. Please try again.', 'error');
-        loginBtn.disabled = false;
+        document.getElementById('content').innerHTML = `<div class="loading">Error loading staff: ${error.message}</div>`;
       }
-    });
-
-    // Password reset functionality
-    document.getElementById('forgotPasswordLink').addEventListener('click', (e) => {
-      e.preventDefault();
-      document.getElementById('resetModal').style.display = 'flex';
-    });
-
-    window.closeResetModal = function() {
-      document.getElementById('resetModal').style.display = 'none';
     }
 
-    function showMessage(element, message, type) {
-      element.innerHTML = `<div class="message ${type}">${message}</div>`;
-    }
+    loadStaff();
   </script>
 </body>
 </html>
