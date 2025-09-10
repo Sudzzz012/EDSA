@@ -85,7 +85,7 @@
     );
 
     async function load() {
-      const { data, error } = await supabase.from('QUERIES').select('*').order('created_at', { ascending: false });
+      const { data, error } = await supabase.from('QUERIES').select('first_name, last_name, email, query_type, status, created_at, reference_number').order('created_at', { ascending: false });
       
       if (error) {
         console.error('Error loading queries:', error);
@@ -99,15 +99,17 @@
 
       const rows = data.map(q => `
         <tr>
-          <td>${q.first_name || ''} ${q.last_name || ''}</td>
+          <td>${(q.first_name || '') + ' ' + (q.last_name || '')}</td>
           <td>${q.email}</td>
           <td>${q.query_type || 'N/A'}</td>
-          <td><span class="status-tag status-${q.status?.toLowerCase()}">${q.status}</span></td>
+          <td>${q.reference_number || 'N/A'}</td>
+          <td><span class="status-tag status-${(q.status || 'new').toLowerCase()}">${q.status || 'new'}</span></td>
+          <td>${q.created_at ? new Date(q.created_at).toLocaleDateString() : 'N/A'}</td>
         </tr>`).join('');
 
       document.getElementById('content').innerHTML = `
         <table>
-          <thead><tr><th>Full Name</th><th>Email</th><th>Query Type</th><th>Status</th></tr></thead>
+          <thead><tr><th>Full Name</th><th>Email</th><th>Query Type</th><th>Reference</th><th>Status</th><th>Date</th></tr></thead>
           <tbody>${rows}</tbody>
         </table>`;
     }
