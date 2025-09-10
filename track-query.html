@@ -57,7 +57,8 @@
     </div>
   </div>
   <script>
-    const supabase = supabase.createClient(
+    const { createClient } = supabase;
+    const supabaseClient = createClient(
       'https://xzjunkpxvfdpuogoflzh.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ'
     );
@@ -70,7 +71,7 @@
       document.getElementById('resultSection').style.display = "none";
 
       if(f.ref.value.trim()){
-        let { data } = await supabase.from("QUERIES").select("*").eq("reference_number", f.ref.value.trim());
+        let { data } = await supabaseClient.from("QUERIES").select("*").eq("reference_number", f.ref.value.trim());
         if(data && data[0]){
           showQueryResult(data[0]);
         } else {
@@ -80,7 +81,7 @@
       }
 
       if(f.id_number.value.trim() && f.email.value.trim()){
-        let { data } = await supabase.from("QUERIES").select("*").eq("id_number", f.id_number.value.trim()).eq("email", f.email.value.trim());
+        let { data } = await supabaseClient.from("QUERIES").select("*").eq("id_number", f.id_number.value.trim()).eq("email", f.email.value.trim());
         if(data && data[0]){
           tempQuery = data[0];
           tempOTP = Math.floor(100000 + Math.random()*900000)+"";
