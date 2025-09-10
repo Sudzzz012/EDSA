@@ -4,6 +4,49 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
+      
+      if (dataToExport.length === 0 || dataToExport[0].cells[0].textContent.includes('No clients found')) {
+        alert('No data to export.');
+        return;
+      }
+
+      // Create CSV content
+      let csvContent = 'ID Number,Name,Email,Phone,Service Type,Branch,Agent,Total Amount,Monthly Payment,Payments Made,Status,Sale Date,Account Number,Bank Name\n';
+      
+      allClients.forEach(client => {
+        const row = [
+          client.client_id_number || '',
+          `"${(client.first_name || '') + ' ' + (client.last_name || '')}"`,
+          client.email || '',
+          client.phone || '',
+          `"${client.service_type || ''}"`,
+          `"${client.branch_name || ''}"`,
+          `"${client.agent_name || ''}"`,
+          client.total_amount || 0,
+          client.monthly_payment || 0,
+          client.total_no_payments_made || 0,
+          client.status || '',
+          client.sale_date ? new Date(client.sale_date).toLocaleDateString() : '',
+          client.account_number || '',
+          `"${client.bank_name || ''}"`
+        ].join(',');
+        csvContent += row + '\n';
+      });
+
+      // Download file
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `EDSA_Clients_Export_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      alert('Client data exported successfully!');
+    }
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
@@ -374,24 +417,6 @@
 
     let currentTier = null;
 
-    // Check authentication and get user role
-    let currentUserRole = null;
-    let currentUserName = null;
-    (function(){
-      try {
-        const sess = JSON.parse(localStorage.getItem('edsa_staff_session') || 'null');
-        if (!sess) { 
-          window.location.href = 'staff-login.html'; 
-          return; 
-        }
-        currentUserRole = sess.role;
-        currentUserName = sess.name;
-      } catch(e) {
-        console.error(e);
-        window.location.href = 'staff-login.html';
-      }
-    })();
-
     const tierConfig = {
       agent: { title: 'Agent/Feeder', dashboard: 'agent-dashboard.html' },
       admin: { title: 'Admin', dashboard: 'admin-dashboard.html' },
@@ -419,52 +444,6 @@
         document.getElementById('loginForm').classList.add('show');
       });
     });
-
-    function displayClients(clients) {
-      const tbody = document.getElementById('clientsBody');
-      
-      if (!clients || clients.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #666;">No clients found</td></tr>';
-        return;
-      }
-
-      const rows = clients.map(client => {
-        const statusClass = `status-${(client.status || 'pending').toLowerCase()}`;
-        const date = client.sale_date ? new Date(client.sale_date).toLocaleDateString() : 'N/A';
-        
-        // Hide sensitive data for agents
-        const phoneDisplay = currentUserRole === 'agent' ? '***-***-****' : (client.phone || 'N/A');
-        const accountDisplay = currentUserRole === 'agent' ? '****-****-****' : (client.account_number || 'N/A');
-        
-        return `
-          <tr>
-            <td>${client.client_id_number || 'N/A'}</td>
-            <td>${(client.first_name || '') + ' ' + (client.last_name || '')}</td>
-            <td>${client.email || 'N/A'}<br><small>${phoneDisplay}</small></td>
-            <td>${client.service_type || 'N/A'}</td>
-            <td>${client.branch_name || 'N/A'}<br><small>Agent: ${client.agent_name || 'N/A'}</small></td>
-            <td>R${formatCurrency(client.total_amount)}<br><small>Monthly: R${formatCurrency(client.monthly_payment)}</small></td>
-            <td>${client.total_no_payments_made || 0}</td>
-            <td><span class="status-badge ${statusClass}">${client.status || 'pending'}</span></td>
-            <td>${date}</td>
-            <td>
-              <div class="client-actions">
-                <button class="btn btn-primary btn-sm" onclick="viewClient('${client.id}')">
-                  <i class="fas fa-eye"></i> View
-                </button>
-                ${currentUserRole !== 'agent' ? `
-                  <button class="btn btn-success btn-sm" onclick="editClient('${client.id}')">
-                    <i class="fas fa-edit"></i> Edit
-                  </button>
-                ` : ''}
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join('');
-
-      tbody.innerHTML = rows;
-    }
 
     // Login form submission
     document.getElementById('staffLoginForm').addEventListener('submit', async (e) => {
@@ -607,19 +586,6 @@
       }
     });
 
-    // View client function
-    window.viewClient = function(clientId) {
-      const client = allClients.find(c => c.id === clientId);
-      if (client) {
-        // Hide sensitive data for agents in the popup
-        const phoneDisplay = currentUserRole === 'agent' ? '***-***-****' : (client.phone || 'N/A');
-        const accountDisplay = currentUserRole === 'agent' ? '****-****-****' : (client.account_number || 'N/A');
-        const bankDisplay = currentUserRole === 'agent' ? '****** (Hidden)' : (client.bank_name || 'N/A');
-        
-        alert(`Client Details:\n\nName: ${client.first_name} ${client.last_name}\nID: ${client.client_id_number}\nEmail: ${client.email}\nPhone: ${phoneDisplay}\nService: ${client.service_type}\nBranch: ${client.branch_name}\nAgent: ${client.agent_name}\nTotal Amount: R${formatCurrency(client.total_amount)}\nMonthly Payment: R${formatCurrency(client.monthly_payment)}\nPayments Made: ${client.total_no_payments_made || 0}\nStatus: ${client.status}\nAccount Number: ${accountDisplay}\nBank: ${bankDisplay}`);
-      }
-    };
-
     // Password reset functionality
     document.getElementById('forgotPasswordLink').addEventListener('click', (e) => {
       e.preventDefault();
@@ -630,7 +596,6 @@
       document.getElementById('resetModal').style.display = 'none';
       document.getElementById('resetModal').style.alignItems = '';
       document.getElementById('resetModal').style.justifyContent = '';
-    }
 
     function showMessage(element, message, type) {
       element.innerHTML = `<div class="message ${type}">${message}</div>`;
