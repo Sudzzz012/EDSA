@@ -3,114 +3,733 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Queries Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap" rel="stylesheet">
+  <title>Staff Login | Erase Debt SA</title>
+  <link rel="icon" href="erase-debt-logo.png"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #f0f4f8;
+    :root {
+      --agent-color: #28a745;
+      --admin-color: #007bff;
+      --manager-color: #ffc107;
+      --super-color: #dc3545;
+    }
+
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #003865, #005c97);
+      min-height: 100vh;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1000px;
       padding: 2rem;
     }
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
     }
-    h2 {
-      color: #003865;
-      margin: 0;
+
+    .logo {
+      width: 120px;
+      height: auto;
+      margin-bottom: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(41, 112, 186, 0.3);
     }
-    button {
-      background: #003865;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
+
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+    }
+
+    .header p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    .login-tiers {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .tier-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 2rem;
+      text-align: center;
       cursor: pointer;
-    }
-    button:hover {
-      background: #005c97;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-      border-radius: 8px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      border: 2px solid transparent;
+      position: relative;
       overflow: hidden;
     }
-    th {
-      background: #003865;
-      color: #fff;
-      padding: 12px;
+
+    .tier-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--tier-color);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
     }
-    td {
-      padding: 10px;
-      border-bottom: 1px solid #eee;
+
+    .tier-card:hover::before {
+      transform: scaleX(1);
     }
-    tr:nth-child(even) {
-      background: #f9f9f9;
+
+    .tier-card:hover {
+      transform: translateY(-8px);
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
     }
-    .status-tag {
-      font-weight: bold;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 0.85rem;
+
+    .tier-card.active {
+      border-color: var(--tier-color);
+      background: rgba(255, 255, 255, 0.2);
     }
-    .status-new { background: #cce5ff; color: #003865; }
-    .status-pending { background: #fff3cd; color: #856404; }
-    .status-closed { background: #f8d7da; color: #721c24; }
-    .loading {
-      text-align: center;
+
+    .tier-card.active::before {
+      transform: scaleX(1);
+    }
+
+    .tier-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: var(--tier-color);
+    }
+
+    .tier-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .tier-description {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      line-height: 1.4;
+    }
+
+    /* Tier-specific colors */
+    .tier-agent {
+      --tier-color: var(--agent-color);
+    }
+
+    .tier-admin {
+      --tier-color: var(--admin-color);
+    }
+
+    .tier-manager {
+      --tier-color: var(--manager-color);
+    }
+
+    .tier-super {
+      --tier-color: var(--super-color);
+    }
+
+    .login-form {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
       padding: 2rem;
-      font-size: 1.1rem;
-      color: #777;
+      backdrop-filter: blur(10px);
+      display: none;
+      animation: slideIn 0.3s ease;
+    }
+
+    .login-form.active {
+      display: block;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .form-header h2 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-group input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--current-tier-color, #fff);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 8px;
+      background: var(--current-tier-color, #2970ba);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .form-links {
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+
+    .form-links a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.3s ease;
+    }
+
+    .form-links a:hover {
+      color: #fff;
+      text-decoration: underline;
+    }
+
+    .message {
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .message.success {
+      background: rgba(40, 167, 69, 0.2);
+      border: 1px solid rgba(40, 167, 69, 0.3);
+      color: #90ee90;
+    }
+
+    .message.error {
+      background: rgba(220, 53, 69, 0.2);
+      border: 1px solid rgba(220, 53, 69, 0.3);
+      color: #ffb3b3;
+    }
+
+    .back-link {
+      position: absolute;
+      top: 2rem;
+      left: 2rem;
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    .back-link:hover {
+      color: #fff;
+    }
+
+    /* Reset Password Form */
+    .reset-form {
+      display: none;
+    }
+
+    .reset-form.active {
+      display: block;
+      animation: slideIn 0.3s ease;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .login-tiers {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .tier-card {
+        padding: 1.5rem;
+      }
+
+      .back-link {
+        position: static;
+        margin-bottom: 2rem;
+        justify-content: center;
+      }
     }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body>
-  <header>
-    <h2>Queries Dashboard</h2>
-    <button onclick="window.location.href='super-dashboard.html'">← Back to Dashboard</button>
-  </header>
-  <div id="content">
-    <div class="loading">Loading Queries Dashboard...</div>
+  <a href="index.html" class="back-link">
+    <i class="fas fa-arrow-left"></i>
+    Back to Homepage
+  </a>
+
+  <div class="container">
+    <div class="header">
+      <img src="erase-debt-logo.png" alt="Erase Debt SA" class="logo">
+      <h1>Staff Login Portal</h1>
+      <p>Select your access level to continue</p>
+    </div>
+
+    <!-- Login Tier Selection -->
+    <div id="tierSelection" class="login-tiers">
+      <div class="tier-card tier-agent" data-tier="agent">
+        <div class="tier-icon">
+          <i class="fas fa-user"></i>
+        </div>
+        <div class="tier-title">Agent / Feeder</div>
+        <div class="tier-description">Client capture and basic data entry access</div>
+      </div>
+
+      <div class="tier-card tier-admin" data-tier="admin">
+        <div class="tier-icon">
+          <i class="fas fa-user-tie"></i>
+        </div>
+        <div class="tier-title">Admin</div>
+        <div class="tier-description">Client management and approval workflows</div>
+      </div>
+
+      <div class="tier-card tier-manager" data-tier="admin_manager">
+        <div class="tier-icon">
+          <i class="fas fa-users-cog"></i>
+        </div>
+        <div class="tier-title">Admin Manager</div>
+        <div class="tier-description">Staff oversight and reporting access</div>
+      </div>
+
+      <div class="tier-card tier-super" data-tier="super">
+        <div class="tier-icon">
+          <i class="fas fa-crown"></i>
+        </div>
+        <div class="tier-title">Super User</div>
+        <div class="tier-description">Full system control and administration</div>
+      </div>
+    </div>
+
+    <!-- Login Form -->
+    <div id="loginForm" class="login-form">
+      <div class="form-header">
+        <h2 id="formTitle">
+          <i id="formIcon" class="fas fa-user"></i>
+          <span id="formTitleText">Agent Login</span>
+        </h2>
+        <p id="formDescription">Enter your credentials to access the system</p>
+      </div>
+
+      <form id="staffLoginForm">
+        <div class="form-group">
+          <label for="idNumber">ID Number</label>
+          <input type="text" id="idNumber" name="idNumber" required placeholder="Enter your 13-digit ID number" maxlength="13">
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required placeholder="Enter your password">
+        </div>
+
+        <button type="submit" class="btn" id="loginBtn">
+          <i class="fas fa-sign-in-alt"></i>
+          Login
+        </button>
+
+        <div id="loginMessage"></div>
+
+        <div class="form-links">
+          <a href="#" id="forgotPasswordLink">Forgot your password?</a>
+          <br><br>
+          <a href="#" id="backToTiers">← Choose Different Access Level</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Reset Password Form -->
+    <div id="resetForm" class="login-form reset-form">
+      <div class="form-header">
+        <h2>
+          <i class="fas fa-key"></i>
+          Reset Password
+        </h2>
+        <p>Enter your ID number and email to reset your password</p>
+      </div>
+
+      <form id="passwordResetForm">
+        <div class="form-group">
+          <label for="resetIdNumber">ID Number</label>
+          <input type="text" id="resetIdNumber" name="resetIdNumber" required placeholder="Enter your 13-digit ID number" maxlength="13">
+        </div>
+
+        <div class="form-group">
+          <label for="resetEmail">Email Address</label>
+          <input type="email" id="resetEmail" name="resetEmail" required placeholder="Enter your email address">
+        </div>
+
+        <button type="submit" class="btn" id="resetBtn">
+          <i class="fas fa-paper-plane"></i>
+          Send Reset Link
+        </button>
+
+        <div id="resetMessage"></div>
+
+        <div class="form-links">
+          <a href="#" id="backToLogin">← Back to Login</a>
+        </div>
+      </form>
+    </div>
   </div>
-  <script>
-    const supabase = supabase.createClient(
+
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"></script>
+  <script type="module">
+    import bcrypt from 'https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/+esm';
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    const supabase = createClient(
       "https://xzjunkpxvfdpuogoflzh.supabase.co",
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ"
     );
 
-    async function load() {
-      const { data, error } = await supabase.from('QUERIES').select('first_name, last_name, email, query_type, status, created_at, reference_number').order('created_at', { ascending: false });
+    // DOM elements
+    const tierSelection = document.getElementById('tierSelection');
+    const loginForm = document.getElementById('loginForm');
+    const resetForm = document.getElementById('resetForm');
+    const staffLoginForm = document.getElementById('staffLoginForm');
+    const passwordResetForm = document.getElementById('passwordResetForm');
+    const loginMessage = document.getElementById('loginMessage');
+    const resetMessage = document.getElementById('resetMessage');
+
+    // Current state
+    let currentTier = null;
+    let currentTierColor = null;
+
+    // Tier configuration
+    const tierConfig = {
+      agent: {
+        title: 'Agent Login',
+        icon: 'fas fa-user',
+        color: '#28a745',
+        dashboard: 'agent-dashboard.html',
+        description: 'Access client capture and basic functions'
+      },
+      admin: {
+        title: 'Admin Login',
+        icon: 'fas fa-user-tie',
+        color: '#007bff',
+        dashboard: 'admin-dashboard.html',
+        description: 'Access client management and approvals'
+      },
+      admin_manager: {
+        title: 'Admin Manager Login',
+        icon: 'fas fa-users-cog',
+        color: '#ffc107',
+        dashboard: 'admin-manager-dashboard.html',
+        description: 'Access staff oversight and reporting'
+      },
+      super: {
+        title: 'Super User Login',
+        icon: 'fas fa-crown',
+        color: '#dc3545',
+        dashboard: 'super-dashboard.html',
+        description: 'Full system administration access'
+      }
+    };
+
+    // Utility functions
+    function showMessage(element, message, type) {
+      element.innerHTML = `<div class="message ${type}">${message}</div>`;
+    }
+
+    function clearMessage(element) {
+      element.innerHTML = '';
+    }
+
+    function updateFormTheme(tier) {
+      const config = tierConfig[tier];
+      document.documentElement.style.setProperty('--current-tier-color', config.color);
       
-      if (error) {
-        console.error('Error loading queries:', error);
-        document.getElementById('content').innerHTML = `
-          <div class="loading" style="color: #d32f2f;">Error loading queries: ${error.message}</div>
-        `;
+      document.getElementById('formIcon').className = config.icon;
+      document.getElementById('formTitleText').textContent = config.title;
+      document.getElementById('formDescription').textContent = config.description;
+    }
+
+    // Tier selection handlers
+    document.querySelectorAll('.tier-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const tier = card.dataset.tier;
+        currentTier = tier;
+        currentTierColor = tierConfig[tier].color;
+
+        // Update active state
+        document.querySelectorAll('.tier-card').forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+
+        // Update form theme
+        updateFormTheme(tier);
+
+        // Show login form
+        tierSelection.style.display = 'none';
+        loginForm.classList.add('active');
+        resetForm.classList.remove('active');
+      });
+    });
+
+    // Back to tiers
+    document.getElementById('backToTiers').addEventListener('click', (e) => {
+      e.preventDefault();
+      tierSelection.style.display = 'grid';
+      loginForm.classList.remove('active');
+      resetForm.classList.remove('active');
+      clearMessage(loginMessage);
+      clearMessage(resetMessage);
+      staffLoginForm.reset();
+      passwordResetForm.reset();
+    });
+
+    // Show reset form
+    document.getElementById('forgotPasswordLink').addEventListener('click', (e) => {
+      e.preventDefault();
+      loginForm.classList.remove('active');
+      resetForm.classList.add('active');
+      clearMessage(loginMessage);
+    });
+
+    // Back to login
+    document.getElementById('backToLogin').addEventListener('click', (e) => {
+      e.preventDefault();
+      resetForm.classList.remove('active');
+      loginForm.classList.add('active');
+      clearMessage(resetMessage);
+    });
+
+    // Login form handler
+    staffLoginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const idNumber = document.getElementById('idNumber').value.trim();
+      const password = document.getElementById('password').value;
+      const loginBtn = document.getElementById('loginBtn');
+
+      // Validation
+      if (!idNumber || idNumber.length !== 13 || !/^\d+$/.test(idNumber)) {
+        showMessage(loginMessage, 'Please enter a valid 13-digit ID number.', 'error');
         return;
       }
+
+      if (!password) {
+        showMessage(loginMessage, 'Please enter your password.', 'error');
+        return;
+      }
+
+      if (!currentTier) {
+        showMessage(loginMessage, 'Please select an access level first.', 'error');
+        return;
+      }
+
+      loginBtn.disabled = true;
+      showMessage(loginMessage, 'Verifying credentials...', 'success');
+
+      try {
+        // Look up user
+        const { data: users, error } = await supabase
+          .from('edsa_users')
+          .select('*')
+          .eq('id_number', idNumber)
+          .eq('role', currentTier)
+          .eq('is_active', true)
+          .single();
+
+        if (error || !users) {
+          showMessage(loginMessage, `No active ${tierConfig[currentTier].title.toLowerCase()} account found with this ID number.`, 'error');
+          loginBtn.disabled = false;
+          return;
+        }
+
+        // Verify password
+        const passwordMatch = await bcrypt.compare(password, users.password_hash);
+        
+        if (!passwordMatch) {
+          showMessage(loginMessage, 'Invalid password. Please try again or use "Forgot Password".', 'error');
+          loginBtn.disabled = false;
+          return;
+        }
+
+        // Success - create session
+        const session = {
+          id: users.id,
+          name: users.full_name,
+          email: users.email,
+          role: users.role,
+          branch: users.branch,
+          loginTime: new Date().toISOString()
+        };
+
+        localStorage.setItem('edsa_staff_session', JSON.stringify(session));
+        
+        showMessage(loginMessage, `Welcome ${users.full_name}! Redirecting...`, 'success');
+        
+        setTimeout(() => {
+          window.location.href = tierConfig[currentTier].dashboard;
+        }, 1500);
+
+      } catch (error) {
+        console.error('Login error:', error);
+        showMessage(loginMessage, 'An error occurred during login. Please try again.', 'error');
+        loginBtn.disabled = false;
+      }
+    });
+
+    // Password reset form handler
+    passwordResetForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
       
-      if (!data) return;
+      const idNumber = document.getElementById('resetIdNumber').value.trim();
+      const email = document.getElementById('resetEmail').value.trim().toLowerCase();
+      const resetBtn = document.getElementById('resetBtn');
 
-      const rows = data.map(q => `
-        <tr>
-          <td>${(q.first_name || '') + ' ' + (q.last_name || '')}</td>
-          <td>${q.email}</td>
-          <td>${q.query_type || 'N/A'}</td>
-          <td>${q.reference_number || 'N/A'}</td>
-          <td><span class="status-tag status-${(q.status || 'new').toLowerCase()}">${q.status || 'new'}</span></td>
-          <td>${q.created_at ? new Date(q.created_at).toLocaleDateString() : 'N/A'}</td>
-        </tr>`).join('');
+      // Validation
+      if (!idNumber || idNumber.length !== 13 || !/^\d+$/.test(idNumber)) {
+        showMessage(resetMessage, 'Please enter a valid 13-digit ID number.', 'error');
+        return;
+      }
 
-      document.getElementById('content').innerHTML = `
-        <table>
-          <thead><tr><th>Full Name</th><th>Email</th><th>Query Type</th><th>Reference</th><th>Status</th><th>Date</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>`;
-    }
-    load();</script></body></html>
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showMessage(resetMessage, 'Please enter a valid email address.', 'error');
+        return;
+      }
+
+      resetBtn.disabled = true;
+      showMessage(resetMessage, 'Looking up your account...', 'success');
+
+      try {
+        // Look up user
+        const { data: users, error } = await supabase
+          .from('edsa_users')
+          .select('*')
+          .eq('id_number', idNumber)
+          .eq('email', email)
+          .eq('is_active', true)
+          .single();
+
+        if (error || !users) {
+          showMessage(resetMessage, 'No active account found with these details.', 'error');
+          resetBtn.disabled = false;
+          return;
+        }
+
+        // Generate reset token
+        const resetToken = Math.random().toString(36).substring(2) + Date.now().toString(36);
+        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // 24 hours
+
+        // Store reset token
+        const { error: resetError } = await supabase
+          .from('password_resets')
+          .insert([{
+            user_id: users.id,
+            reset_token: resetToken,
+            expires_at: expiresAt,
+            used: false
+          }]);
+
+        if (resetError) {
+          showMessage(resetMessage, 'Error creating reset token. Please try again.', 'error');
+          resetBtn.disabled = false;
+          return;
+        }
+
+        // Generate reset link
+        const resetLink = `${window.location.origin}/set-password.html?user=${encodeURIComponent(idNumber)}&token=${encodeURIComponent(resetToken)}`;
+
+        // In production, this would be emailed. For now, show the link.
+        showMessage(resetMessage, `
+          <strong>Password Reset Link Generated!</strong><br><br>
+          <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; word-break: break-all; font-size: 0.9rem;">
+            <a href="${resetLink}" target="_blank" style="color: #90ee90;">${resetLink}</a>
+          </div><br>
+          <small>Click the link above or copy it to a new tab. Link expires in 24 hours.</small>
+        `, 'success');
+
+        passwordResetForm.reset();
+
+      } catch (error) {
+        console.error('Reset error:', error);
+        showMessage(resetMessage, 'An error occurred. Please try again.', 'error');
+      }
+
+      resetBtn.disabled = false;
+    });
+  </script>
+</body>
+</html>
