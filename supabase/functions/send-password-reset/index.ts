@@ -70,9 +70,9 @@ serve(async (req) => {
     if (!SENDGRID_API_KEY) {
       console.error('SENDGRID_API_KEY not found in environment variables')
       return new Response(
-        JSON.stringify({ error: 'Email service not configured' }),
+        JSON.stringify({ error: 'Email service not configured', reset_link: resetLink }),
         { 
-          status: 500, 
+          status: 200, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
       )
@@ -111,9 +111,9 @@ serve(async (req) => {
       const errorText = await response.text()
       console.error('SendGrid error:', errorText)
       return new Response(
-        JSON.stringify({ error: 'Failed to send email', details: errorText }),
+        JSON.stringify({ error: 'Failed to send email', details: errorText, reset_link: resetLink }),
         { 
-          status: 500, 
+          status: 200, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
       )
