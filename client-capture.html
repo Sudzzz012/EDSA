@@ -4,7 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
-  <title>Client Capture - Erase Debt SA</title>
+      <h3 style="margin-bottom: 1rem;">Password Reset</h3>
+      <p style="margin-bottom: 1rem; opacity: 0.8;">Please contact your administrator to reset your password.</p>
+      <button onclick="closeResetModal()" style="background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer;">Close</button>
+    </div>
+  </div>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co https://api.sendgrid.com;">
+  <title>Staff Login - Erase Debt SA</title>
   <link rel="icon" href="erase-debt-logo.png"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <style>
@@ -29,13 +38,15 @@
       background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
       color: #fff;
       min-height: 100vh;
-      padding: 2rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 2rem;
+    .login-container {
+      max-width: 1000px;
+      width: 100%;
+      padding: 2rem;
     }
 
     .header {
@@ -61,33 +72,98 @@
       opacity: 0.9;
     }
 
-    .form-container {
+    .tier-selection {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .tier-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tier-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      transition: left 0.5s;
+    }
+
+    .tier-card:hover::before {
+      left: 100%;
+    }
+
+    .tier-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+      border-color: rgba(255,255,255,0.3);
+    }
+
+    .tier-card.selected {
+      border-color: #fff;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .tier-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .tier-agent { color: #28a745; }
+    .tier-admin { color: #17a2b8; }
+    .tier-admin_manager { color: #ffc107; }
+    .tier-super { color: #dc3545; }
+
+    .tier-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .tier-description {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      line-height: 1.4;
+    }
+
+    .login-form {
+      display: none;
       background: rgba(255, 255, 255, 0.1);
       border-radius: 16px;
       padding: 2rem;
       backdrop-filter: blur(10px);
-      margin-bottom: 2rem;
+      margin-top: 2rem;
     }
 
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 2rem;
+    .login-form.show {
+      display: block;
+      animation: slideIn 0.3s ease-out;
     }
 
-    .form-section {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 12px;
-      padding: 1.5rem;
-    }
-
-    .section-title {
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-      color: #fff;
-      border-bottom: 2px solid rgba(255,255,255,0.2);
-      padding-bottom: 0.5rem;
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .form-group {
@@ -98,12 +174,9 @@
       display: block;
       margin-bottom: 0.5rem;
       font-weight: 600;
-      color: #fff;
     }
 
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
+    .form-group input {
       width: 100%;
       padding: 0.75rem 1rem;
       border: 2px solid rgba(255,255,255,0.3);
@@ -114,34 +187,20 @@
       transition: border-color 0.3s;
     }
 
-    .form-group input::placeholder,
-    .form-group textarea::placeholder {
+    .form-group input::placeholder {
       color: rgba(255,255,255,0.6);
     }
 
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
+    .form-group input:focus {
       outline: none;
       border-color: #fff;
       background: rgba(255,255,255,0.15);
     }
 
-    .form-group select option {
-      background: var(--primary-dark);
-      color: #fff;
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-
-    .submit-btn {
+    .login-btn {
       width: 100%;
-      padding: 1rem;
-      background: var(--success);
+      padding: 0.75rem;
+      background: var(--primary);
       color: #fff;
       border: none;
       border-radius: 8px;
@@ -149,19 +208,35 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s;
-      margin-top: 2rem;
+      margin-bottom: 1rem;
     }
 
-    .submit-btn:hover:not(:disabled) {
-      background: #218838;
+    .login-btn:hover:not(:disabled) {
+      background: var(--primary-dark);
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
 
-    .submit-btn:disabled {
+    .login-btn:disabled {
       opacity: 0.6;
       cursor: not-allowed;
       transform: none;
+    }
+
+    .forgot-password {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .forgot-password a {
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .forgot-password a:hover {
+      color: #fff;
+      text-decoration: underline;
     }
 
     .message {
@@ -184,12 +259,6 @@
       color: #f8d7da;
     }
 
-    .message.info {
-      background: rgba(23, 162, 184, 0.2);
-      border: 1px solid rgba(23, 162, 184, 0.5);
-      color: #d1ecf1;
-    }
-
     .back-link {
       position: absolute;
       top: 2rem;
@@ -208,11 +277,7 @@
     }
 
     @media (max-width: 768px) {
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .form-row {
+      .tier-selection {
         grid-template-columns: 1fr;
       }
       
@@ -220,8 +285,8 @@
         font-size: 2rem;
       }
       
-      .container {
-        padding: 0 1rem;
+      .login-container {
+        padding: 1rem;
       }
       
       .back-link {
@@ -233,315 +298,264 @@
   </style>
 </head>
 <body>
-  <a href="agent-dashboard.html" class="back-link">
+  <a href="index.html" class="back-link">
     <i class="fas fa-arrow-left"></i>
-    Back to Dashboard
+    Back to Homepage
   </a>
 
-  <div class="container">
+  <div class="login-container">
     <div class="header">
       <img src="erase-debt-logo.png" alt="Erase Debt SA" class="logo">
-      <h1>Client Capture</h1>
-      <p>Enter new client information</p>
+      <h1>Staff Portal</h1>
+      <p>Select your access level to continue</p>
     </div>
 
-    <form id="clientCaptureForm">
-      <div class="form-container">
-        <div class="form-grid">
-          <!-- Personal Information -->
-          <div class="form-section">
-            <h3 class="section-title">Personal Information</h3>
-            
-            <div class="form-group">
-              <label for="fullName">Full Name *</label>
-              <input type="text" id="fullName" name="fullName" required placeholder="Enter full name">
-            </div>
-            
-            <div class="form-row">
-              <div class="form-group">
-                <label for="idNumber">ID Number *</label>
-                <input type="text" id="idNumber" name="idNumber" required placeholder="ID Number">
-              </div>
-              <div class="form-group">
-                <label for="dateOfBirth">Date of Birth</label>
-                <input type="date" id="dateOfBirth" name="dateOfBirth">
-              </div>
-            </div>
-            
-            <div class="form-row">
-              <div class="form-group">
-                <label for="gender">Gender</label>
-                <select id="gender" name="gender">
-                  <option value="">Select Gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="maritalStatus">Marital Status</label>
-                <select id="maritalStatus" name="maritalStatus">
-                  <option value="">Select Status</option>
-                  <option value="Single">Single</option>
-                  <option value="Married">Married</option>
-                  <option value="Divorced">Divorced</option>
-                  <option value="Widowed">Widowed</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <!-- Contact Information -->
-          <div class="form-section">
-            <h3 class="section-title">Contact Information</h3>
-            
-            <div class="form-group">
-              <label for="email">Email Address *</label>
-              <input type="email" id="email" name="email" required placeholder="email@example.com">
-            </div>
-            
-            <div class="form-row">
-              <div class="form-group">
-                <label for="cellPhone">Cell Phone *</label>
-                <input type="tel" id="cellPhone" name="cellPhone" required placeholder="Cell phone number">
-              </div>
-              <div class="form-group">
-                <label for="homePhone">Home Phone</label>
-                <input type="tel" id="homePhone" name="homePhone" placeholder="Home phone number">
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <label for="address">Physical Address *</label>
-              <textarea id="address" name="address" required placeholder="Enter physical address" rows="3"></textarea>
-            </div>
-            
-            <div class="form-row">
-              <div class="form-group">
-                <label for="city">City *</label>
-                <input type="text" id="city" name="city" required placeholder="City">
-              </div>
-              <div class="form-group">
-                <label for="postalCode">Postal Code</label>
-                <input type="text" id="postalCode" name="postalCode" placeholder="Postal code">
-              </div>
-            </div>
-          </div>
-
-          <!-- Employment Information -->
-          <div class="form-section">
-            <h3 class="section-title">Employment Information</h3>
-            
-            <div class="form-group">
-              <label for="employer">Employer</label>
-              <input type="text" id="employer" name="employer" placeholder="Current employer">
-            </div>
-            
-            <div class="form-row">
-              <div class="form-group">
-                <label for="jobTitle">Job Title</label>
-                <input type="text" id="jobTitle" name="jobTitle" placeholder="Job title">
-              </div>
-              <div class="form-group">
-                <label for="monthlyIncome">Monthly Income</label>
-                <input type="number" id="monthlyIncome" name="monthlyIncome" placeholder="Monthly income" step="0.01">
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <label for="workAddress">Work Address</label>
-              <textarea id="workAddress" name="workAddress" placeholder="Work address" rows="2"></textarea>
-            </div>
-          </div>
-
-          <!-- Service Information -->
-          <div class="form-section">
-            <h3 class="section-title">Service Information</h3>
-            
-            <div class="form-group">
-              <label for="serviceType">Service Type *</label>
-              <select id="serviceType" name="serviceType" required>
-                <option value="">Select Service</option>
-                <option value="Debt Review">Debt Review</option>
-                <option value="Debt Counselling">Debt Counselling</option>
-                <option value="Legal Services">Legal Services</option>
-                <option value="Financial Planning">Financial Planning</option>
-              </select>
-            </div>
-            
-            <div class="form-row">
-              <div class="form-group">
-                <label for="totalDebt">Total Debt Amount</label>
-                <input type="number" id="totalDebt" name="totalDebt" placeholder="Total debt amount" step="0.01">
-              </div>
-              <div class="form-group">
-                <label for="priority">Priority Level</label>
-                <select id="priority" name="priority">
-                  <option value="Normal">Normal</option>
-                  <option value="High">High</option>
-                  <option value="Urgent">Urgent</option>
-                </select>
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <label for="notes">Additional Notes</label>
-              <textarea id="notes" name="notes" placeholder="Any additional information" rows="3"></textarea>
-            </div>
-          </div>
-
-          <!-- Agent Assignment -->
-          <div class="form-section">
-            <h3 class="section-title">Assignment</h3>
-            
-            <div class="form-group">
-              <label for="assignedAgent">Assigned Agent</label>
-              <select id="assignedAgent" name="assignedAgent">
-                <option value="">Select Agent</option>
-                <option value="David Wilson">David Wilson</option>
-                <option value="Emma Thompson">Emma Thompson</option>
-                <option value="James Anderson">James Anderson</option>
-                <option value="Maria Garcia">Maria Garcia</option>
-                <option value="Robert Taylor">Robert Taylor</option>
-                <option value="Jennifer Martinez">Jennifer Martinez</option>
-                <option value="William Jones">William Jones</option>
-                <option value="Ashley Miller">Ashley Miller</option>
-                <option value="Christopher Lee">Christopher Lee</option>
-                <option value="Amanda White">Amanda White</option>
-                <option value="Matthew Harris">Matthew Harris</option>
-                <option value="Jessica Clark">Jessica Clark</option>
-                <option value="Daniel Lewis">Daniel Lewis</option>
-                <option value="Michelle Robinson">Michelle Robinson</option>
-                <option value="Kevin Walker">Kevin Walker</option>
-                <option value="Stephanie Hall">Stephanie Hall</option>
-                <option value="Brian Young">Brian Young</option>
-                <option value="Nicole King">Nicole King</option>
-                <option value="Ryan Wright">Ryan Wright</option>
-                <option value="Samantha Green">Samantha Green</option>
-                <option value="Justin Adams">Justin Adams</option>
-                <option value="Rachel Baker">Rachel Baker</option>
-                <option value="Brandon Nelson">Brandon Nelson</option>
-                <option value="Megan Carter">Megan Carter</option>
-                <option value="Tyler Mitchell">Tyler Mitchell</option>
-                <option value="Kayla Perez">Kayla Perez</option>
-                <option value="Jordan Roberts">Jordan Roberts</option>
-                <option value="Brittany Turner">Brittany Turner</option>
-                <option value="Austin Phillips">Austin Phillips</option>
-                <option value="Danielle Campbell">Danielle Campbell</option>
-                <option value="Sean Parker">Sean Parker</option>
-                <option value="Alexis Evans">Alexis Evans</option>
-                <option value="Cody Edwards">Cody Edwards</option>
-                <option value="Jasmine Collins">Jasmine Collins</option>
-                <option value="Trevor Stewart">Trevor Stewart</option>
-                <option value="Vanessa Sanchez">Vanessa Sanchez</option>
-                <option value="Marcus Morris">Marcus Morris</option>
-                <option value="Crystal Rogers">Crystal Rogers</option>
-                <option value="Devin Reed">Devin Reed</option>
-                <option value="Tiffany Cook">Tiffany Cook</option>
-                <option value="Garrett Morgan">Garrett Morgan</option>
-                <option value="Amber Bell">Amber Bell</option>
-                <option value="Caleb Murphy">Caleb Murphy</option>
-                <option value="Heather Bailey">Heather Bailey</option>
-                <option value="Ian Rivera">Ian Rivera</option>
-                <option value="Courtney Cooper">Courtney Cooper</option>
-              </select>
-            </div>
-            
-            <div class="form-group">
-              <label for="branch">Branch</label>
-              <select id="branch" name="branch">
-                <option value="">Select Branch</option>
-                <option value="Johannesburg">Johannesburg</option>
-                <option value="Cape Town">Cape Town</option>
-                <option value="Durban">Durban</option>
-                <option value="Pretoria">Pretoria</option>
-                <option value="Port Elizabeth">Port Elizabeth</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <button type="submit" class="submit-btn" id="submitBtn">
-          <i class="fas fa-save"></i>
-          Capture Client
-        </button>
-
-        <div id="formMessage"></div>
+    <div class="tier-selection">
+      <div class="tier-card" data-tier="agent">
+        <i class="fas fa-user-edit tier-icon tier-agent"></i>
+        <div class="tier-title">Agent/Feeder</div>
+        <div class="tier-description">Client capture and data entry</div>
       </div>
-    </form>
+
+      <div class="tier-card" data-tier="admin">
+        <i class="fas fa-user-cog tier-icon tier-admin"></i>
+        <div class="tier-title">Admin</div>
+        <div class="tier-description">Client management and workflows</div>
+      </div>
+
+      <div class="tier-card" data-tier="admin_manager">
+        <i class="fas fa-users-cog tier-icon tier-admin_manager"></i>
+        <div class="tier-title">Admin Manager</div>
+        <div class="tier-description">Staff oversight and reporting</div>
+      </div>
+
+      <div class="tier-card" data-tier="super">
+        <i class="fas fa-crown tier-icon tier-super"></i>
+        <div class="tier-title">Super User</div>
+        <div class="tier-description">Full system administration</div>
+      </div>
+    </div>
+
+    <div class="login-form" id="loginForm">
+      <h2 id="loginTitle">Login</h2>
+      <form id="staffLoginForm">
+        <div class="form-group">
+          <label for="idNumber">ID Number</label>
+          <input type="text" id="idNumber" name="idNumber" required placeholder="Enter your ID number">
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required placeholder="Enter your password">
+        </div>
+        
+        <button type="submit" class="login-btn" id="loginBtn">
+          <i class="fas fa-sign-in-alt"></i>
+          Login
+        </button>
+        
+        <div class="forgot-password">
+          <a href="#" id="forgotPasswordLink">Forgot your password?</a>
+        </div>
+        
+        <div id="loginMessage"></div>
+      </form>
+    </div>
   </div>
+
+  <!-- Password Reset Modal -->
+  <div id="resetModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; display: flex; align-items: center; justify-content: center;">
 
   <script type="module" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"></script>
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    import bcrypt from 'https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/+esm';
 
     const supabase = createClient(
       "https://xzjunkpxvfdpuogoflzh.supabase.co",
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ"
     );
 
-    // Check if user is logged in
-    const session = JSON.parse(localStorage.getItem('edsa_staff_session') || '{}');
-    if (!session.id) {
-      window.location.href = 'staff-login.html';
-    }
+    let currentTier = null;
 
-    // Form submission
-    document.getElementById('clientCaptureForm').addEventListener('submit', async (e) => {
+    const tierConfig = {
+      agent: { title: 'Agent/Feeder', dashboard: 'agent-dashboard.html' },
+      admin: { title: 'Admin', dashboard: 'admin-dashboard.html' },
+      admin_manager: { title: 'Admin Manager', dashboard: 'admin-manager-dashboard.html' },
+      super: { title: 'Super User', dashboard: 'super-dashboard.html' }
+    };
+
+    // Tier selection
+    document.querySelectorAll('.tier-card').forEach(card => {
+      card.addEventListener('click', () => {
+        // Remove selected class from all cards
+        document.querySelectorAll('.tier-card').forEach(c => c.classList.remove('selected'));
+        
+        // Add selected class to clicked card
+        card.classList.add('selected');
+        
+        // Set current tier
+        currentTier = card.dataset.tier;
+        
+        // Update login form
+        document.getElementById('loginTitle').textContent = `${tierConfig[currentTier].title} Login`;
+        document.getElementById('loginBtn').innerHTML = `<i class="fas fa-sign-in-alt"></i> Login as ${tierConfig[currentTier].title}`;
+        
+        // Show login form
+        document.getElementById('loginForm').classList.add('show');
+      });
+    });
+
+    // Login form submission
+    document.getElementById('staffLoginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       
-      const submitBtn = document.getElementById('submitBtn');
-      const formMessage = document.getElementById('formMessage');
-      
-      // Get form data
-      const formData = new FormData(e.target);
-      const clientData = Object.fromEntries(formData.entries());
-      
-      // Validate required fields
-      if (!clientData.fullName || !clientData.idNumber || !clientData.email || !clientData.cellPhone || !clientData.address || !clientData.city || !clientData.serviceType) {
-        showMessage(formMessage, 'Please fill in all required fields.', 'error');
+      if (!currentTier) {
+        showMessage('loginMessage', 'Please select your access level first.', 'error');
         return;
       }
-      
-      submitBtn.disabled = true;
-      showMessage(formMessage, 'Saving client information...', 'info');
-      
+
+      const idNumber = document.getElementById('idNumber').value.trim();
+      const password = document.getElementById('password').value;
+      const loginBtn = document.getElementById('loginBtn');
+      const loginMessage = document.getElementById('loginMessage');
+
+      if (!idNumber || !password) {
+        showMessage(loginMessage, 'Please enter both ID number and password.', 'error');
+        return;
+      }
+
+      loginBtn.disabled = true;
+      showMessage(loginMessage, 'Verifying credentials...', 'info');
+
       try {
-        // Add metadata
-        clientData.captured_by = session.name;
-        clientData.captured_by_id = session.id;
-        clientData.status = 'New';
-        clientData.created_at = new Date().toISOString();
-        
-        // Insert into database
-        const { data, error } = await supabase
-          .from('edsa_clients')
-          .insert([clientData])
-          .select()
-          .single();
-        
-        if (error) {
-          console.error('Database error:', error);
-          showMessage(formMessage, 'Failed to save client information. Please try again.', 'error');
-          submitBtn.disabled = false;
+        // Look up user
+        const { data: usersArray, error } = await supabase
+          .from('edsa_users')
+          .select('*')
+          .eq('id_number', idNumber)
+          .eq('role', currentTier)
+          .eq('is_active', true)
+          .limit(1);
+
+        if (error || !usersArray || usersArray.length === 0) {
+          // If this is the super user ID and no account exists, create it
+          if (idNumber === '8804015196086' && currentTier === 'super') {
+            showMessage(loginMessage, 'Super user account not found. Creating default account...', 'info');
+            
+            try {
+              // Create the super user account
+              const tempPassword = 'SuperUser2025!';
+              const password_hash = await bcrypt.hash(tempPassword, 10);
+              
+              const { data: newUser, error: createError } = await supabase
+                .from('edsa_users')
+                .insert({
+                  full_name: 'Super Administrator',
+                  email: 'super@erasedebtsa.co.za',
+                  id_number: '8804015196086',
+                  password_hash: password_hash,
+                  role: 'super',
+                  branch: 'Erase Debt SA - ADMIN',
+                  status: 'active',
+                  is_active: true
+                })
+                .select()
+                .single();
+              
+              if (createError) {
+                console.error('Error creating super user:', createError);
+                showMessage(loginMessage, 'Failed to create super user account. Please contact IT support.', 'error');
+                loginBtn.disabled = false;
+                return;
+              }
+              
+              showMessage(loginMessage, 'Super user account created! Please try logging in again.', 'success');
+              loginBtn.disabled = false;
+              return;
+              
+            } catch (createErr) {
+              console.error('Error creating super user:', createErr);
+              showMessage(loginMessage, 'Failed to create super user account. Please contact IT support.', 'error');
+              loginBtn.disabled = false;
+              return;
+            }
+          } else {
+            // Debug: Let's see what we actually found
+            const { data: allUsers } = await supabase
+              .from('edsa_users')
+              .select('id_number, role, is_active, status')
+              .eq('id_number', idNumber);
+            
+            console.log('Debug - All users with this ID:', allUsers);
+            console.log('Debug - Looking for role:', currentTier);
+            console.log('Debug - Original error:', error);
+            
+            if (allUsers && allUsers.length > 0) {
+              const user = allUsers[0];
+              if (user.role !== currentTier) {
+                showMessage(loginMessage, `This ID belongs to a ${user.role} account. Please select the correct login tier.`, 'error');
+              } else if (!user.is_active) {
+                showMessage(loginMessage, 'This account is disabled. Please contact your administrator.', 'error');
+              } else {
+                showMessage(loginMessage, 'Account found but login failed. Please check your credentials.', 'error');
+              }
+            } else {
+              showMessage(loginMessage, `No account found with ID number ${idNumber}.`, 'error');
+            }
+          }
+          loginBtn.disabled = false;
           return;
         }
+
+        const users = usersArray[0];
+
+        // Verify password
+        const isValidPassword = await bcrypt.compare(password, users.password_hash);
         
-        showMessage(formMessage, `Client ${clientData.fullName} has been successfully captured!`, 'success');
+        if (!isValidPassword) {
+          showMessage(loginMessage, 'Invalid password. Please try again. (If this is your first login, you may need to reset your password)', 'error');
+          loginBtn.disabled = false;
+          return;
+        }
+
+        console.log('Login successful for:', users.full_name);
         
-        // Reset form after success
+        // Store session
+        const session = {
+          id: users.id,
+          name: users.full_name,
+          email: users.email,
+          role: users.role,
+          branch: users.branch,
+          loginTime: new Date().toISOString()
+        };
+        
+        localStorage.setItem('edsa_staff_session', JSON.stringify(session));
+        
+        showMessage(loginMessage, `Welcome ${users.full_name}! Redirecting...`, 'success');
+        
+        // Redirect to appropriate dashboard
         setTimeout(() => {
-          document.getElementById('clientCaptureForm').reset();
-          formMessage.innerHTML = '';
-          submitBtn.disabled = false;
-        }, 2000);
-        
+          window.location.href = tierConfig[users.role].dashboard;
+        }, 1500);
+
       } catch (error) {
-        console.error('Capture error:', error);
-        showMessage(formMessage, 'An error occurred while saving client information.', 'error');
-        submitBtn.disabled = false;
+        console.error('Login error:', error);
+        showMessage(loginMessage, 'An error occurred during login. Please try again.', 'error');
+        loginBtn.disabled = false;
       }
     });
+
+    // Password reset functionality
+    document.getElementById('forgotPasswordLink').addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById('resetModal').style.display = 'flex';
+    });
+
+    window.closeResetModal = function() {
+      document.getElementById('resetModal').style.display = 'none';
+    }
 
     function showMessage(element, message, type) {
       element.innerHTML = `<div class="message ${type}">${message}</div>`;
