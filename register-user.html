@@ -153,10 +153,14 @@
   <!-- bcryptjs via ESM for hashing the temporary password -->
   <script type="module">
     import bcrypt from 'https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/+esm';
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/+esm';
 
     // Supabase project config (your anon key)
     const SUPABASE_URL = "https://xzjunkpxvfdpuogoflzh.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ";
+
+    // Initialize Supabase client
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // Generate a random password reset token for the welcome email
     function generateResetToken() {
