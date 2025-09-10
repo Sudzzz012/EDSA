@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
   <title>Staff Login - Erase Debt SA</title>
   <link rel="icon" href="erase-debt-logo.png"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -393,6 +392,43 @@
       admin: { title: 'Admin', dashboard: 'admin-dashboard.html' },
       admin_manager: { title: 'Admin Manager', dashboard: 'admin-manager-dashboard.html' },
       super: { title: 'Super User', dashboard: 'super-dashboard.html' }
+    };
+
+    // Generate temporary password function (Super users only)
+    window.generateTempPassword = async function(id, name) {
+      const currentSession = JSON.parse(localStorage.getItem('edsa_staff_session') || '{}');
+      if (currentSession.role !== 'super') {
+        alert('Only super users can generate temporary passwords.');
+        return;
+      }
+
+      if (!confirm(`Generate a new temporary password for ${name}?`)) {
+        return;
+      }
+
+      try {
+        // Generate a simple temporary password
+        const tempPassword = 'Temp' + Math.floor(1000 + Math.random() * 9000) + '!';
+        
+        // Import bcrypt for hashing
+        const bcrypt = await import('https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/+esm');
+        const password_hash = await bcrypt.default.hash(tempPassword, 10);
+
+        const { error } = await supabase
+          .from('edsa_users')
+          .update({ password_hash })
+          .eq('id', id);
+
+        if (error) {
+          alert('Error generating password: ' + error.message);
+          return;
+        }
+
+        alert(`Temporary password generated for ${name}:\n\nPassword: ${tempPassword}\n\nPlease share this securely with the user.`);
+        loadStaff(); // Reload to show updated hash
+      } catch (error) {
+        alert('Error: ' + error.message);
+      }
     };
 
     // Tier selection
