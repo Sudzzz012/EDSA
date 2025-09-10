@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register Staff User | Erase Debt SA</title>
+  <link rel="icon" href="erase-debt-logo.png"/>
+
+  <!-- Content Security Policy -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.supabase.co https://*.supabase.in;
+    script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline';
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data:;
+    font-src 'self' data:;
+  ">
+
+  <style>
+    :root { --brand:#2970ba; --brand2:#003865; }
+    body { font-family: Arial, sans-serif; background: linear-gradient(135deg,#003865,#005c97); margin:0; padding:24px; color:#14243b; }
+    .wrap { max-width: 840px; margin: 0 auto; }
+    .header { display:flex; align-items:center; gap:16px; margin-bottom:14px; }
+    .logo { width:110px; border-radius:12px; box-shadow:0 6px 24px #2970ba55; background:#fff; padding:6px; }
+    .title { color:#fff; font-size:1.8rem; font-weight:800; letter-spacing:-.2px; }
+    .card { background:#fff; border-radius:16px; box-shadow:0 14px 44px #2970ba33; padding:22px; }
+    .desc { color:#445; text-align:center; margin:6px 0 18px; }
+    label { display:block; font-weight:700; margin:10px 0 6px; }
+    input, select { width:100%; padding:12px; border-radius:10px; border:1px solid #c7d8ef; font-size:1rem; }
+    .row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    @media(max-width:780px){ .row { grid-template-columns:1fr; } }
+    .btn { width:100%; margin-top:16px; padding:14px; border:none; border-radius:12px; background:var(--brand); color:#fff; font-weight:800; cursor:pointer; }
+    .btn:hover { background:var(--brand2); }
+    .btn.secondary { background:#6b7280; }
+    .btn.secondary:hover { background:#4b5563; }
+    .split { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+    .msg { display:none; margin-top:14px; font-weight:700; white-space:pre-wrap; background:#f7fbff; border:1px solid #cfe3fb; color:#163a5f; padding:10px 12px; border-radius:10px; }
+    .back { display:inline-block; margin-top:14px; color:#2970ba; font-weight:700; text-decoration:none; }
+    .fine { color:#667; font-size:0.95rem; text-align:center; margin-top:6px;}
+    .note { background:#fff7e6; border:1px solid #ffd089; color:#5c3c00; padding:10px 12px; border-radius:10px; margin:10px 0 0; font-size:0.95rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <img src="erase-debt-logo.png" alt="Erase Debt SA" class="logo"/>
+      <div class="title">Erase Debt SA • Staff Registration</div>
+    </div>
+
+    <div class="card">
+      <div class="desc">
+        <b>Flow</b>: Capture details → Temp password generated → <b>bcrypt hash</b> saved → Welcome email sent from Edge Function.
+        <div class="note">Ensure <code>send-user-email-public</code> is deployed, CORS-enabled, and your <code>SENDGRIDFINAL</code> secret is set.</div>
+      </div>
+
+      <form id="registerForm" autocomplete="off">
+        <div class="row">
+          <div>
+            <label>Full Name</label>
+            <input id="full_name" required />
+          </div>
+          <div>
+            <label>Email Address</label>
+            <input id="email" type="email" required />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>ID Number (Username)</label>
+            <input id="id_number" required />
+          </div>
+          <div>
+            <label>Role</label>
+            <!-- must match DB CHECK: agent | admin | admin_manager | super -->
+            <select id="role" required>
+              <option value="">Select Role</option>
+              <option value="agent">Agent</option>
+              <option value="admin">Admin</option>
+              <option value="admin_manager">Admin Manager</option>
+              <option value="super">Super User</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Branch</label>
+            <select id="branch" required>
+              <option value="">Select Branch</option>
+              <option>Erase Debt SA - ADMIN</option>
+              <option>Erase Debt SA - MP</option>
+              <option>Erase Debt SA - SS</option>
+              <option>Clean Slate Solutions - MSJ</option>
+              <option>Clean Slate Solutions - RSJ</option>
+              <option>Boost My Credit Score</option>
+              <option>Fix My Credit Score</option>
+              <option>Credit Boost SA</option>
+              <option>Credit Renew SA</option>
+              <option>National Credit Solutions</option>
+              <option>Get Credit SA</option>
+              <option>Shield Credit Solutions</option>
+              <option>SAZZ Debt Solutions</option>
+              <option>Clean Credit Consultants</option>
+              <option>SA Blacklisting Busters</option>
+              <option>Increase My Credit Score</option>
+              <option>South African Credit Score Experts - AA</option>
+              <option>South African Credit Score Experts - QAA</option>
+              <option>Credifix SA</option>
+            </select>
+          </div>
+          <div>
+            <label>Actions</label>
+            <div class="split">
+              <button class="btn" type="submit" id="submitBtn">Create User</button>
+              <button class="btn secondary" type="button" id="testEmailBtn">Test Email Function</button>
+            </div>
+            <div class="fine">Test button pings the Edge Function without saving a user.</div>
+          </div>
+        </div>
+
+        <div id="msg" class="msg"></div>
+      </form>
+
+      <a class="back" href="super-dashboard.html">← Back to Super Dashboard</a>
+    </div>
+  </div>
+
+  <!-- bcrypt via ESM (works with our CSP) -->
+  <script type="module">
+    import bcrypt from 'https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/+esm';
+
+    const SUPABASE_URL = "https://xzjunkpxvfdpuogoflzh.supabase.co";
+    // Your anon key (as provided earlier)
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ";
+
+    const msg = document.getElementById('msg');
+    const submitBtn = document.getElementById('submitBtn');
+    const testBtn = document.getElementById('testEmailBtn');
+
+    function showMsg(text){ msg.style.display='block'; msg.textContent = text; }
+    async function readText(res){ try { return await res.text(); } catch { return ''; } }
+    function setDisabled(disabled){ submitBtn.disabled = disabled; testBtn.disabled = disabled; }
+
+    function genTempPassword(){
+      const arr = new Uint8Array(12);
+      crypto.getRandomValues(arr);
+      return btoa(String.fromCharCode(...arr)).replace(/[+/=]/g,'').slice(0,12);
+    }
+
+    async function insertUser(payload){
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/edsa_users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) {
+        const body = await readText(res);
+        throw new Error(`Insert failed: HTTP ${res.status} ${res.statusText}\n${body}`);
+      }
+      return res.json();
+    }
+
+    async function sendWelcomeEmail({ to, full_name, id_number, tempPassword }){
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/send-user-email-public`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+        },
+        body: JSON.stringify({
+          to,
+          subject: 'Your Erase Debt SA Login Details',
+          body: `
+            <p>Hi ${full_name},</p>
+            <p>Your staff account has been created.</p>
+            <p><strong>Username (ID):</strong> ${id_number}<br/>
+               <strong>Temporary Password:</strong> ${tempPassword}</p>
+            <p>Please keep these details safe and change your password after first login.</p>
+            <p>Regards,<br/>Erase Debt SA</p>
+          `,
+          from: 'support@erasedebtsa.net'
+        })
+      });
+      if (!res.ok) {
+        const body = await readText(res);
+        throw new Error(`Email failed: HTTP ${res.status} ${res.statusText}\n${body}`);
+      }
+      return res.json();
+    }
+
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      setDisabled(true);
+      showMsg('⏳ Creating user...');
+
+      const full_name = document.getElementById('full_name').value.trim();
+      const email     = document.getElementById('email').value.trim().toLowerCase();
+      const id_number = document.getElementById('id_number').value.trim();
+      const role      = document.getElementById('role').value;     // agent|admin|admin_manager|super
+      const branch    = document.getElementById('branch').value;
+
+      try {
+        // 1) Generate password & hash
+        const tempPassword = genTempPassword();
+        const password_hash = await bcrypt.hash(tempPassword, 10);
+
+        // 2) Insert user
+        const inserted = await insertUser({
+          full_name, email, id_number, password_hash, role, branch, status: 'active'
+        });
+
+        // 3) Send welcome email
+        await sendWelcomeEmail({ to: email, full_name, id_number, tempPassword });
+
+        showMsg(`✅ User created & email sent.
+User ID: ${inserted?.[0]?.id || '(created)'}
+Role: ${role} | Branch: ${branch}`);
+
+        (e.target).reset();
+      } catch (err) {
+        showMsg('❌ ' + (err?.message || err));
+      } finally {
+        setDisabled(false);
+      }
+    });
+
+    testBtn.addEventListener('click', async () => {
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const full_name = document.getElementById('full_name').value.trim() || 'Test User';
+      const id_number = document.getElementById('id_number').value.trim() || '0000000000000';
+      if (!email) { showMsg('❌ Enter an email first to test.'); return; }
+      setDisabled(true);
+      showMsg('⏳ Testing email function...');
+      try {
+        await sendWelcomeEmail({ to: email, full_name, id_number, tempPassword: genTempPassword() });
+        showMsg('✅ Email function responded OK. Check inbox: ' + email);
+      } catch (err) {
+        showMsg('❌ ' + (err?.message || err));
+      } finally {
+        setDisabled(false);
+      }
+    });
+  </script>
+</body>
+</html>

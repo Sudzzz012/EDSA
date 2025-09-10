@@ -1,0 +1,163 @@
+
+/* =====================================================
+   Erase Debt SA — Luxury Skin v2
+   - Premium palette, fluid type, sticky nav shrink
+   - Gradient hero with depth, micro-interactions
+   - Responsive grid, toned typography
+   ===================================================== */
+:root{
+  --brand:#0f3a63;
+  --brand-2:#0b2b49;
+  --gold:#c9a86a;
+  --ink:#0e1a33;
+  --ink-2:#2a3753;
+  --muted:#6b7a99;
+  --bg:#f6f8fb;
+  --elev:#ffffff;
+  --line:#e6eef9;
+  --radius:14px;
+  --shadow-1: 0 10px 24px rgba(15,58,99,0.10);
+  --shadow-2: 0 18px 44px rgba(15,58,99,0.18);
+  --h1: clamp(24px, 3vw, 36px);
+  --h2: clamp(18px, 2vw, 26px);
+  --body: clamp(14px, 1.1vw, 16px);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  font-size:var(--body);
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+}
+
+/* --- Sticky Nav --- */
+.header{
+  position:sticky; top:0; z-index:100;
+  transition:all .25s ease;
+  border-bottom:1px solid transparent;
+  backdrop-filter:saturate(1.2) blur(8px);
+  background:linear-gradient(to bottom, rgba(255,255,255,.85), rgba(255,255,255,.75));
+}
+.header.shrink{ border-bottom:1px solid var(--line); }
+.nav{ max-width: 1080px; margin:0 auto; padding:12px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.logo{ height:44px }
+.links{ display:flex; flex-wrap:wrap; gap:14px; align-items:center }
+.links a{ text-decoration:none; color:var(--brand); font-weight:700 }
+.btn{ background:var(--gold); color:#1b1b1b; padding:9px 14px; border-radius:10px; font-weight:800; box-shadow:var(--shadow-1) }
+.btn:hover{ filter:brightness(1.05); transform:translateY(-1px); transition:transform .15s ease }
+
+/* --- Hero --- */
+.hero{
+  position:relative; overflow:hidden; color:#fff;
+  background: radial-gradient(900px 500px at -10% 0%, rgba(255,255,255,.25), transparent 60%),
+              radial-gradient(800px 400px at 110% 0%, rgba(255,255,255,.20), transparent 60%),
+              linear-gradient(135deg, #0b2b49, #0f3a63 60%, #164f86);
+}
+.hero .container{ max-width:1080px; margin:0 auto; padding:32px 16px 24px 16px; display:grid; grid-template-columns: 1.05fr .95fr; gap:18px; align-items:center; }
+.hero h1{ font-size:var(--h1); line-height:1.12; margin:0 0 8px }
+.hero p{ margin:0 0 12px; opacity:.95 }
+.cta-row{ display:flex; flex-wrap:wrap; gap:10px; margin-top:8px }
+.button{ background:#fff; color:#0f3a63; border:none; border-radius:10px; padding:10px 14px; font-weight:800; box-shadow:var(--shadow-1); cursor:pointer }
+.button.gold{ background:var(--gold); color:#1b1b1b }
+.art{ position:relative; border-radius: var(--radius); overflow:hidden; box-shadow:var(--shadow-2) }
+.art img{ display:block; width:100%; height:auto }
+.noise{ position:absolute; inset:0; background-image: radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px); background-size:3px 3px; mix-blend-mode:overlay; pointer-events:none }
+
+/* --- Sections --- */
+.section{ max-width:1080px; margin:28px auto; padding:0 16px }
+.h2{ font-size:var(--h2); color:var(--brand); margin:0 0 10px }
+
+.cards{ display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:14px }
+.card{ background:var(--elev); border-radius:var(--radius); padding:14px; border:1px solid var(--line); box-shadow:var(--shadow-1) }
+.card .img{ border-radius:12px; overflow:hidden; margin-bottom:8px }
+.card .img img{ width:100%; display:block }
+.card p{ color:var(--ink-2); line-height:1.6; margin:6px 0 0 }
+
+.cta{ display:inline-block; margin-top:8px; background:var(--brand); color:#fff; padding:10px 14px; border-radius:10px; font-weight:800 }
+.cta:hover{ background:#0b2b49 }
+
+/* --- Trust --- */
+.trust{ display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:center }
+.panel{ background:var(--elev); border-radius:var(--radius); padding:16px; border:1px solid var(--line); box-shadow:var(--shadow-1) }
+.counts{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:8px }
+.count{ background:#f7faff; border:1px solid var(--line); border-radius:10px; padding:10px; text-align:center }
+.n{ font-weight:900; color:var(--brand); font-size:clamp(18px,2vw,22px) }
+.brands{ display:flex; align-items:center; gap:14px; margin-top:8px }
+.brands img{ height:20px }
+
+/* --- Testimonials --- */
+.wrap{ background:#eef3f9 }
+.testi{ max-width:1080px; margin:0 auto; padding:24px 16px }
+.grid4{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px }
+.tcard{ background:linear-gradient(135deg,#fbfbfc,#ffffff); border:1px solid var(--line); border-radius:12px; padding:12px; text-align:center; box-shadow:var(--shadow-1) }
+.tcard img{ width:58px; height:58px; border-radius:50%; object-fit:cover; display:block; margin:6px auto }
+.tname{ font-weight:900; color:var(--brand); margin-top:6px }
+.tstars img{ width:14px; height:14px; margin:0 1px }
+.tmeta{ font-size:12px; color:var(--muted); margin-top:2px }
+.tquote{ color:var(--ink-2); margin-top:6px }
+
+/* --- Footer --- */
+.footer{ background:#0b1d3a; color:#dfeaff; margin-top:28px }
+.footer .inner{ max-width:1080px; margin:0 auto; padding:18px 16px; display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center }
+.footer a{ color:#b6d6ff; text-decoration:none }
+
+/* --- Utilities --- */
+.reveal{ opacity:0; transform:translateY(10px) }
+.reveal.revealed{ opacity:1; transform:none; transition: opacity .35s ease, transform .35s ease }
+
+/* --- Responsive --- */
+@media (max-width:1024px){
+  .hero .container{ grid-template-columns:1fr }
+  .art{ order:-1 }
+  .trust{ grid-template-columns:1fr }
+  .grid4{ grid-template-columns:repeat(2,1fr) }
+}
+@media (max-width:560px){
+  .links{ gap:10px }
+  .grid4{ grid-template-columns:1fr }
+  .counts{ grid-template-columns:1fr 1fr }
+}
+/* Dark mode auto */
+@media (prefers-color-scheme:dark){
+  :root{ --bg:#0b1326; --elev:#0f1a33; --ink:#eef2ff; --ink-2:#cbd5ff; --line:#182a55 }
+  .count{ background:#0f2144 }
+  .wrap{ background:#0e1c39 }
+}
+
+
+/* ===== Luxury Skin v2.1 — Mac/Laptop Compact Pass ===== */
+html { font-size: 14px; } /* global shrink */
+:root{
+  --h1: clamp(20px, 2.2vw, 28px);
+  --h2: clamp(16px, 1.6vw, 22px);
+  --body: clamp(12.5px, 0.95vw, 14.5px);
+  --radius: 10px;
+}
+
+.nav, .section, .hero .container, .testi .inner, .footer .inner { max-width: 920px !important; }
+.logo{ height: 38px }
+.links a{ font-weight: 600 }
+.btn{ padding: 7px 12px; border-radius: 8px }
+
+.hero .container{ gap:12px; padding:22px 12px 14px 12px; grid-template-columns: 1fr; }
+.cta-row{ gap:8px }
+.button{ padding:8px 12px; border-radius:8px }
+
+.cards{ grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px }
+.card{ padding:10px; border-radius:10px }
+.card .img{ margin-bottom:6px }
+
+.trust{ grid-template-columns:1fr; gap:12px }
+.counts{ grid-template-columns: repeat(3, 1fr); gap:8px }
+.count{ padding:8px }
+.n{ font-size: clamp(16px, 1.6vw, 20px) }
+
+.grid4{ grid-template-columns: repeat(2, 1fr); gap:12px }
+.tcard{ padding:10px }
+.tcard img{ width:52px; height:52px }
+
+.footer .inner{ padding:14px 12px }
