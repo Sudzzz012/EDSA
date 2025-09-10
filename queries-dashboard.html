@@ -85,20 +85,29 @@
     );
 
     async function load() {
-      const { data } = await supabase.from('queries').select('*').order('created_at', { ascending: false });
+      const { data, error } = await supabase.from('QUERIES').select('*').order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error loading queries:', error);
+        document.getElementById('content').innerHTML = `
+          <div class="loading" style="color: #d32f2f;">Error loading queries: ${error.message}</div>
+        `;
+        return;
+      }
+      
       if (!data) return;
 
       const rows = data.map(q => `
         <tr>
-          <td>${q.full_name}</td>
+          <td>${q.first_name || ''} ${q.last_name || ''}</td>
           <td>${q.email}</td>
-          <td>${q.subject}</td>
+          <td>${q.query_type || 'N/A'}</td>
           <td><span class="status-tag status-${q.status?.toLowerCase()}">${q.status}</span></td>
         </tr>`).join('');
 
       document.getElementById('content').innerHTML = `
         <table>
-          <thead><tr><th>Full Name</th><th>Email</th><th>Subject</th><th>Status</th></tr></thead>
+          <thead><tr><th>Full Name</th><th>Email</th><th>Query Type</th><th>Status</th></tr></thead>
           <tbody>${rows}</tbody>
         </table>`;
     }
