@@ -1,0 +1,17 @@
+{
+  "name": "edsa-client-portal",
+  "version": "1.0.0",
+  "description": "Erase Debt SA Client Portal",
+  "main": "index.html",
+  "scripts": {
+    "dev": "http-server . -p 3000 -o",
+    "start": "http-server . -p 3000",
+    "build": "echo 'Static site - no build needed'"
+  },
+  "keywords": ["debt-review", "credit-clearance", "client-portal"],
+  "author": "Erase Debt SA",
+  "license": "ISC",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
