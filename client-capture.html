@@ -1,181 +1,562 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Client Capture Form - Erase Debt SA</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
+  <title>Staff Login - Erase Debt SA</title>
+  <link rel="icon" href="erase-debt-logo.png"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <style>
-    body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #003865, #005c97); color: #fff; padding: 2rem; }
-    header { display: flex; align-items: center; justify-content: center; margin-bottom: 2rem; }
-    header img { height: 60px; }
-    h1 { text-align: center; color: #fff; }
-    form { background: #fff; color: #333; padding: 2rem; border-radius: 10px; max-width: 900px; margin: 2rem auto; box-shadow: 0 0 15px rgba(0,0,0,0.2);}
-    .form-group { display: flex; flex-direction: column; margin-bottom: 1rem; }
-    label { font-weight: bold; margin-bottom: 0.3rem; }
-    input, select { padding: 0.6rem; font-size: 1rem; border: 1px solid #ccc; border-radius: 6px; }
-    button { margin-top: 1.5rem; background-color: #005c97; color: #fff; padding: 0.8rem 1.5rem; border: none; font-size: 1rem; border-radius: 6px; cursor: pointer; }
-    button:hover { background-color: #004070; }
-    .back-link { display: block; margin: 2rem auto; text-align: center; }
+    :root {
+      --primary: #2970ba;
+      --primary-dark: #003865;
+      --secondary: #005c97;
+      --success: #28a745;
+      --warning: #ffc107;
+      --danger: #dc3545;
+      --info: #17a2b8;
+    }
 
-    /* Suasha AI floating button */
-    #suasha-bubble {
-      position: fixed;
-      bottom: 30px;
-      right: 30px;
-      width: 60px;
-      height: 60px;
-      background-color: #fff;
-      border-radius: 50%;
-      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+      color: #fff;
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
-      font-size: 30px;
     }
 
-    #suasha-chat {
-      position: fixed;
-      bottom: 100px;
-      right: 30px;
-      width: 350px;
-      height: 480px;
-      display: none;
-      border-radius: 10px;
+    .login-container {
+      max-width: 1000px;
+      width: 100%;
+      padding: 2rem;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .logo {
+      height: 80px;
+      margin-bottom: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .header p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    .tier-selection {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .tier-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      backdrop-filter: blur(10px);
+      position: relative;
       overflow: hidden;
-      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
+
+    .tier-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      transition: left 0.5s;
+    }
+
+    .tier-card:hover::before {
+      left: 100%;
+    }
+
+    .tier-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+      border-color: rgba(255,255,255,0.3);
+    }
+
+    .tier-card.selected {
+      border-color: #fff;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .tier-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .tier-agent { color: #28a745; }
+    .tier-admin { color: #17a2b8; }
+    .tier-admin_manager { color: #ffc107; }
+    .tier-super { color: #dc3545; }
+
+    .tier-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .tier-description {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      line-height: 1.4;
+    }
+
+    .login-form {
+      display: none;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+      margin-top: 2rem;
+    }
+
+    .login-form.show {
+      display: block;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input::placeholder {
+      color: rgba(255,255,255,0.6);
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #fff;
+      background: rgba(255,255,255,0.15);
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 0.75rem;
+      background: var(--primary);
+      color: #fff;
       border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 1rem;
+    }
+
+    .login-btn:hover:not(:disabled) {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .login-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .forgot-password {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .forgot-password a {
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .forgot-password a:hover {
+      color: #fff;
+      text-decoration: underline;
+    }
+
+    .message {
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .message.success {
+      background: rgba(40, 167, 69, 0.2);
+      border: 1px solid rgba(40, 167, 69, 0.5);
+      color: #d4edda;
+    }
+
+    .message.error {
+      background: rgba(220, 53, 69, 0.2);
+      border: 1px solid rgba(220, 53, 69, 0.5);
+      color: #f8d7da;
+    }
+
+    .back-link {
+      position: absolute;
+      top: 2rem;
+      left: 2rem;
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+
+    .back-link:hover {
+      color: #fff;
+    }
+
+    @media (max-width: 768px) {
+      .tier-selection {
+        grid-template-columns: 1fr;
+      }
+      
+      .header h1 {
+        font-size: 2rem;
+      }
+      
+      .login-container {
+        padding: 1rem;
+      }
+      
+      .back-link {
+        position: static;
+        margin-bottom: 2rem;
+        justify-content: center;
+      }
     }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body>
-  <header>
-    <img src="erase-debt-logo.jpg" alt="Erase Debt SA Logo" />
-  </header>
-  <h1>Client Capture Form</h1>
-  <div class="back-link">
-    <button onclick="goBackToDashboard()">← Go Back to Dashboard</button>
+  <a href="index.html" class="back-link">
+    <i class="fas fa-arrow-left"></i>
+    Back to Homepage
+  </a>
+
+  <div class="login-container">
+    <div class="header">
+      <img src="erase-debt-logo.png" alt="Erase Debt SA" class="logo">
+      <h1>Staff Portal</h1>
+      <p>Select your access level to continue</p>
+    </div>
+
+    <div class="tier-selection">
+      <div class="tier-card" data-tier="agent">
+        <i class="fas fa-user-edit tier-icon tier-agent"></i>
+        <div class="tier-title">Agent/Feeder</div>
+        <div class="tier-description">Client capture and data entry</div>
+      </div>
+
+      <div class="tier-card" data-tier="admin">
+        <i class="fas fa-user-cog tier-icon tier-admin"></i>
+        <div class="tier-title">Admin</div>
+        <div class="tier-description">Client management and workflows</div>
+      </div>
+
+      <div class="tier-card" data-tier="admin_manager">
+        <i class="fas fa-users-cog tier-icon tier-admin_manager"></i>
+        <div class="tier-title">Admin Manager</div>
+        <div class="tier-description">Staff oversight and reporting</div>
+      </div>
+
+      <div class="tier-card" data-tier="super">
+        <i class="fas fa-crown tier-icon tier-super"></i>
+        <div class="tier-title">Super User</div>
+        <div class="tier-description">Full system administration</div>
+      </div>
+    </div>
+
+    <div class="login-form" id="loginForm">
+      <h2 id="loginTitle">Login</h2>
+      <form id="staffLoginForm">
+        <div class="form-group">
+          <label for="idNumber">ID Number</label>
+          <input type="text" id="idNumber" name="idNumber" required placeholder="Enter your ID number">
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required placeholder="Enter your password">
+        </div>
+        
+        <button type="submit" class="login-btn" id="loginBtn">
+          <i class="fas fa-sign-in-alt"></i>
+          Login
+        </button>
+        
+        <div class="forgot-password">
+          <a href="#" id="forgotPasswordLink">Forgot your password?</a>
+        </div>
+        
+        <div id="loginMessage"></div>
+      </form>
+    </div>
   </div>
 
-  <form id="clientForm">
-    <div class="form-group"><label>Client ID Number</label><input type="number" name="client_id_number" required /></div>
-    <div class="form-group"><label>First Name</label><input type="text" name="first_name" required /></div>
-    <div class="form-group"><label>Last Name</label><input type="text" name="last_name" required /></div>
-    <div class="form-group"><label>Email</label><input type="email" name="email" required /></div>
-    <div class="form-group"><label>Phone</label><input type="number" name="phone" required /></div>
-    <div class="form-group"><label>Gender</label>
-      <select name="gender"><option>Male</option><option>Female</option><option>Other</option></select>
-    </div>
-    <div class="form-group"><label>Province</label>
-      <select name="province">
-        <option>Gauteng</option><option>KwaZulu-Natal</option><option>Western Cape</option>
-        <option>Eastern Cape</option><option>Free State</option><option>Mpumalanga</option>
-        <option>Limpopo</option><option>North West</option><option>Northern Cape</option>
-      </select>
-    </div>
-    <div class="form-group"><label>Branch</label>
-      <select name="branch_name">
-        <option>Erase Debt SA - ADMIN</option><option>SAZZ Debt Solutions</option><option>Credifix SA</option>
-        <option>SA Blacklisting Busters</option><option>Get Credit SA</option><option>Boost My Credit Score</option>
-        <option>Shield Credit Solutions</option><option>National Credit Solutions</option>
-        <option>South African Credit Score Experts - AA</option><option>South African Credit Score Experts - QAA</option>
-        <option>Clean Slate Solutions - RSJ</option><option>Clean Slate Solutions - MSJ</option>
-        <option>Increase My Credit Score</option><option>Credit Boost SA</option><option>Credit Renew SA</option>
-        <option>Fix My Credit Score</option><option>Clean Credit Consultants</option>
-        <option>Erase Debt SA - SS</option><option>Erase Debt SA - MP</option>
-      </select>
-    </div>
-    <div class="form-group"><label>Agent Name</label><input type="text" name="agent_name" /></div>
-    <div class="form-group"><label>Sale Date</label><input type="date" name="sale_date" /></div>
-    <div class="form-group"><label>Sale Reference</label><input type="text" name="sale_reference" /></div>
-    <div class="form-group"><label>Service Type</label>
-      <select name="service_type">
-        <option>SERVICE 1 - DRR(C & D3) - NP</option><option>SERVICE 1 - DRR(C & D3) - P</option>
-        <option>SERVICE 2 - D4 - BELOW 12M</option><option>SERVICE 3 - D4 - AITC</option>
-        <option>SERVICE 4 - NL/CR</option><option>SERVICE 5 - NL ITC CLEARANCE</option>
-        <option>SERVICE 6 - RN - A - NL</option><option>SERVICE 7 - RN - OTHER/NL</option>
-      </select>
-    </div>
-    <div class="form-group"><label>Payment Plan Months</label><input type="number" name="payment_plan_months" /></div>
-    <div class="form-group"><label>Bank</label>
-      <select name="bank"><option>ABSA</option><option>Capitec</option><option>FNB</option>
-      <option>Nedbank</option><option>Standard Bank</option><option>TymeBank</option><option>Investec</option></select>
-    </div>
-    <div class="form-group"><label>Account Type</label><select name="account_type"><option>Savings</option><option>Cheque</option></select></div>
-    <div class="form-group"><label>Account Number</label><input type="number" name="account_number" /></div>
-    <div class="form-group"><label>Salary Date</label><input type="date" name="salary_date" /></div>
-    <div class="form-group"><label>Tracking Date</label><input type="date" name="tracking_date" /></div>
-    <div class="form-group"><label>Nupay Reference</label><input type="text" name="nupay_reference" /></div>
-    <div class="form-group"><label>Total Amount</label><input type="number" name="total_amount" /></div>
-    <div class="form-group"><label>Monthly Payment</label><input type="number" name="monthly_payment" /></div>
-    <div class="form-group"><label>Status</label><select name="status"><option>Pending</option><option>Active</option><option>Cancelled</option></select></div>
-    <div class="form-group"><label>Total No. Payments Made</label><input type="text" name="total_no_payments_made" /></div>
-    <div class="form-group"><label>Total No. Missed Payments</label><input type="text" name="total_no_missed_payments" /></div>
-    <button type="submit">Submit Client</button>
-  </form>
+  <!-- Password Reset Modal -->
+  <div id="resetModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; display: flex; align-items: center; justify-content: center;">
 
-  <div id="suasha-bubble" onclick="toggleSuasha()">💬</div>
-  <iframe id="suasha-chat" src="https://chat.openai.com" title="Suasha AI Assistant"></iframe>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"></script>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    import bcrypt from 'https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/+esm';
 
-  <script>
-    const { createClient } = supabase;
-    const supabaseClient = createClient('https://xzjunkpxvfdpuogoflzh.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ');
-    const TABLE_NAME = 'edsa_client_database';
+    const supabase = createClient(
+      "https://xzjunkpxvfdpuogoflzh.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ"
+    );
 
-    document.getElementById("clientForm").addEventListener("submit", async function(e) {
+    let currentTier = null;
+
+    const tierConfig = {
+      agent: { title: 'Agent/Feeder', dashboard: 'agent-dashboard.html' },
+      admin: { title: 'Admin', dashboard: 'admin-dashboard.html' },
+      admin_manager: { title: 'Admin Manager', dashboard: 'admin-manager-dashboard.html' },
+      super: { title: 'Super User', dashboard: 'super-dashboard.html' }
+    };
+
+    // Tier selection
+    document.querySelectorAll('.tier-card').forEach(card => {
+      card.addEventListener('click', () => {
+        // Remove selected class from all cards
+        document.querySelectorAll('.tier-card').forEach(c => c.classList.remove('selected'));
+        
+        // Add selected class to clicked card
+        card.classList.add('selected');
+        
+        // Set current tier
+        currentTier = card.dataset.tier;
+        
+        // Update login form
+        document.getElementById('loginTitle').textContent = `${tierConfig[currentTier].title} Login`;
+        document.getElementById('loginBtn').innerHTML = `<i class="fas fa-sign-in-alt"></i> Login as ${tierConfig[currentTier].title}`;
+        
+        // Show login form
+        document.getElementById('loginForm').classList.add('show');
+      });
+    });
+
+    // Login form submission
+    document.getElementById('staffLoginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const form = e.target;
-      const data = {
-        id: crypto.randomUUID(),
-        client_id_number: form.client_id_number.value || null,
-        first_name: form.first_name.value,
-        last_name: form.last_name.value,
-        email: form.email.value,
-        phone: form.phone.value || null,
-        gender: form.gender.value,
-        province: form.province.value,
-        branch_name: form.branch_name.value,
-        agent_name: form.agent_name.value,
-        sale_date: form.sale_date.value,
-        sale_reference: form.sale_reference.value,
-        service_type: form.service_type.value,
-        payment_plan_months: form.payment_plan_months.value || null,
-        bank: form.bank.value,
-        account_type: form.account_type.value,
-        account_number: form.account_number.value || null,
-        salary_date: form.salary_date.value,
-        tracking_date: form.tracking_date.value,
-        nupay_reference: form.nupay_reference.value,
-        total_amount: form.total_amount.value || null,
-        monthly_payment: form.monthly_payment.value || null,
-        status: form.status.value,
-        total_no_payments_made: form.total_no_payments_made.value,
-        total_no_missed_payments: form.total_no_missed_payments.value,
-      };
+      
+      if (!currentTier) {
+        showMessage('loginMessage', 'Please select your access level first.', 'error');
+        return;
+      }
 
-      const { error } = await supabaseClient.from(TABLE_NAME).insert([data]);
-      if (error) {
-        alert("❌ Error saving client: " + error.message);
-      } else {
-        alert("✅ Client captured and saved to Erase Debt SA Database!");
-        form.reset();
+      const idNumber = document.getElementById('idNumber').value.trim();
+      const password = document.getElementById('password').value;
+      const loginBtn = document.getElementById('loginBtn');
+      const loginMessage = document.getElementById('loginMessage');
+
+      if (!idNumber || !password) {
+        showMessage(loginMessage, 'Please enter both ID number and password.', 'error');
+        return;
+      }
+
+      loginBtn.disabled = true;
+      showMessage(loginMessage, 'Verifying credentials...', 'info');
+
+      try {
+        // Look up user
+        const { data: usersArray, error } = await supabase
+          .from('edsa_users')
+          .select('*')
+          .eq('id_number', idNumber)
+          .eq('role', currentTier)
+          .eq('is_active', true)
+          .limit(1);
+
+        if (error || !usersArray || usersArray.length === 0) {
+          // If this is the super user ID and no account exists, create it
+          if (idNumber === '8804015196086' && currentTier === 'super') {
+            showMessage(loginMessage, 'Super user account not found. Creating default account...', 'info');
+            
+            try {
+              // Create the super user account
+              const tempPassword = 'SuperUser2025!';
+              const password_hash = await bcrypt.hash(tempPassword, 10);
+              
+              const { data: newUser, error: createError } = await supabase
+                .from('edsa_users')
+                .insert({
+                  full_name: 'Super Administrator',
+                  email: 'super@erasedebtsa.co.za',
+                  id_number: '8804015196086',
+                  password_hash: password_hash,
+                  role: 'super',
+                  branch: 'Erase Debt SA - ADMIN',
+                  status: 'active',
+                  is_active: true
+                })
+                .select()
+                .single();
+              
+              if (createError) {
+                console.error('Error creating super user:', createError);
+                showMessage(loginMessage, 'Failed to create super user account. Please contact IT support.', 'error');
+                loginBtn.disabled = false;
+                return;
+              }
+              
+              showMessage(loginMessage, 'Super user account created! Please try logging in again.', 'success');
+              loginBtn.disabled = false;
+              return;
+              
+            } catch (createErr) {
+              console.error('Error creating super user:', createErr);
+              showMessage(loginMessage, 'Failed to create super user account. Please contact IT support.', 'error');
+              loginBtn.disabled = false;
+              return;
+            }
+          } else {
+            // Debug: Let's see what we actually found
+            const { data: allUsers } = await supabase
+              .from('edsa_users')
+              .select('id_number, role, is_active, status')
+              .eq('id_number', idNumber);
+            
+            console.log('Debug - All users with this ID:', allUsers);
+            console.log('Debug - Looking for role:', currentTier);
+            console.log('Debug - Original error:', error);
+            
+            if (allUsers && allUsers.length > 0) {
+              const user = allUsers[0];
+              if (user.role !== currentTier) {
+                showMessage(loginMessage, `This ID belongs to a ${user.role} account. Please select the correct login tier.`, 'error');
+              } else if (!user.is_active) {
+                showMessage(loginMessage, 'This account is disabled. Please contact your administrator.', 'error');
+              } else {
+                showMessage(loginMessage, 'Account found but login failed. Please check your credentials.', 'error');
+              }
+            } else {
+              showMessage(loginMessage, `No account found with ID number ${idNumber}.`, 'error');
+            }
+          }
+          loginBtn.disabled = false;
+          return;
+        }
+
+        const users = usersArray[0];
+
+        // Verify password
+        const isValidPassword = await bcrypt.compare(password, users.password_hash);
+        
+        if (!isValidPassword) {
+          showMessage(loginMessage, 'Invalid password. Please try again. (If this is your first login, you may need to reset your password)', 'error');
+          loginBtn.disabled = false;
+          return;
+        }
+
+        console.log('Login successful for:', users.full_name);
+        
+        // Store session
+        const session = {
+          id: users.id,
+          name: users.full_name,
+          email: users.email,
+          role: users.role,
+          branch: users.branch,
+          loginTime: new Date().toISOString()
+        };
+        
+        localStorage.setItem('edsa_staff_session', JSON.stringify(session));
+        
+        showMessage(loginMessage, `Welcome ${users.full_name}! Redirecting...`, 'success');
+        
+        // Redirect to appropriate dashboard
+        setTimeout(() => {
+          window.location.href = tierConfig[users.role].dashboard;
+        }, 1500);
+
+      } catch (error) {
+        console.error('Login error:', error);
+        showMessage(loginMessage, 'An error occurred during login. Please try again.', 'error');
+        loginBtn.disabled = false;
       }
     });
 
-    function goBackToDashboard() {
-      const role = sessionStorage.getItem("user_role");
-      if (role === "agent") window.location.href = "agent-dashboard.html";
-      else if (role === "admin") window.location.href = "admin-dashboard.html";
-      else if (role === "admin_manager") window.location.href = "admin-manager-dashboard.html";
-      else if (role === "super") window.location.href = "super-dashboard.html";
-      else window.location.href = "index.html";
+    // Password reset functionality
+    document.getElementById('forgotPasswordLink').addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById('resetModal').style.display = 'flex';
+    });
+
+    window.closeResetModal = function() {
+      document.getElementById('resetModal').style.display = 'none';
+      document.getElementById('resetModal').style.alignItems = '';
+      document.getElementById('resetModal').style.justifyContent = '';
     }
 
-    function toggleSuasha() {
-      const chat = document.getElementById("suasha-chat");
-      chat.style.display = chat.style.display === "block" ? "none" : "block";
+    function showMessage(element, message, type) {
+      element.innerHTML = `<div class="message ${type}">${message}</div>`;
     }
   </script>
 </body>
