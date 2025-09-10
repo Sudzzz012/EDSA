@@ -118,12 +118,12 @@ serve(async (req) => {
     console.log('Email details:', { to, subject: subject ? 'Present' : 'Missing', from })
 
     // Get SendGrid API key from environment
-    const SENDGRID_API_KEY = Deno.env.get('SENDGRIDFINAL') || Deno.env.get('SENDGRID_API_KEY')
+    const SENDGRID_API_KEY = Deno.env.get('RESEND_API_KEY') || Deno.env.get('SENDGRIDFINAL') || Deno.env.get('SENDGRID_API_KEY')
     
     if (!SENDGRID_API_KEY) {
       console.error('SendGrid API key not found in environment variables. Available env vars:', Object.keys(Deno.env.toObject()))
       return new Response(
-        JSON.stringify({ error: 'Email service not configured' }),
+        JSON.stringify({ error: 'Email service not configured - missing RESEND_API_KEY' }),
         { 
           status: 500, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
