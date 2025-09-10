@@ -104,9 +104,6 @@
           <td>${q.query_type || 'N/A'}</td>
           <td>${q.reference_number || 'N/A'}</td>
           <td><span class="status-tag status-${(q.status || 'new').toLowerCase()}">${q.status || 'new'}</span></td>
-          return;
-        }
-
           <td><span class="status-tag status-${(q.status || 'new').toLowerCase()}">${q.status || 'new'}</span></td>
           <td>${q.created_at ? new Date(q.created_at).toLocaleDateString() : 'N/A'}</td>
         </tr>`).join('');
