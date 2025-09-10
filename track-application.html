@@ -3,123 +3,654 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Queries Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap" rel="stylesheet">
+  <title>Track Your Application - Erase Debt SA</title>
+  <link rel="icon" href="erase-debt-logo.png"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #f0f4f8;
-      margin: 0;
-      padding: 2rem;
+    :root {
+      --brand: #2970ba;
+      --brand-dark: #003865;
+      --success: #16a34a;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
     }
-    header {
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, var(--brand-dark), var(--brand));
+      color: #fff;
+      margin: 0;
+      min-height: 100vh;
+    }
+    
+    .header {
+      background: rgba(0,0,0,0.1);
+      padding: 1.5rem 2rem;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .header img {
+      height: 60px;
+      margin-bottom: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    
+    .header h1 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    
+    .auth-section {
+      background: var(--card);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    }
+    
+    .auth-section h2 {
+      color: var(--brand);
+      margin-bottom: 1rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+    
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(41, 112, 186, 0.1);
+    }
+    
+    .btn {
+      background: var(--brand);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .btn:hover {
+      background: var(--brand-dark);
+    }
+    
+    .btn:disabled {
+      background: var(--muted);
+      cursor: not-allowed;
+    }
+    
+    .dashboard {
+      display: none;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .card {
+      background: var(--card);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    }
+    
+    .card h3 {
+      color: var(--brand);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .status-pending_verification {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    
+    .status-verified_active {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    
+    .status-payment_overdue {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    
+    .status-service_complete {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    
+    .info-grid {
+      display: grid;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    
+    .info-label {
+      font-weight: 600;
+      color: var(--muted);
+    }
+    
+    .info-value {
+      font-weight: 600;
+      color: var(--text);
+    }
+    
+    .payment-history {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    
+    .payment-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1.5rem;
-    }
-    h2 {
-      color: #003865;
-      margin: 0;
-    }
-    button {
-      background: #003865;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #005c97;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      background: #f8fafc;
       border-radius: 8px;
-      overflow: hidden;
     }
-    th {
-      background: #003865;
-      color: #fff;
-      padding: 12px;
+    
+    .payment-success {
+      border-left: 4px solid var(--success);
     }
-    td {
-      padding: 10px;
-      border-bottom: 1px solid #eee;
+    
+    .payment-failed {
+      border-left: 4px solid var(--danger);
     }
-    tr:nth-child(even) {
-      background: #f9f9f9;
+    
+    .payment-pending {
+      border-left: 4px solid var(--warning);
     }
-    .status-tag {
-      font-weight: bold;
-      padding: 4px 8px;
+    
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #e5e7eb;
       border-radius: 4px;
-      font-size: 0.85rem;
+      overflow: hidden;
+      margin: 1rem 0;
     }
-    .status-new { background: #cce5ff; color: #003865; }
-    .status-pending { background: #fff3cd; color: #856404; }
-    .status-closed { background: #f8d7da; color: #721c24; }
-    .loading {
-      text-align: center;
-      padding: 2rem;
-      font-size: 1.1rem;
-      color: #777;
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--brand), var(--success));
+      transition: width 0.3s ease;
     }
-  </style>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-</head>
-<body>
-  <header>
-    <h2>Queries Dashboard</h2>
-    <button onclick="window.location.href='super-dashboard.html'">← Back to Dashboard</button>
-  </header>
-  <div id="content">
-    <div class="loading">Loading Queries Dashboard...</div>
-  </div>
-  <script>
-    const supabase = supabase.createClient(
-      "https://xzjunkpxvfdpuogoflzh.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ"
-    );
-
-    async function load() {
-      const { data, error } = await supabase.from('QUERIES').select('first_name, last_name, email, query_type, status, created_at, reference_number').order('created_at', { ascending: false });
-      
-      if (error) {
-        console.error('Error loading queries:', error);
-        document.getElementById('content').innerHTML = `
-          <div class="loading" style="color: #d32f2f;">Error loading queries: ${error.message}</div>
-        `;
-        return;
+    
+    .message {
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      font-weight: 600;
+    }
+    
+    .message.error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+    
+    .message.success {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+    
+    .message.info {
+      background: #dbeafe;
+      color: #1e40af;
+      border: 1px solid #93c5fd;
+    }
+    
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+    
+    .back-link:hover {
+      color: white;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 0.5rem;
       }
       
-      if (!data) return;
-
-      const rows = data.map(q => `
-        <tr>
-          <td>${(q.first_name || '') + ' ' + (q.last_name || '')}</td>
-          <td>${q.email}</td>
-          <td>${q.query_type || 'N/A'}</td>
-          <td>${q.reference_number || 'N/A'}</td>
-          <td><span class="status-tag status-${(q.status || 'new').toLowerCase()}">${q.status || 'new'}</span></td>
-          <td><span class="status-tag status-${(q.status || 'new').toLowerCase()}">${q.status || 'new'}</span></td>
-
-      const rows = data.map(q => `
-        <tr>
-          <td>${(q.first_name || '') + ' ' + (q.last_name || '')}</td>
-          <td>${q.email}</td>
-          <td>${q.query_type || 'N/A'}</td>
-          <td>${q.reference_number || 'N/A'}</td>
-          <td><span class="status-tag status-${(q.status || 'new').toLowerCase()}">${q.status || 'new'}</span></td>
-          <td>${q.created_at ? new Date(q.created_at).toLocaleDateString() : 'N/A'}</td>
-        </tr>`).join('');
-
-      document.getElementById('content').innerHTML = `
-        <table>
-          <thead><tr><th>Full Name</th><th>Email</th><th>Query Type</th><th>Reference</th><th>Status</th><th>Date</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>`;
+      .auth-section, .card {
+        padding: 1rem;
+      }
+      
+      .header {
+        padding: 1rem;
+      }
+      
+      .header h1 {
+        font-size: 1.5rem;
+      }
     }
-    load();</script></body></html>
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="erase-debt-logo.png" alt="Erase Debt SA Logo" />
+    <h1>Track Your Application</h1>
+  </div>
+
+  <div class="container">
+    <a href="index.html" class="back-link">
+      <i class="fas fa-arrow-left"></i>
+      Back to Homepage
+    </a>
+
+    <!-- Authentication Section -->
+    <div id="authSection" class="auth-section">
+      <h2><i class="fas fa-shield-alt"></i> Secure Access</h2>
+      <p>Enter your details to securely access your application status. We'll send a verification code to your registered email address.</p>
+      
+      <form id="authForm">
+        <div class="form-group">
+          <label for="idNumber">ID Number</label>
+          <input type="text" id="idNumber" name="idNumber" required maxlength="13" placeholder="Enter your 13-digit ID number">
+        </div>
+        
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" required placeholder="Enter your registered email address">
+        </div>
+        
+        <button type="submit" class="btn" id="authBtn">
+          <i class="fas fa-search"></i> Find My Application
+        </button>
+      </form>
+      
+      <div id="authMessage"></div>
+    </div>
+
+    <!-- OTP Verification Section -->
+    <div id="otpSection" class="auth-section" style="display: none;">
+      <h2><i class="fas fa-key"></i> Verification Code</h2>
+      <p>We've sent a 6-digit verification code to your email address. Please enter it below to access your application.</p>
+      
+      <form id="otpForm">
+        <div class="form-group">
+          <label for="otpCode">6-Digit Verification Code</label>
+          <input type="text" id="otpCode" name="otpCode" required maxlength="6" placeholder="Enter 6-digit code">
+        </div>
+        
+        <button type="submit" class="btn" id="otpBtn">
+          <i class="fas fa-unlock"></i> Verify & Access
+        </button>
+      </form>
+      
+      <div id="otpMessage"></div>
+    </div>
+
+    <!-- Application Dashboard -->
+    <div id="dashboard" class="dashboard">
+      <!-- Client Information Card -->
+      <div class="card">
+        <h3><i class="fas fa-user"></i> Client Information</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Name:</span>
+            <span class="info-value" id="clientName">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Email:</span>
+            <span class="info-value" id="clientEmail">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Phone:</span>
+            <span class="info-value" id="clientPhone">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Status:</span>
+            <span class="status-badge" id="clientStatus">-</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Service Information Card -->
+      <div class="card">
+        <h3><i class="fas fa-cogs"></i> Service Details</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Service Type:</span>
+            <span class="info-value" id="serviceType">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Payment Plan:</span>
+            <span class="info-value" id="paymentPlan">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Total Amount:</span>
+            <span class="info-value" id="totalAmount">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Monthly Payment:</span>
+            <span class="info-value" id="monthlyPayment">-</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Progress Card -->
+      <div class="card">
+        <h3><i class="fas fa-credit-card"></i> Payment Progress</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Amount Paid:</span>
+            <span class="info-value" id="amountPaid">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Balance Remaining:</span>
+            <span class="info-value" id="balanceRemaining">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Next Payment:</span>
+            <span class="info-value" id="nextPayment">-</span>
+          </div>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+        <p style="text-align: center; margin: 0.5rem 0; color: var(--muted);">
+          <span id="progressText">0% Complete</span>
+        </p>
+      </div>
+
+      <!-- Recent Communications Card -->
+      <div class="card">
+        <h3><i class="fas fa-envelope"></i> Recent Communications</h3>
+        <div id="communicationsList">
+          <p style="color: var(--muted); text-align: center;">Loading communications...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Supabase configuration
+    const supabaseUrl = 'https://xzjunkpxvfdpuogoflzh.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ';
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+    // Global variables
+    let currentClient = null;
+    let otpCode = null;
+
+    // DOM elements
+    const authSection = document.getElementById('authSection');
+    const otpSection = document.getElementById('otpSection');
+    const dashboard = document.getElementById('dashboard');
+    const authForm = document.getElementById('authForm');
+    const otpForm = document.getElementById('otpForm');
+    const authMessage = document.getElementById('authMessage');
+    const otpMessage = document.getElementById('otpMessage');
+
+    // Utility functions
+    function showMessage(element, message, type = 'info') {
+      element.innerHTML = `<div class="message ${type}">${message}</div>`;
+    }
+
+    function formatCurrency(amount) {
+      return new Intl.NumberFormat('en-ZA', {
+        style: 'currency',
+        currency: 'ZAR'
+      }).format(amount || 0);
+    }
+
+    function formatDate(dateString) {
+      if (!dateString) return '-';
+      return new Date(dateString).toLocaleDateString('en-ZA');
+    }
+
+    function generateOTP() {
+      return Math.floor(100000 + Math.random() * 900000).toString();
+    }
+
+    // Authentication form handler
+    authForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const idNumber = document.getElementById('idNumber').value.trim();
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      
+      if (!idNumber || !email) {
+        showMessage(authMessage, 'Please enter both ID number and email address.', 'error');
+        return;
+      }
+
+      if (idNumber.length !== 13 || !/^\d+$/.test(idNumber)) {
+        showMessage(authMessage, 'Please enter a valid 13-digit ID number.', 'error');
+        return;
+      }
+
+      document.getElementById('authBtn').disabled = true;
+      showMessage(authMessage, 'Searching for your application...', 'info');
+
+      try {
+        // Look up client in database
+        const { data, error } = await supabase
+          .from('edsa_client_database')
+          .select('*')
+          .eq('client_id_number', parseInt(idNumber))
+          .eq('email', email)
+          .single();
+
+        if (error || !data) {
+          showMessage(authMessage, 'No application found with these details. Please check your ID number and email address.', 'error');
+          document.getElementById('authBtn').disabled = false;
+          return;
+        }
+
+        currentClient = data;
+        otpCode = generateOTP();
+
+        // Here you would normally send the OTP via email
+        // For demo purposes, we'll show it in the console
+        console.log('OTP Code:', otpCode);
+        
+        // In production, call your email service here
+        // await sendOTPEmail(email, otpCode);
+
+        showMessage(authMessage, 'Application found! Check your email for the verification code.', 'success');
+        
+        // Show OTP section
+        authSection.style.display = 'none';
+        otpSection.style.display = 'block';
+
+      } catch (error) {
+        console.error('Error:', error);
+        showMessage(authMessage, 'An error occurred while searching for your application. Please try again.', 'error');
+      }
+
+      document.getElementById('authBtn').disabled = false;
+    });
+
+    // OTP verification handler
+    otpForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const enteredOTP = document.getElementById('otpCode').value.trim();
+      
+      if (!enteredOTP) {
+        showMessage(otpMessage, 'Please enter the verification code.', 'error');
+        return;
+      }
+
+      // For demo purposes, accept any 6-digit code
+      // In production, verify against the sent OTP
+      if (enteredOTP.length !== 6) {
+        showMessage(otpMessage, 'Please enter a valid 6-digit code.', 'error');
+        return;
+      }
+
+      document.getElementById('otpBtn').disabled = true;
+      showMessage(otpMessage, 'Verifying code...', 'info');
+
+      // Simulate verification delay
+      setTimeout(() => {
+        showMessage(otpMessage, 'Code verified! Loading your application...', 'success');
+        
+        setTimeout(() => {
+          otpSection.style.display = 'none';
+          loadClientDashboard();
+        }, 1000);
+      }, 1000);
+    });
+
+    // Load client dashboard
+    async function loadClientDashboard() {
+      if (!currentClient) return;
+
+      // Populate client information
+      document.getElementById('clientName').textContent = 
+        `${currentClient.first_name || ''} ${currentClient.last_name || ''}`.trim() || '-';
+      document.getElementById('clientEmail').textContent = currentClient.email || '-';
+      document.getElementById('clientPhone').textContent = currentClient.phone || '-';
+      
+      const statusBadge = document.getElementById('clientStatus');
+      statusBadge.textContent = (currentClient.status || 'pending').replace('_', ' ').toUpperCase();
+      statusBadge.className = `status-badge status-${currentClient.status || 'pending_verification'}`;
+
+      // Populate service information
+      document.getElementById('serviceType').textContent = currentClient.service_type || '-';
+      document.getElementById('paymentPlan').textContent = currentClient.payment_plan_months ? 
+        `${currentClient.payment_plan_months} months` : '-';
+      document.getElementById('totalAmount').textContent = formatCurrency(currentClient.total_amount);
+      document.getElementById('monthlyPayment').textContent = formatCurrency(currentClient.monthly_payment);
+
+      // Calculate payment progress
+      const totalAmount = parseFloat(currentClient.total_amount || 0);
+      const amountPaid = parseFloat(currentClient.amount_paid || 0);
+      const balanceRemaining = totalAmount - amountPaid;
+      const progressPercentage = totalAmount > 0 ? (amountPaid / totalAmount) * 100 : 0;
+
+      document.getElementById('amountPaid').textContent = formatCurrency(amountPaid);
+      document.getElementById('balanceRemaining').textContent = formatCurrency(balanceRemaining);
+      document.getElementById('nextPayment').textContent = formatDate(currentClient.next_payment_date);
+      
+      document.getElementById('progressFill').style.width = `${progressPercentage}%`;
+      document.getElementById('progressText').textContent = `${Math.round(progressPercentage)}% Complete`;
+
+      // Load communications (placeholder)
+      loadCommunications();
+
+      // Show dashboard
+      dashboard.style.display = 'grid';
+    }
+
+    // Load communications (placeholder function)
+    function loadCommunications() {
+      const communicationsList = document.getElementById('communicationsList');
+      
+      // This would normally load from your email_communications table
+      communicationsList.innerHTML = `
+        <div class="payment-item payment-success">
+          <div>
+            <strong>Welcome Email Sent</strong>
+            <br><small>Service activation and payment details</small>
+          </div>
+          <small>${formatDate(currentClient.created_at)}</small>
+        </div>
+        <div class="payment-item payment-pending">
+          <div>
+            <strong>Payment Reminder</strong>
+            <br><small>Next payment due soon</small>
+          </div>
+          <small>2 days ago</small>
+        </div>
+      `;
+    }
+
+    // Check for service link token in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const serviceToken = urlParams.get('token');
+    
+    if (serviceToken) {
+      // If accessed via service link, skip authentication
+      authSection.style.display = 'none';
+      showMessage(authMessage, 'Loading your application via secure link...', 'info');
+      
+      // In production, validate the service token and load client data
+      setTimeout(() => {
+        // Simulate loading client data via token
+        currentClient = {
+          first_name: 'John',
+          last_name: 'Doe',
+          email: 'john.doe@example.com',
+          phone: '0123456789',
+          status: 'verified_active',
+          service_type: 'SERVICE 1 - DRR(C & D3)',
+          payment_plan_months: 6,
+          total_amount: 7992.50,
+          monthly_payment: 1332.08,
+          amount_paid: 2664.16,
+          next_payment_date: '2025-02-15',
+          created_at: '2025-01-15'
+        };
+        
+        loadClientDashboard();
+      }, 2000);
+    }
+  </script>
+</body>
+</html>
