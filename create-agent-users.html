@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Agent Users from Spreadsheet - Erase Debt SA</title>
+  <link rel="icon" href="erase-debt-logo.png"/>
+  <style>
+    body { font-family: Arial, sans-serif; background: linear-gradient(135deg,#003865,#005c97); margin:0; padding:24px; color:#14243b; }
+    .wrap { max-width: 1400px; margin: 0 auto; }
+    .header { display:flex; align-items:center; gap:16px; margin-bottom:14px; color:#fff; }
+    .logo { width:90px; border-radius:12px; box-shadow:0 6px 24px #2970ba55; }
+    .title { font-size:1.7rem; font-weight:800; letter-spacing:-.2px; }
+    .card { background:#fff; border-radius:16px; box-shadow:0 14px 44px #2970ba33; padding:22px; margin-bottom:20px; }
+    .btn { padding:12px 20px; background:#2970ba; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600; margin:5px; }
+    .btn:hover { background:#003865; }
+    .btn.success { background:#28a745; }
+    .btn.success:hover { background:#218838; }
+    .btn.danger { background:#dc3545; }
+    .btn.danger:hover { background:#c82333; }
+    .status { margin:10px 0; padding:10px; border-radius:8px; }
+    .success { background:#d4edda; color:#155724; }
+    .error { background:#f8d7da; color:#721c24; }
+    .info { background:#d1ecf1; color:#0c5460; }
+    .warning { background:#fff3cd; color:#856404; }
+    .progress { width:100%; height:20px; background:#f0f0f0; border-radius:10px; overflow:hidden; margin:10px 0; }
+    .progress-bar { height:100%; background:#28a745; transition:width 0.3s; }
+    .log { background:#f8f9fa; border:1px solid #dee2e6; border-radius:8px; padding:15px; max-height:400px; overflow-y:auto; font-family:monospace; font-size:0.9rem; margin:15px 0; }
+    .agent-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:15px; margin-top:20px; }
+    .agent-card { background:#f8f9fa; border:1px solid #dee2e6; border-radius:8px; padding:15px; }
+    .agent-name { font-weight:bold; color:#2970ba; margin-bottom:5px; }
+    .agent-details { font-size:0.9rem; color:#666; }
+    .agent-company { font-weight:600; color:#28a745; margin-bottom:3px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <img src="erase-debt-logo.png" alt="Erase Debt SA" class="logo"/>
+      <div class="title">Create Agent/Feeder Users from Spreadsheet</div>
+    </div>
+
+    <div class="card">
+      <h3>🚀 Agent/Feeder Account Creation</h3>
+      <p><strong>Password:</strong> All agents will be created with password <code>password@123</code></p>
+      <p><strong>Total Agents to Create:</strong> <span id="agentCount">Loading...</span></p>
+      
+      <div style="display:flex; gap:10px; margin:15px 0; flex-wrap:wrap;">
+        <button class="btn success" onclick="createAllAgents()">🚀 Create All Agents</button>
+        <button class="btn" onclick="showAgentList()">👥 Show Agent List</button>
+        <button class="btn" onclick="testAgentLogin()">🧪 Test Agent Login</button>
+        <button class="btn danger" onclick="clearAgents()">🗑️ Clear All Agents</button>
+      </div>
+      
+      <div class="progress" id="progressContainer" style="display:none;">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      
+      <div id="status"></div>
+      <div id="log" class="log" style="display:none;"></div>
+      
+      <div id="agentList" style="display:none;">
+        <h4>Agent/Feeder List from Spreadsheet:</h4>
+        <div class="agent-grid" id="agentCards"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <a href="super-dashboard.html" style="color:#2970ba; text-decoration:none; font-weight:bold;">← Back to Super Dashboard</a>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    import bcrypt from 'https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/+esm';
+
+    const supabase = createClient(
+      "https://xzjunkpxvfdpuogoflzh.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ"
+    );
+
+    // Extracted from the spreadsheet image
+    const agents = [
+      { company: "SAZZ Debt Solutions", name: "Joran Reynolds Gaffar", id: "6901145146081", email: "sazz@erasedebtsa.co.za" },
+      { company: "Credifix SA", name: "Ashira Vairuth", id: "8601290146080", email: "credifix@erasedebtsa.co.za" },
+      { company: "SA Blacklisting Busters", name: "Caleb Dane Veerasamy", id: "9701305079083", email: "caleb@erasedebtsa.co.za" },
+      { company: "Increase My Credit Score", name: "Amaara Mohamed", id: "9904045079084", email: "amaara@erasedebtsa.co.za" },
+      { company: "Boost My Credit Score", name: "Marcus Parkkar", id: "8407155074080", email: "bmcs@erasedebtsa.co.za" },
+      { company: "Shield Credit Solutions", name: "Trevolin Chellan", id: "9806145079088", email: "trevolin@erasedebtsa.co.za" },
+      { company: "National Credit Solutions", name: "Semone Jordon Mursami", id: "9803170270084", email: "semone@erasedebtsa.co.za" },
+      { company: "South African Credit Score Experts - AA", name: "Wayne Govender", id: "8412035051084", email: "sacrediitscoreexperts@erasedebtsa.co.za" },
+      { company: "South African Credit Score Experts - QAA", name: "Sinjin Govender", id: "8212175109081", email: "sacrediitscoreexperts@erasedebtsa.co.za" },
+      { company: "Clean Slate Solutions - MSJ", name: "Suraksha Joseph", id: "9307105079080", email: "suraksha@erasedebtsa.co.za" },
+      { company: "Clean Slate Solutions - RSJ", name: "Alan Joseph", id: "6701155003087", email: "cleanslatesolutions@erasedebtsa.co.za" },
+      { company: "Increase My Credit Score", name: "Amaan Mohammed", id: "0201055018080", email: "amaan@erasedebtsa.co.za" },
+      { company: "Credit Boost SA", name: "Sharish Joseph", id: "9202155198086", email: "serisha@erasedebtsa.co.za" },
+      { company: "Credit Renew SA", name: "Michelle Alicia Narmugam", id: "7810150210085", email: "michelle@erasedebtsa.co.za" },
+      { company: "Fix My Credit Score", name: "Sebastian Papa", id: "7605075276088", email: "Sebastian@erasedebtsa.co.za" },
+      { company: "Clean Credit Consultants", name: "Nicolene Gaffar", id: "9212030263083", email: "ccc@erasedebtsa.co.za" },
+      { company: "Erase Debt SA", name: "Leshni", id: "8802240178088", email: "leshni@erasedebtsa.co.za" },
+      { company: "Erase Debt SA", name: "Zoey", id: "9701030751089", email: "zoey@erasedebtsa.co.za" }
+    ];
+
+    document.getElementById('agentCount').textContent = agents.length;
+
+    let currentProgress = 0;
+    let logMessages = [];
+
+    function updateProgress(current, total) {
+      currentProgress = (current / total) * 100;
+      document.getElementById('progressBar').style.width = currentProgress + '%';
+    }
+
+    function addLog(message, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString();
+      logMessages.push(`[${timestamp}] ${message}`);
+      const logEl = document.getElementById('log');
+      logEl.innerHTML = logMessages.join('\n');
+      logEl.scrollTop = logEl.scrollHeight;
+      console.log(message);
+    }
+
+    function showStatus(message, type = 'info') {
+      document.getElementById('status').innerHTML = `<div class="${type}">${message}</div>`;
+    }
+
+    window.showAgentList = function() {
+      const agentList = document.getElementById('agentList');
+      const agentCards = document.getElementById('agentCards');
+      
+      agentCards.innerHTML = agents.map(agent => `
+        <div class="agent-card">
+          <div class="agent-company">${agent.company}</div>
+          <div class="agent-name">${agent.name}</div>
+          <div class="agent-details">
+            ID: ${agent.id}<br>
+            Email: ${agent.email}
+          </div>
+        </div>
+      `).join('');
+      
+      agentList.style.display = 'block';
+    };
+
+    window.createAllAgents = async function() {
+      const progressContainer = document.getElementById('progressContainer');
+      const logEl = document.getElementById('log');
+      
+      progressContainer.style.display = 'block';
+      logEl.style.display = 'block';
+      logMessages = [];
+      
+      showStatus('🚀 Creating agent accounts with password: password@123', 'info');
+      addLog('Starting agent account creation...');
+      
+      let successCount = 0;
+      let errorCount = 0;
+      let skippedCount = 0;
+
+      try {
+        // Hash the common password once
+        const commonPassword = 'password@123';
+        addLog(`Hashing password: ${commonPassword}`);
+        const password_hash = await bcrypt.hash(commonPassword, 10);
+        addLog('Password hashed successfully');
+
+        for (let i = 0; i < agents.length; i++) {
+          const agent = agents[i];
+          updateProgress(i, agents.length);
+          
+          addLog(`\n--- Creating ${i + 1}/${agents.length}: ${agent.name} ---`);
+          
+          try {
+            // Check if user already exists
+            const { data: existingUser } = await supabase
+              .from('edsa_users')
+              .select('id, full_name')
+              .eq('id_number', agent.id)
+              .maybeSingle();
+
+            if (existingUser) {
+              addLog(`⚠️ Agent ${agent.name} (${agent.id}) already exists, skipping...`);
+              skippedCount++;
+              continue;
+            }
+
+            // Create agent user
+            const { data, error } = await supabase
+              .from('edsa_users')
+              .insert({
+                full_name: agent.name,
+                email: agent.email.toLowerCase(),
+                id_number: agent.id,
+                password_hash: password_hash,
+                role: 'agent',
+                branch: agent.company,
+                status: 'active',
+                is_active: true
+              })
+              .select()
+              .single();
+
+            if (error) {
+              addLog(`❌ Error creating ${agent.name}: ${error.message}`);
+              errorCount++;
+            } else {
+              addLog(`✅ Created ${agent.name} (${agent.company}) - ID: ${agent.id}`);
+              addLog(`   Login: ID ${agent.id} + password password@123`);
+              successCount++;
+            }
+
+          } catch (error) {
+            addLog(`❌ Exception for ${agent.name}: ${error.message}`);
+            errorCount++;
+          }
+
+          // Small delay to avoid overwhelming the database
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+
+        updateProgress(agents.length, agents.length);
+        
+        addLog(`\n=== FINAL RESULTS ===`);
+        addLog(`✅ Successfully created: ${successCount} agents`);
+        addLog(`⚠️ Skipped (already exists): ${skippedCount} agents`);
+        addLog(`❌ Errors: ${errorCount} agents`);
+        addLog(`📊 Total processed: ${agents.length} agents`);
+        addLog(`🔑 All agents can login with: password@123`);
+        
+        if (successCount > 0) {
+          showStatus(`🎉 Created ${successCount} agent accounts! All can login with password@123`, 'success');
+        } else if (skippedCount === agents.length) {
+          showStatus(`ℹ️ All agents already exist in the system`, 'warning');
+        } else {
+          showStatus(`⚠️ Completed with ${errorCount} errors. Check log for details.`, 'warning');
+        }
+
+      } catch (error) {
+        addLog(`💥 Fatal error: ${error.message}`);
+        showStatus('❌ Agent creation failed. Check log for details.', 'error');
+      }
+    };
+
+    window.testAgentLogin = function() {
+      if (agents.length > 0) {
+        const testAgent = agents[0];
+        const message = `Test Login Details:
+        
+ID Number: ${testAgent.id}
+Password: password@123
+Name: ${testAgent.name}
+Company: ${testAgent.company}
+
+Go to staff-login.html → Select "Agent/Feeder" → Use these credentials`;
+        
+        alert(message);
+        addLog(`Test agent credentials: ID ${testAgent.id} + password@123`);
+      }
+    };
+
+    window.clearAgents = async function() {
+      if (!confirm('⚠️ WARNING: This will DELETE ALL agent accounts. Are you sure?')) {
+        return;
+      }
+
+      const logEl = document.getElementById('log');
+      logEl.style.display = 'block';
+      logMessages = [];
+      
+      showStatus('🗑️ Clearing all agent accounts...', 'warning');
+      addLog('Starting agent deletion process...');
+      
+      try {
+        // Delete all agent users
+        const { data, error } = await supabase
+          .from('edsa_users')
+          .delete()
+          .eq('role', 'agent')
+          .select();
+
+        if (error) {
+          addLog(`❌ Error deleting agents: ${error.message}`);
+          showStatus('❌ Failed to clear agents', 'error');
+        } else {
+          const deletedCount = data ? data.length : 0;
+          addLog(`✅ Deleted ${deletedCount} agent accounts successfully`);
+          showStatus(`✅ Cleared ${deletedCount} agent accounts.`, 'success');
+        }
+
+      } catch (error) {
+        addLog(`💥 Fatal error: ${error.message}`);
+        showStatus('❌ Failed to clear agents', 'error');
+      }
+    };
+
+    // Load page
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('Agent creation page loaded with', agents.length, 'agents');
+    });
+  </script>
+</body>
+</html>
