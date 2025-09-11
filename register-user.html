@@ -170,11 +170,17 @@
     // Send welcome email with password setup link
     async function sendWelcomeEmail(userData) {
       try {
+        console.log('Starting sendWelcomeEmail for:', userData.email);
+        
         // Generate reset token
         const resetToken = generateResetToken();
         const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // 24 hours
 
+        console.log('Generated reset token:', resetToken.substring(0, 10) + '...');
+        console.log('Token expires at:', expiresAt);
+
         // Insert password reset record
+        console.log('Inserting password reset record...');
         const { error: resetError } = await supabase
           .from('password_resets')
           .insert({
@@ -186,23 +192,18 @@
 
         if (resetError) {
           console.error('Error creating reset token:', resetError);
-          throw resetError;
+          throw new Error(`Failed to create reset token: ${resetError.message}`);
         }
+
+        console.log('Reset token created successfully');
 
         // Create password setup link
         const setupLink = `${window.location.origin}/set-password.html?user=${encodeURIComponent(userData.id_number)}&token=${encodeURIComponent(resetToken)}`;
         
-        // Send email via the edge function
-        const emailResponse = await fetch(`${SUPABASE_URL}/functions/v1/send-user-email-public`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-          },
-          body: JSON.stringify({
-            to: userData.email,
-            subject: 'Welcome to Erase Debt SA - Set Your Password',
-            body: `
+        console.log('Setup link created:', setupLink);
+        
+        // Construct email body
+        const emailBody = `
               <!DOCTYPE html>
               <html>
               <head>
@@ -255,18 +256,38 @@
                 </div>
               </body>
               </html>
-            `
+            `;
+
+        console.log('Calling edge function...');
+        
+        // Send email via the edge function  
+        const emailResponse = await fetch(`${SUPABASE_URL}/functions/v1/send-user-email-public`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          },
+          body: JSON.stringify({
+            to: userData.email,
+            subject: 'Welcome to Erase Debt SA - Set Your Password',
+            body: emailBody
           })
         });
 
+        console.log('Edge function response status:', emailResponse.status);
+        
         if (!emailResponse.ok) {
           const errorText = await emailResponse.text();
+          console.error('Edge function error response:', errorText);
           throw new Error(`Email failed: ${emailResponse.status} ${errorText}`);
         }
 
+        const responseData = await emailResponse.json();
+        console.log('Email sent successfully:', responseData);
+        
         return true;
       } catch (error) {
-        console.error('Error sending welcome email:', error);
+        console.error('Error in sendWelcomeEmail:', error);
         throw error;
       }
     }
