@@ -513,6 +513,18 @@
               showMessage(loginMessage, `No account found with ID number ${idNumber}.`, 'error');
             }
           }
+          
+          // Special debugging for agents
+          if (currentTier === 'agent') {
+            console.log('Agent login debug - ID:', idNumber, 'Tier:', currentTier);
+            // Let's check what exists for this ID
+            const { data: debugUsers } = await supabase
+              .from('edsa_users')
+              .select('id_number, role, is_active, status, full_name')
+              .eq('id_number', idNumber);
+            console.log('Debug - Found users for this ID:', debugUsers);
+          }
+          
           loginBtn.disabled = false;
           return;
         }
@@ -520,10 +532,12 @@
         const users = usersArray[0];
 
         // Verify password
+        console.log('Verifying password for user:', users.full_name, 'Role:', users.role);
         const isValidPassword = await bcrypt.compare(password, users.password_hash);
+        console.log('Password verification result:', isValidPassword);
         
         if (!isValidPassword) {
-          showMessage(loginMessage, 'Invalid password. Please try again or contact your administrator if this is your first login.', 'error');
+          showMessage(loginMessage, `Invalid password for ${users.full_name}. Please try "password@123" or contact your administrator.`, 'error');
           loginBtn.disabled = false;
           return;
         }

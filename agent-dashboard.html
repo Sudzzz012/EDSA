@@ -354,50 +354,59 @@
         const { data: agentClients, error } = await supabase
           .from('edsa_client_database')
           .select('*')
-          .eq('agent_name', currentAgent.name);
+          .ilike('agent_name', `%${currentAgent.name}%`);
 
         if (error) {
           console.error('Error loading agent clients:', error);
+          // Don't return early, continue with empty data
+          const clients = [];
+          updateStatsWithClients(clients);
           return;
         }
 
         const clients = agentClients || [];
-        const totalClients = clients.length;
-        
-        // Calculate this month's clients
-        const currentMonth = new Date().getMonth();
-        const currentYear = new Date().getFullYear();
-        const monthlyClients = clients.filter(client => {
-          const clientDate = new Date(client.created_at || client.sale_date);
-          return clientDate.getMonth() === currentMonth && clientDate.getFullYear() === currentYear;
-        }).length;
-
-        // Calculate today's clients
-        const today = new Date().toDateString();
-        const todayClients = clients.filter(client => {
-          const clientDate = new Date(client.created_at || client.sale_date);
-          return clientDate.toDateString() === today;
-        }).length;
-
-        // Count active sales
-        const activeSales = clients.filter(client => 
-          client.status === 'active' || client.status === 'pending_verification'
-        ).length;
-
-        // Update stats display
-        document.getElementById('totalClients').textContent = totalClients;
-        document.getElementById('monthlyClients').textContent = monthlyClients;
-        document.getElementById('todayClients').textContent = todayClients;
-        document.getElementById('activeSales').textContent = activeSales;
+        updateStatsWithClients(clients);
 
         // Load recent activity
         loadRecentActivity(clients);
 
       } catch (error) {
         console.error('Error loading dashboard stats:', error);
+        // Continue with empty stats rather than breaking
+        updateStatsWithClients([]);
       }
     }
 
+    // Separate function to update stats
+    function updateStatsWithClients(clients) {
+      const totalClients = clients.length;
+      
+      // Calculate this month's clients
+      const currentMonth = new Date().getMonth();
+      const currentYear = new Date().getFullYear();
+      const monthlyClients = clients.filter(client => {
+        const clientDate = new Date(client.created_at || client.sale_date);
+        return clientDate.getMonth() === currentMonth && clientDate.getFullYear() === currentYear;
+      }).length;
+
+      // Calculate today's clients
+      const today = new Date().toDateString();
+      const todayClients = clients.filter(client => {
+        const clientDate = new Date(client.created_at || client.sale_date);
+        return clientDate.toDateString() === today;
+      }).length;
+
+      // Count active sales
+      const activeSales = clients.filter(client => 
+        client.status === 'active' || client.status === 'pending_verification'
+      ).length;
+
+      // Update stats display
+      document.getElementById('totalClients').textContent = totalClients;
+      document.getElementById('monthlyClients').textContent = monthlyClients;
+      document.getElementById('todayClients').textContent = todayClients;
+      document.getElementById('activeSales').textContent = activeSales;
+    }
     // Load recent activity
     function loadRecentActivity(clients) {
       const activityContainer = document.getElementById('recentActivity');
