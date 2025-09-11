@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bulk Create Staff Users | Erase Debt SA</title>
+  <link rel="icon" href="erase-debt-logo.png"/>
+  <style>
+    body { font-family: Arial, sans-serif; background: linear-gradient(135deg,#003865,#005c97); margin:0; padding:24px; color:#14243b; }
+    .wrap { max-width: 1200px; margin: 0 auto; }
+    .header { display:flex; align-items:center; gap:16px; margin-bottom:14px; color:#fff; }
+    .logo { width:90px; border-radius:12px; box-shadow:0 6px 24px #2970ba55; }
+    .title { font-size:1.7rem; font-weight:800; letter-spacing:-.2px; }
+    .card { background:#fff; border-radius:16px; box-shadow:0 14px 44px #2970ba33; padding:22px; margin-bottom:20px; }
+    .btn { padding:12px 20px; background:#2970ba; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600; margin:5px; }
+    .btn:hover { background:#003865; }
+    .btn.danger { background:#dc3545; }
+    .btn.danger:hover { background:#c82333; }
+    .status { margin:10px 0; padding:10px; border-radius:8px; }
+    .success { background:#d4edda; color:#155724; }
+    .error { background:#f8d7da; color:#721c24; }
+    .info { background:#d1ecf1; color:#0c5460; }
+    .warning { background:#fff3cd; color:#856404; }
+    .progress { width:100%; height:20px; background:#f0f0f0; border-radius:10px; overflow:hidden; margin:10px 0; }
+    .progress-bar { height:100%; background:#28a745; transition:width 0.3s; }
+    .log { background:#f8f9fa; border:1px solid #dee2e6; border-radius:8px; padding:15px; max-height:400px; overflow-y:auto; font-family:monospace; font-size:0.9rem; margin:15px 0; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <img src="erase-debt-logo.png" alt="Erase Debt SA" class="logo"/>
+      <div class="title">Bulk Create Staff Users</div>
+    </div>
+
+    <div class="card">
+      <h3>⚠️ Testing Environment Setup</h3>
+      <p><strong>Password:</strong> All users will be created with password <code>password@123</code></p>
+      <p><strong>Total Users to Create:</strong> <span id="userCount">Loading...</span></p>
+      
+      <div style="display:flex; gap:10px; margin:15px 0;">
+        <button class="btn" onclick="createAllUsers()">🚀 Create All Users</button>
+        <button class="btn" onclick="showUserList()">👥 Show User List</button>
+        <button class="btn danger" onclick="clearAllUsers()">🗑️ Clear All Users</button>
+      </div>
+      
+      <div class="progress" id="progressContainer" style="display:none;">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      
+      <div id="status"></div>
+      <div id="log" class="log" style="display:none;"></div>
+    </div>
+
+    <div class="card">
+      <a href="super-dashboard.html" style="color:#2970ba; text-decoration:none; font-weight:bold;">← Back to Super Dashboard</a>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    import bcrypt from 'https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/+esm';
+
+    const supabase = createClient(
+      "https://xzjunkpxvfdpuogoflzh.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ"
+    );
+
+    const staffUsers = [
+      // Admin Managers
+      { role: "admin_manager", name: "Kumari Chetty", id: "8505110010089", email: "kumari@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      { role: "admin_manager", name: "Shilleni Hurbeert", id: "0105295089087", email: "shilleni@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      { role: "admin_manager", name: "Junitha Luckan", id: "7912070013080", email: "june@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      
+      // Admins
+      { role: "admin", name: "Havi Naraynan", id: "7405190017088", email: "havi@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      { role: "admin", name: "Farzana Amod", id: "9709150381082", email: "farzana@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      { role: "admin", name: "Shentel Pillay", id: "0012020037086", email: "shentel@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      { role: "admin", name: "Bavan Rampersad", id: "0212145303088", email: "bavan@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      { role: "admin", name: "Heather Nomtolo", id: "7705055247082", email: "heather@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      { role: "admin", name: "Shallin Paul", id: "0412096285082", email: "shallin@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      { role: "admin", name: "Kavitha Rampersad", id: "5305190057082", email: "kavitha@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      { role: "admin", name: "Alvina Reddy", id: "8508150311084", email: "alvina@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      { role: "admin", name: "Shalini Reddy", id: "5503300087082", email: "shalini@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      { role: "admin", name: "Abigail Govender", id: "0004280354087", email: "abigail@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      { role: "admin", name: "Denise Reddy", id: "5312145157084", email: "denise@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      { role: "admin", name: "Nicole Reddy", id: "5907050142080", email: "nicole@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      { role: "admin", name: "Kireen Rampersad", id: "5311120043080", email: "kireen@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      { role: "admin", name: "Disandra Govinden", id: "0102040238085", email: "disandra@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      { role: "admin", name: "Carmem Reddy", id: "6508110080086", email: "carmem@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      { role: "admin", name: "Simone Narainsamy", id: "7601310149081", email: "simone@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      { role: "admin", name: "Natasha Govender", id: "5212296170086", email: "natasha@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      { role: "admin", name: "Shanelle Dorasamy", id: "5602270139086", email: "shanelle@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      { role: "admin", name: "Natasha Pillay", id: "6512286174086", email: "natasha.pillay@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      { role: "admin", name: "Karmeela Tia Govender", id: "5411220288088", email: "tia@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      { role: "admin", name: "Jonisha Shanugam", id: "5011120578087", email: "jonisha@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      { role: "admin", name: "Portia Mtshali", id: "0105050158082", email: "portia@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      { role: "admin", name: "Buleleni Sikhosana", id: "9806220990080", email: "buleleni@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      { role: "admin", name: "Snenhlahlila Manzi", id: "9810071058088", email: "snenhla@debt-mate.co.za", branch: "Clean Slate Solutions - MSJ" },
+      { role: "admin", name: "Thabelele Buhle Sikhosana", id: "9402091240089", email: "princess@debt-mate.co.za", branch: "Clean Slate Solutions - MSJ" }
+    ];
+
+    // Add agent/feeder users from the original list
+    const agentUsers = [
+      { role: "agent", name: "Joran Reynolds Gaffar", id: "6901145146081", email: "sazz@erasedebtsa.co.za", branch: "SAZZ Debt Solutions" },
+      { role: "agent", name: "Ashira Vairuth", id: "8601290146080", email: "credifix@erasedebtsa.co.za", branch: "Credifix SA" },
+      { role: "agent", name: "Caleb Dane Veerasamy", id: "9701305079083", email: "caleb@erasedebtsa.co.za", branch: "SA Blacklisting Busters" },
+      { role: "agent", name: "Amaara Mohamed", id: "9904045079084", email: "amaara@erasedebtsa.co.za", branch: "Increase My Credit Score" },
+      { role: "agent", name: "Marcus Parkkar", id: "8407155074080", email: "bmcs@erasedebtsa.co.za", branch: "Boost My Credit Score" },
+      { role: "agent", name: "Trevolin Chellan", id: "9806145079088", email: "trevolin@erasedebtsa.co.za", branch: "Shield Credit Solutions" },
+      { role: "agent", name: "Semone Jordon Mursami", id: "9803170270084", email: "semone@erasedebtsa.co.za", branch: "National Credit Solutions" },
+      { role: "agent", name: "Wayne Govender", id: "8412035051084", email: "sacrediitscoreexperts@erasedebtsa.co.za", branch: "South African Credit Score Experts - AA" },
+      { role: "agent", name: "Sinjin Govender", id: "8812175109081", email: "sinjin@erasedebtsa.co.za", branch: "South African Credit Score Experts - QAA" },
+      { role: "agent", name: "Suraksha Joseph", id: "9307105079080", email: "suraksha@erasedebtsa.co.za", branch: "Clean Slate Solutions - MSJ" },
+      { role: "agent", name: "Alan Joseph", id: "6701155003087", email: "cleanslatesolutions@erasedebtsa.co.za", branch: "Clean Slate Solutions - RSJ" },
+      { role: "agent", name: "Amaan Mohammed", id: "0201055018080", email: "amaan@erasedebtsa.co.za", branch: "Increase My Credit Score" },
+      { role: "agent", name: "Sharish Joseph", id: "9202155198086", email: "serisha@erasedebtsa.co.za", branch: "Credit Boost SA" },
+      { role: "agent", name: "Michelle Alicia Narmugam", id: "7810150210085", email: "michelle@erasedebtsa.co.za", branch: "Credit Renew SA" },
+      { role: "agent", name: "Sebastian Papa", id: "7605075276088", email: "Sebastian@erasedebtsa.co.za", branch: "Fix My Credit Score" },
+      { role: "agent", name: "Nicolene Gaffar", id: "9212030263083", email: "ccc@erasedebtsa.co.za", branch: "Clean Credit Consultants" },
+      { role: "agent", name: "Leshni", id: "8802240178088", email: "leshni@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" },
+      { role: "agent", name: "Zoey", id: "9701030751089", email: "zoey@erasedebtsa.co.za", branch: "Erase Debt SA - ADMIN" }
+    ];
+
+    const allUsers = [...staffUsers, ...agentUsers];
+    
+    document.getElementById('userCount').textContent = allUsers.length;
+
+    let currentProgress = 0;
+    let logMessages = [];
+
+    function updateProgress(current, total) {
+      currentProgress = (current / total) * 100;
+      document.getElementById('progressBar').style.width = currentProgress + '%';
+    }
+
+    function addLog(message, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString();
+      logMessages.push(`[${timestamp}] ${message}`);
+      const logEl = document.getElementById('log');
+      logEl.innerHTML = logMessages.join('\n');
+      logEl.scrollTop = logEl.scrollHeight;
+      console.log(message);
+    }
+
+    function showStatus(message, type = 'info') {
+      document.getElementById('status').innerHTML = `<div class="${type}">${message}</div>`;
+    }
+
+    window.showUserList = function() {
+      const logEl = document.getElementById('log');
+      logEl.style.display = 'block';
+      logMessages = [];
+      
+      addLog('=== USER LIST ===');
+      allUsers.forEach((user, index) => {
+        addLog(`${index + 1}. ${user.name} (${user.role.toUpperCase()}) - ${user.email} - ID: ${user.id} - Branch: ${user.branch}`);
+      });
+      addLog('=== END LIST ===');
+    };
+
+    window.createAllUsers = async function() {
+      const progressContainer = document.getElementById('progressContainer');
+      const logEl = document.getElementById('log');
+      
+      progressContainer.style.display = 'block';
+      logEl.style.display = 'block';
+      logMessages = [];
+      
+      showStatus('🚀 Starting bulk user creation...', 'info');
+      addLog('Starting bulk user creation process...');
+      
+      let successCount = 0;
+      let errorCount = 0;
+      let skippedCount = 0;
+
+      try {
+        // Hash the common password once
+        const commonPassword = 'password@123';
+        addLog(`Hashing common password: ${commonPassword}`);
+        const password_hash = await bcrypt.hash(commonPassword, 10);
+        addLog('Password hashed successfully');
+
+        for (let i = 0; i < allUsers.length; i++) {
+          const user = allUsers[i];
+          updateProgress(i, allUsers.length);
+          
+          addLog(`\n--- Processing ${i + 1}/${allUsers.length}: ${user.name} ---`);
+          
+          try {
+            // Check if user already exists
+            const { data: existingUser } = await supabase
+              .from('edsa_users')
+              .select('id')
+              .eq('id_number', user.id)
+              .maybeSingle();
+
+            if (existingUser) {
+              addLog(`⚠️ User ${user.name} already exists, skipping...`);
+              skippedCount++;
+              continue;
+            }
+
+            // Create user
+            const { data, error } = await supabase
+              .from('edsa_users')
+              .insert({
+                full_name: user.name,
+                email: user.email.toLowerCase(),
+                id_number: user.id,
+                password_hash: password_hash,
+                role: user.role,
+                branch: user.branch,
+                status: 'active',
+                is_active: true
+              })
+              .select()
+              .single();
+
+            if (error) {
+              addLog(`❌ Error creating ${user.name}: ${error.message}`);
+              errorCount++;
+            } else {
+              addLog(`✅ Created ${user.name} successfully (Role: ${user.role.toUpperCase()})`);
+              successCount++;
+            }
+
+          } catch (error) {
+            addLog(`❌ Exception for ${user.name}: ${error.message}`);
+            errorCount++;
+          }
+
+          // Small delay to avoid overwhelming the database
+          await new Promise(resolve => setTimeout(resolve, 50));
+        }
+
+        updateProgress(allUsers.length, allUsers.length);
+        
+        addLog(`\n=== FINAL RESULTS ===`);
+        addLog(`✅ Successfully created: ${successCount} users`);
+        addLog(`⚠️ Skipped (already exists): ${skippedCount} users`);
+        addLog(`❌ Errors: ${errorCount} users`);
+        addLog(`📊 Total processed: ${allUsers.length} users`);
+        
+        if (successCount > 0) {
+          showStatus(`🎉 Bulk creation completed! Created ${successCount} users with password: password@123`, 'success');
+        } else if (skippedCount === allUsers.length) {
+          showStatus(`ℹ️ All users already exist in the system`, 'warning');
+        } else {
+          showStatus(`⚠️ Completed with ${errorCount} errors. Check log for details.`, 'warning');
+        }
+
+      } catch (error) {
+        addLog(`💥 Fatal error: ${error.message}`);
+        showStatus('❌ Bulk creation failed. Check log for details.', 'error');
+      }
+    };
+
+    window.clearAllUsers = async function() {
+      if (!confirm('⚠️ WARNING: This will DELETE ALL staff users except the super admin. Are you absolutely sure?')) {
+        return;
+      }
+
+      if (!confirm('🚨 FINAL WARNING: This action cannot be undone. All staff accounts will be permanently deleted!')) {
+        return;
+      }
+
+      const logEl = document.getElementById('log');
+      logEl.style.display = 'block';
+      logMessages = [];
+      
+      showStatus('🗑️ Clearing all users...', 'warning');
+      addLog('Starting user deletion process...');
+      
+      try {
+        // Delete all users except super admin
+        const { data, error } = await supabase
+          .from('edsa_users')
+          .delete()
+          .neq('id_number', '8804015196086') // Keep the super admin
+          .select();
+
+        if (error) {
+          addLog(`❌ Error deleting users: ${error.message}`);
+          showStatus('❌ Failed to clear users', 'error');
+        } else {
+          const deletedCount = data ? data.length : 0;
+          addLog(`✅ Deleted ${deletedCount} users successfully`);
+          addLog('🔒 Super admin account preserved');
+          showStatus(`✅ Cleared ${deletedCount} users. Super admin preserved.`, 'success');
+        }
+
+      } catch (error) {
+        addLog(`💥 Fatal error: ${error.message}`);
+        showStatus('❌ Failed to clear users', 'error');
+      }
+    };
+  </script>
+</body>
+</html>
