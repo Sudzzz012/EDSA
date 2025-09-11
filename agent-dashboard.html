@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Agent Dashboard - Erase Debt SA</title>
+  <link rel="icon" href="erase-debt-logo.png"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
     * {
@@ -192,21 +193,78 @@
     .logout-btn:hover {
       background: #c82333;
     }
+
+    .welcome-message {
+      background: rgba(255, 255, 255, 0.9);
+      color: #2c3e50;
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .agent-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .info-item {
+      background: #f8f9fa;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .info-label {
+      font-size: 0.9em;
+      color: #666;
+      margin-bottom: 5px;
+    }
+
+    .info-value {
+      font-weight: bold;
+      color: #2c3e50;
+    }
   </style>
 </head>
 <body>
   <header>
     <img src="erase-debt-logo.png" alt="Erase Debt SA Logo" />
-    <h1>Welcome Agent</h1>
+    <h1 id="welcomeTitle">Welcome Agent</h1>
     <button class="logout-btn" onclick="logout()">
       <i class="fas fa-sign-out-alt"></i> Logout
     </button>
   </header>
 
   <div class="container">
+    <div class="welcome-message" id="agentWelcome">
+      <h2 id="agentName">Loading...</h2>
+      <div class="agent-info">
+        <div class="info-item">
+          <div class="info-label">Agent ID</div>
+          <div class="info-value" id="agentId">-</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Branch</div>
+          <div class="info-value" id="agentBranch">-</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Role</div>
+          <div class="info-value" id="agentRole">-</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Status</div>
+          <div class="info-value" id="agentStatus">-</div>
+        </div>
+      </div>
+    </div>
+
     <nav>
       <a href="client-capture.html"><i class="fas fa-clipboard-list"></i> Capture Client</a>
-      <a href="clients-dashboard.html"><i class="fas fa-eye"></i> View My Sales</a>
+      <a href="agent-view-sales.html"><i class="fas fa-eye"></i> View My Sales</a>
     </nav>
 
     <div class="stats-grid">
@@ -227,8 +285,8 @@
       </div>
       <div class="stat-card">
         <i class="fas fa-trophy"></i>
-        <h3>Commission</h3>
-        <p id="totalCommission">R0</p>
+        <h3>Active Sales</h3>
+        <p id="activeSales">0</p>
       </div>
     </div>
 
@@ -248,103 +306,163 @@
     <i class="fas fa-arrow-left"></i> Back
   </button>
 
-  <script>
-    // Load agent data and stats
-    function loadDashboard() {
-      const currentAgent = JSON.parse(localStorage.getItem('currentAgent'));
-      if (!currentAgent) {
-        window.location.href = 'agent-login.html';
-        return;
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    const supabase = createClient(
+      "https://xzjunkpxvfdpuogoflzh.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ"
+    );
+
+    let currentAgent = null;
+
+    // Check authentication and load agent data
+    async function initializeDashboard() {
+      try {
+        const sess = JSON.parse(localStorage.getItem('edsa_staff_session') || 'null');
+        if (!sess || sess.role !== 'agent') { 
+          console.log('Invalid session or not an agent:', sess);
+          window.location.href = 'staff-login.html'; 
+          return; 
+        }
+
+        currentAgent = sess;
+
+        // Update UI with agent information
+        document.getElementById('welcomeTitle').textContent = `Welcome ${sess.name}`;
+        document.getElementById('agentName').textContent = `${sess.name} (Agent)`;
+        document.getElementById('agentId').textContent = sess.id_number || '-';
+        document.getElementById('agentBranch').textContent = sess.branch || '-';
+        document.getElementById('agentRole').textContent = sess.role.toUpperCase();
+        document.getElementById('agentStatus').textContent = 'ACTIVE';
+
+        // Load dashboard data
+        await loadDashboardStats();
+
+      } catch(e) {
+        console.error('Dashboard initialization error:', e);
+        window.location.href = 'staff-login.html';
       }
-
-      // Load all clients
-      const allClients = JSON.parse(localStorage.getItem('clients')) || [];
-      
-      // Filter clients for current agent
-      const agentClients = allClients.filter(client => client.agentId === currentAgent.id);
-      
-      // Calculate stats
-      const totalClients = agentClients.length;
-      const today = new Date().toDateString();
-      const todayClients = agentClients.filter(client => 
-        new Date(client.dateAdded).toDateString() === today
-      ).length;
-      
-      const currentMonth = new Date().getMonth();
-      const currentYear = new Date().getFullYear();
-      const monthlyClients = agentClients.filter(client => {
-        const clientDate = new Date(client.dateAdded);
-        return clientDate.getMonth() === currentMonth && clientDate.getFullYear() === currentYear;
-      }).length;
-      
-      const totalCommission = agentClients.reduce((sum, client) => {
-        return sum + (parseFloat(client.commission) || 0);
-      }, 0);
-
-      // Update display
-      document.getElementById('totalClients').textContent = totalClients;
-      document.getElementById('todayClients').textContent = todayClients;
-      document.getElementById('monthlyClients').textContent = monthlyClients;
-      document.getElementById('totalCommission').textContent = `R${totalCommission.toFixed(2)}`;
-
-      // Load recent activity
-      loadRecentActivity(agentClients);
     }
 
+    // Load dashboard statistics
+    async function loadDashboardStats() {
+      try {
+        if (!currentAgent) return;
+
+        // Load clients captured by this agent
+        const { data: agentClients, error } = await supabase
+          .from('edsa_client_database')
+          .select('*')
+          .eq('agent_name', currentAgent.name);
+
+        if (error) {
+          console.error('Error loading agent clients:', error);
+          return;
+        }
+
+        const clients = agentClients || [];
+        const totalClients = clients.length;
+        
+        // Calculate this month's clients
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+        const monthlyClients = clients.filter(client => {
+          const clientDate = new Date(client.created_at || client.sale_date);
+          return clientDate.getMonth() === currentMonth && clientDate.getFullYear() === currentYear;
+        }).length;
+
+        // Calculate today's clients
+        const today = new Date().toDateString();
+        const todayClients = clients.filter(client => {
+          const clientDate = new Date(client.created_at || client.sale_date);
+          return clientDate.toDateString() === today;
+        }).length;
+
+        // Count active sales
+        const activeSales = clients.filter(client => 
+          client.status === 'active' || client.status === 'pending_verification'
+        ).length;
+
+        // Update stats display
+        document.getElementById('totalClients').textContent = totalClients;
+        document.getElementById('monthlyClients').textContent = monthlyClients;
+        document.getElementById('todayClients').textContent = todayClients;
+        document.getElementById('activeSales').textContent = activeSales;
+
+        // Load recent activity
+        loadRecentActivity(clients);
+
+      } catch (error) {
+        console.error('Error loading dashboard stats:', error);
+      }
+    }
+
+    // Load recent activity
     function loadRecentActivity(clients) {
       const activityContainer = document.getElementById('recentActivity');
       
-      if (clients.length === 0) {
+      if (!clients || clients.length === 0) {
         activityContainer.innerHTML = `
           <div class="activity-item">
             <i class="fas fa-info-circle"></i>
-            <span>No clients captured yet</span>
+            <span>No clients captured yet. Start by capturing your first client!</span>
             <span class="activity-time">--</span>
           </div>
         `;
         return;
       }
 
-      // Sort clients by date (most recent first)
+      // Sort clients by date (most recent first) and take top 5
       const recentClients = clients
-        .sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded))
+        .sort((a, b) => new Date(b.created_at || b.sale_date) - new Date(a.created_at || a.sale_date))
         .slice(0, 5);
 
-      activityContainer.innerHTML = recentClients.map(client => `
-        <div class="activity-item">
-          <i class="fas fa-user-plus"></i>
-          <span>Captured client: ${client.firstName} ${client.lastName}</span>
-          <span class="activity-time">${formatDate(client.dateAdded)}</span>
-        </div>
-      `).join('');
+      const activityHTML = recentClients.map(client => {
+        const clientDate = new Date(client.created_at || client.sale_date);
+        const timeAgo = formatTimeAgo(clientDate);
+        
+        return `
+          <div class="activity-item">
+            <i class="fas fa-user-plus"></i>
+            <span>Captured: ${client.first_name} ${client.last_name} (${client.service_type})</span>
+            <span class="activity-time">${timeAgo}</span>
+          </div>
+        `;
+      }).join('');
+
+      activityContainer.innerHTML = activityHTML;
     }
 
-    function formatDate(dateString) {
-      const date = new Date(dateString);
+    function formatTimeAgo(date) {
       const now = new Date();
       const diffTime = Math.abs(now - date);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+      const diffMinutes = Math.floor(diffTime / (1000 * 60));
       
-      if (diffDays === 1) return 'Today';
-      if (diffDays === 2) return 'Yesterday';
-      if (diffDays <= 7) return `${diffDays - 1} days ago`;
+      if (diffMinutes < 60) return `${diffMinutes}m ago`;
+      if (diffHours < 24) return `${diffHours}h ago`;
+      if (diffDays === 1) return 'Yesterday';
+      if (diffDays < 7) return `${diffDays} days ago`;
       
       return date.toLocaleDateString();
     }
 
-    function logout() {
+    // Global functions
+    window.logout = function() {
       if (confirm('Are you sure you want to logout?')) {
-        localStorage.removeItem('currentAgent');
-        window.location.href = 'agent-login.html';
+        localStorage.removeItem('edsa_staff_session');
+        window.location.href = 'staff-login.html';
       }
-    }
+    };
 
-    function goBack() {
+    window.goBack = function() {
       window.history.back();
-    }
+    };
 
-    // Load dashboard on page load
-    window.addEventListener('load', loadDashboard);
+    // Initialize dashboard when page loads
+    initializeDashboard();
   </script>
 </body>
 </html>

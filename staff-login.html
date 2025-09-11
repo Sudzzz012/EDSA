@@ -484,6 +484,11 @@
               loginBtn.disabled = false;
               return;
             }
+          } else if (currentTier === 'agent') {
+            // For agents, show helpful message about account creation
+            showMessage(loginMessage, `No agent account found with ID number ${idNumber}. Please contact your administrator to create your account.`, 'error');
+            loginBtn.disabled = false;
+            return;
           } else {
             // Debug: Let's see what we actually found
             const { data: allUsers } = await supabase
@@ -518,7 +523,7 @@
         const isValidPassword = await bcrypt.compare(password, users.password_hash);
         
         if (!isValidPassword) {
-          showMessage(loginMessage, 'Invalid password. Please try again. (If this is your first login, you may need to reset your password)', 'error');
+          showMessage(loginMessage, 'Invalid password. Please try again or contact your administrator if this is your first login.', 'error');
           loginBtn.disabled = false;
           return;
         }
@@ -532,6 +537,7 @@
           email: users.email,
           role: users.role,
           branch: users.branch,
+          id_number: users.id_number,
           loginTime: new Date().toISOString()
         };
         
