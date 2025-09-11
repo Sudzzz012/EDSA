@@ -229,10 +229,6 @@
 
             <div class="form-row">
               <div class="form-group">
-                <label for="address">Physical Address</label>
-                <textarea id="address" name="address" rows="3"></textarea>
-              </div>
-              <div class="form-group">
                 <label for="employer">Employer</label>
                 <input type="text" id="employer" name="employer">
               </div>
@@ -409,7 +405,6 @@
           client_id_number: parseInt(idNumber),
           email: formData.get('email').toLowerCase(),
           phone: formData.get('phone'),
-          address: formData.get('address'),
           employer: formData.get('employer'),
           service_type: formData.get('service_type'),
           total_amount: parseFloat(formData.get('total_amount')),
