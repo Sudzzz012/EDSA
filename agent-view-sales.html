@@ -328,7 +328,7 @@
         const { data: clients, error } = await supabase
           .from('edsa_client_database')
           .select('*')
-          .eq('agent_name', currentAgent.name)
+          .ilike('agent_name', `%${currentAgent.name}%`)
           .order('created_at', { ascending: false });
 
         if (error) {
@@ -420,7 +420,7 @@
       if (searchTerm) {
         filtered = filtered.filter(client =>
           `${client.first_name} ${client.last_name}`.toLowerCase().includes(searchTerm) ||
-          client.client_id_number.toString().includes(searchTerm) ||
+          (client.client_id_number && client.client_id_number.toString().includes(searchTerm)) ||
           (client.email && client.email.toLowerCase().includes(searchTerm)) ||
           (client.sale_reference && client.sale_reference.toLowerCase().includes(searchTerm))
         );

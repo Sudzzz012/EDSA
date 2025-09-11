@@ -354,7 +354,7 @@
         const { data: agentClients, error } = await supabase
           .from('edsa_client_database')
           .select('*')
-          .ilike('agent_name', `%${currentAgent.name}%`);
+          .eq('agent_name', currentAgent.name);
 
         if (error) {
           console.error('Error loading agent clients:', error);
@@ -385,14 +385,14 @@
       const currentMonth = new Date().getMonth();
       const currentYear = new Date().getFullYear();
       const monthlyClients = clients.filter(client => {
-        const clientDate = new Date(client.created_at || client.sale_date);
+        const clientDate = new Date(client.created_at);
         return clientDate.getMonth() === currentMonth && clientDate.getFullYear() === currentYear;
       }).length;
 
       // Calculate today's clients
       const today = new Date().toDateString();
       const todayClients = clients.filter(client => {
-        const clientDate = new Date(client.created_at || client.sale_date);
+        const clientDate = new Date(client.created_at);
         return clientDate.toDateString() === today;
       }).length;
 
@@ -424,11 +424,11 @@
 
       // Sort clients by date (most recent first) and take top 5
       const recentClients = clients
-        .sort((a, b) => new Date(b.created_at || b.sale_date) - new Date(a.created_at || a.sale_date))
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
         .slice(0, 5);
 
       const activityHTML = recentClients.map(client => {
-        const clientDate = new Date(client.created_at || client.sale_date);
+        const clientDate = new Date(client.created_at);
         const timeAgo = formatTimeAgo(clientDate);
         
         return `

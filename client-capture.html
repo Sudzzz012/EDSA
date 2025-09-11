@@ -223,14 +223,34 @@
               </div>
               <div class="form-group">
                 <label for="phone">Phone Number *</label>
-                <input type="tel" id="phone" name="phone" required>
+                <input type="tel" id="phone" name="phone" required pattern="[0-9]{10,15}">
               </div>
             </div>
 
             <div class="form-row">
               <div class="form-group">
-                <label for="employer">Employer</label>
-                <input type="text" id="employer" name="employer">
+                <label for="gender">Gender</label>
+                <select id="gender" name="gender">
+                  <option value="">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="province">Province</label>
+                <select id="province" name="province">
+                  <option value="">Select Province</option>
+                  <option value="Western Cape">Western Cape</option>
+                  <option value="Eastern Cape">Eastern Cape</option>
+                  <option value="Northern Cape">Northern Cape</option>
+                  <option value="Free State">Free State</option>
+                  <option value="KwaZulu-Natal">KwaZulu-Natal</option>
+                  <option value="North West">North West</option>
+                  <option value="Gauteng">Gauteng</option>
+                  <option value="Mpumalanga">Mpumalanga</option>
+                  <option value="Limpopo">Limpopo</option>
+                </select>
               </div>
             </div>
           </div>
@@ -257,28 +277,33 @@
             <div class="form-row">
               <div class="form-group">
                 <label for="totalAmount">Total Amount *</label>
-                <input type="number" id="totalAmount" name="total_amount" required min="0" step="0.01">
+                <input type="number" id="totalAmount" name="total_amount" required min="0" step="1">
               </div>
               <div class="form-group">
                 <label for="monthlyPayment">Monthly Payment *</label>
-                <input type="number" id="monthlyPayment" name="monthly_payment" required min="0" step="0.01">
+                <input type="number" id="monthlyPayment" name="monthly_payment" required min="0" step="1">
               </div>
             </div>
 
             <div class="form-row">
               <div class="form-group">
                 <label for="salaryDate">Salary Date</label>
-                <input type="date" id="salaryDate" name="salary_date">
+                <input type="text" id="salaryDate" name="salary_date" placeholder="e.g., 25th of each month">
               </div>
               <div class="form-group">
-                <label for="status">Status</label>
-                <select id="status" name="status">
-                  <option value="pending_verification">Pending Verification</option>
-                  <option value="active">Active</option>
-                  <option value="completed">Completed</option>
-                  <option value="cancelled">Cancelled</option>
-                </select>
+                <label for="trackingDate">Tracking Date</label>
+                <input type="text" id="trackingDate" name="tracking_date" placeholder="e.g., 30th of each month">
               </div>
+            </div>
+
+            <div class="form-group">
+              <label for="status">Status</label>
+              <select id="status" name="status">
+                <option value="pending_verification">Pending Verification</option>
+                <option value="active">Active</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
             </div>
           </div>
         </div>
@@ -289,8 +314,8 @@
           
           <div class="form-row">
             <div class="form-group">
-              <label for="bankName">Bank Name</label>
-              <select id="bankName" name="bank_name">
+              <label for="bank">Bank Name</label>
+              <select id="bank" name="bank">
                 <option value="">Select Bank</option>
                 <option value="ABSA">ABSA</option>
                 <option value="Standard Bank">Standard Bank</option>
@@ -305,9 +330,25 @@
               </select>
             </div>
             <div class="form-group">
-              <label for="accountNumber">Account Number</label>
-              <input type="text" id="accountNumber" name="account_number">
+              <label for="accountType">Account Type</label>
+              <select id="accountType" name="account_type">
+                <option value="">Select Account Type</option>
+                <option value="Savings">Savings</option>
+                <option value="Cheque">Cheque</option>
+                <option value="Current">Current</option>
+                <option value="Transmission">Transmission</option>
+              </select>
             </div>
+          </div>
+
+          <div class="form-group">
+            <label for="accountNumber">Account Number</label>
+            <input type="text" id="accountNumber" name="account_number" pattern="[0-9]{8,12}">
+          </div>
+
+          <div class="form-group">
+            <label for="nupayReference">NuPay Reference</label>
+            <input type="text" id="nupayReference" name="nupay_reference" placeholder="Payment reference number">
           </div>
         </div>
 
@@ -387,6 +428,12 @@
           throw new Error('Please enter a valid email address');
         }
 
+        // Validate phone number
+        const phone = formData.get('phone');
+        if (!/^\d{10,15}$/.test(phone)) {
+          throw new Error('Phone number must be 10-15 digits');
+        }
+
         // Check for duplicate ID number
         const { data: existingClient } = await supabase
           .from('edsa_client_database')
@@ -398,30 +445,43 @@
           throw new Error('A client with this ID number already exists');
         }
 
-        // Prepare client data
+        // Generate unique ID and sale reference
+        const uniqueId = `client_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const saleReference = generateSaleReference();
+
+        // Prepare client data matching exact database schema
         const clientData = {
+          id: uniqueId,
+          branch_name: currentAgent.branch,
+          agent_name: currentAgent.name,
+          sale_date: new Date().toISOString().split('T')[0],
+          sale_reference: saleReference,
+          client_id_number: parseInt(idNumber),
           first_name: formData.get('first_name'),
           last_name: formData.get('last_name'),
-          client_id_number: parseInt(idNumber),
           email: formData.get('email').toLowerCase(),
-          phone: formData.get('phone'),
-          employer: formData.get('employer'),
+          phone: parseInt(formData.get('phone')),
+          gender: formData.get('gender') || null,
+          province: formData.get('province') || null,
           service_type: formData.get('service_type'),
-          total_amount: parseFloat(formData.get('total_amount')),
-          monthly_payment: parseFloat(formData.get('monthly_payment')),
           payment_plan_months: Math.ceil(parseFloat(formData.get('total_amount')) / parseFloat(formData.get('monthly_payment'))),
-          salary_date: formData.get('salary_date'),
-          bank_name: formData.get('bank_name'),
-          account_number: formData.get('account_number'),
+          bank: formData.get('bank') || null,
+          account_type: formData.get('account_type') || null,
+          account_number: formData.get('account_number') ? parseInt(formData.get('account_number')) : null,
+          salary_date: formData.get('salary_date') || null,
+          tracking_date: formData.get('tracking_date') || null,
+          nupay_reference: formData.get('nupay_reference') || null,
+          total_amount: parseInt(formData.get('total_amount')),
+          monthly_payment: parseInt(formData.get('monthly_payment')),
           status: formData.get('status') || 'pending_verification',
-          agent_name: currentAgent.name,
-          branch_name: currentAgent.branch,
-          sale_reference: generateSaleReference(),
-          sale_date: new Date().toISOString().split('T')[0],
+          audit_log: [],
           created_at: new Date().toISOString(),
-          total_no_payments_made: 0,
-          total_no_missed_payments: 0
+          updated_at: new Date().toISOString(),
+          total_no_payments_made: "0",
+          total_no_missed_payments: "0"
         };
+
+        console.log('Inserting client data:', clientData);
 
         // Insert into database
         const { data, error } = await supabase
@@ -431,18 +491,21 @@
           .single();
 
         if (error) {
+          console.error('Database error:', error);
           throw new Error(`Database error: ${error.message}`);
         }
+
+        console.log('Client created successfully:', data);
 
         showMessage(`Client ${clientData.first_name} ${clientData.last_name} captured successfully! Reference: ${clientData.sale_reference}`, 'success');
         
         // Reset form
         e.target.reset();
 
-        // Redirect to dashboard after 2 seconds
+        // Redirect to dashboard after 3 seconds
         setTimeout(() => {
           window.location.href = 'agent-dashboard.html';
-        }, 2000);
+        }, 3000);
 
       } catch (error) {
         console.error('Error capturing client:', error);
