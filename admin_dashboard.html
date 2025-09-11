@@ -200,6 +200,224 @@
       color: #666;
     }
 
+    /* Client Detail Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 800px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid #f0f0f0;
+      padding-bottom: 1rem;
+    }
+
+    .modal-title {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--primary);
+      margin: 0;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 2rem;
+      cursor: pointer;
+      color: #666;
+      padding: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .close-btn:hover {
+      background: #f0f0f0;
+    }
+
+    .client-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    .detail-section {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .detail-section h3 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .detail-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .detail-item:last-child {
+      border-bottom: none;
+    }
+
+    .detail-label {
+      font-weight: 600;
+      color: #495057;
+    }
+
+    .detail-value {
+      color: #212529;
+      text-align: right;
+      flex: 1;
+      margin-left: 1rem;
+      word-break: break-word;
+    }
+
+    .status-update-section {
+      grid-column: 1 / -1;
+      background: #fff3cd;
+      border: 2px solid #ffc107;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .status-update-section h3 {
+      color: #856404;
+      margin-bottom: 1rem;
+    }
+
+    .status-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #218838;
+    }
+
+    .btn-warning {
+      background: var(--warning);
+      color: white;
+    }
+
+    .btn-warning:hover {
+      background: #e0a800;
+    }
+
+    .email-section {
+      grid-column: 1 / -1;
+      background: #e7f3ff;
+      border: 2px solid var(--info);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .email-section h3 {
+      color: var(--info);
+      margin-bottom: 1rem;
+    }
+
+    .email-templates {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .email-template {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .email-template:hover {
+      background: #f8f9fa;
+      border-color: var(--info);
+    }
+
+    .email-template.selected {
+      background: #f0f8ff;
+      border-color: var(--info);
+      border-width: 2px;
+    }
+
+    .message {
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .message.success {
+      background: rgba(40, 167, 69, 0.1);
+      color: var(--success);
+      border: 1px solid rgba(40, 167, 69, 0.2);
+    }
+
+    .message.error {
+      background: rgba(220, 53, 69, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(220, 53, 69, 0.2);
+    }
+
+    .client-row {
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .client-row:hover {
+      background-color: #f8f9fa;
+    }
+
     @media (max-width: 768px) {
       .header {
         flex-direction: column;
@@ -219,6 +437,14 @@
 
       .stats-grid {
         grid-template-columns: repeat(2, 1fr);
+      }
+
+      .client-details {
+        grid-template-columns: 1fr;
+      }
+
+      .email-templates {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -288,226 +514,3 @@
           <option value="Service 7 - RN Other Status / NL Removal">Service 7</option>
         </select>
       </div>
-
-      <div id="loadingMessage" class="loading">
-        <i class="fas fa-spinner fa-spin"></i> Loading clients...
-      </div>
-
-      <div class="clients-table" id="clientsTable" style="display: none;">
-        <table>
-          <thead>
-            <tr>
-              <th>Sale Reference</th>
-              <th>Client Name</th>
-              <th>ID Number</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Service Type</th>
-              <th>Branch</th>
-              <th>Agent</th>
-              <th>Total Amount</th>
-              <th>Monthly Payment</th>
-              <th>Payments Made</th>
-              <th>Status</th>
-              <th>Sale Date</th>
-            </tr>
-          </thead>
-          <tbody id="clientsBody">
-            <!-- Clients will be loaded here -->
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-
-    const supabase = createClient(
-      "https://xzjunkpxvfdpuogoflzh.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ"
-    );
-
-    let allClients = [];
-    let currentUser = null;
-
-    // Check authentication
-    function checkAuth() {
-      try {
-        const sess = JSON.parse(localStorage.getItem('edsa_staff_session') || 'null');
-        if (!sess || !['admin', 'admin_manager', 'super'].includes(sess.role)) { 
-          window.location.href = 'staff-login.html'; 
-          return false; 
-        }
-        currentUser = sess;
-        
-        // Update welcome message
-        const h1 = document.querySelector('h1');
-        if (h1) {
-          h1.innerHTML = `<i class="fas fa-users-cog"></i> Welcome ${sess.name}`;
-        }
-        
-        return true;
-      } catch(e) {
-        console.error(e);
-        window.location.href = 'staff-login.html';
-        return false;
-      }
-    }
-
-    // Initialize page
-    if (!checkAuth()) {
-      // Redirect will happen in checkAuth
-    } else {
-      loadClients();
-    }
-
-    async function loadClients() {
-      try {
-        console.log('Loading clients for user:', currentUser);
-        
-        // Load all clients (admins can see all clients across branches)
-        const { data: clients, error } = await supabase
-          .from('edsa_client_database')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (error) {
-          console.error('Error loading clients:', error);
-          document.getElementById('loadingMessage').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error loading clients: ' + error.message;
-          return;
-        }
-
-        console.log('Loaded clients:', clients?.length || 0);
-        allClients = clients || [];
-        
-        updateStats();
-        populateBranchFilter();
-        displayClients(allClients);
-
-        document.getElementById('loadingMessage').style.display = 'none';
-        document.getElementById('clientsTable').style.display = 'block';
-
-      } catch (error) {
-        console.error('Error:', error);
-        document.getElementById('loadingMessage').innerHTML = '<i class="fas fa-exclamation-triangle"></i> An unexpected error occurred: ' + error.message;
-      }
-    }
-
-    function updateStats() {
-      const total = allClients.length;
-      const active = allClients.filter(c => c.status === 'active').length;
-      
-      // This month's clients
-      const currentMonth = new Date().getMonth();
-      const currentYear = new Date().getFullYear();
-      const monthlyClients = allClients.filter(client => {
-        const clientDate = new Date(client.created_at || client.sale_date);
-        return clientDate.getMonth() === currentMonth && clientDate.getFullYear() === currentYear;
-      }).length;
-
-      // Total value
-      const totalValue = allClients.reduce((sum, client) => sum + (parseInt(client.total_amount) || 0), 0);
-
-      document.getElementById('totalClients').textContent = total;
-      document.getElementById('activeClients').textContent = active;
-      document.getElementById('monthlyClients').textContent = monthlyClients;
-      document.getElementById('totalValue').textContent = `R ${totalValue.toLocaleString()}`;
-    }
-
-    function populateBranchFilter() {
-      const branches = [...new Set(allClients.map(c => c.branch_name).filter(Boolean))];
-      const branchFilter = document.getElementById('branchFilter');
-      
-      branches.forEach(branch => {
-        const option = document.createElement('option');
-        option.value = branch;
-        option.textContent = branch;
-        branchFilter.appendChild(option);
-      });
-    }
-
-    function displayClients(clients) {
-      const tbody = document.getElementById('clientsBody');
-      
-      if (!clients || clients.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="13" class="no-data"><i class="fas fa-inbox"></i><br>No clients found</td></tr>';
-        return;
-      }
-
-      const rows = clients.map(client => {
-        const statusClass = `status-${client.status || 'pending_verification'}`;
-        const saleDate = client.sale_date || 
-                        (client.created_at ? new Date(client.created_at).toLocaleDateString() : 'N/A');
-        
-        return `
-          <tr>
-            <td><strong>${client.sale_reference || 'N/A'}</strong></td>
-            <td>${client.first_name || ''} ${client.last_name || ''}</td>
-            <td>${client.client_id_number || 'N/A'}</td>
-            <td>${client.email || 'N/A'}</td>
-            <td>${client.phone || 'N/A'}</td>
-            <td style="font-size: 0.9em;">${client.service_type || 'N/A'}</td>
-            <td>${client.branch_name || 'N/A'}</td>
-            <td>${client.agent_name || 'N/A'}</td>
-            <td><strong>R ${(parseInt(client.total_amount) || 0).toLocaleString()}</strong></td>
-            <td>R ${(parseInt(client.monthly_payment) || 0).toLocaleString()}</td>
-            <td>${client.total_no_payments_made || '0'}</td>
-            <td><span class="status-badge ${statusClass}">${(client.status || 'pending').replace('_', ' ')}</span></td>
-            <td>${saleDate}</td>
-          </tr>
-        `;
-      }).join('');
-
-      tbody.innerHTML = rows;
-    }
-
-    // Search and filter functionality
-    document.getElementById('searchBox').addEventListener('input', filterClients);
-    document.getElementById('branchFilter').addEventListener('change', filterClients);
-    document.getElementById('statusFilter').addEventListener('change', filterClients);
-    document.getElementById('serviceFilter').addEventListener('change', filterClients);
-
-    function filterClients() {
-      const searchTerm = document.getElementById('searchBox').value.toLowerCase();
-      const branchFilter = document.getElementById('branchFilter').value;
-      const statusFilter = document.getElementById('statusFilter').value;
-      const serviceFilter = document.getElementById('serviceFilter').value;
-
-      let filtered = allClients;
-
-      if (searchTerm) {
-        filtered = filtered.filter(client =>
-          `${client.first_name || ''} ${client.last_name || ''}`.toLowerCase().includes(searchTerm) ||
-          (client.client_id_number && client.client_id_number.toString().includes(searchTerm)) ||
-          (client.email && client.email.toLowerCase().includes(searchTerm)) ||
-          (client.service_type && client.service_type.toLowerCase().includes(searchTerm)) ||
-          (client.sale_reference && client.sale_reference.toLowerCase().includes(searchTerm))
-        );
-      }
-
-      if (branchFilter) {
-        filtered = filtered.filter(client => client.branch_name === branchFilter);
-      }
-
-      if (statusFilter) {
-        filtered = filtered.filter(client => client.status === statusFilter);
-      }
-
-      if (serviceFilter) {
-        filtered = filtered.filter(client => client.service_type === serviceFilter);
-      }
-
-      displayClients(filtered);
-    }
-
-    // Logout function
-    window.logout = function() {
-      if (confirm('Are you sure you want to logout?')) {
-        localStorage.removeItem('edsa_staff_session');
-        window.location.href = 'staff-login.html';
-      }
-    };
-  </script>
-</body>
-</html>
