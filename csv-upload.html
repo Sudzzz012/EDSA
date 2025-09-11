@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CSV Upload - Erase Debt SA</title>
+  <link rel="icon" href="erase-debt-logo.png"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2970ba;
+      --primary-dark: #003865;
+      --secondary: #005c97;
+      --success: #28a745;
+      --warning: #ffc107;
+      --danger: #dc3545;
+      --info: #17a2b8;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+      margin: 0;
+      padding: 20px;
+      color: #333;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(10px);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .btn-secondary { background: #6c757d; color: white; }
+    .btn-secondary:hover { background: #545b62; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover { background: #218838; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover { background: #c82333; }
+
+    .upload-card {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .upload-area {
+      border: 3px dashed #ddd;
+      border-radius: 12px;
+      padding: 3rem 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .upload-area.dragover {
+      border-color: var(--primary);
+      background-color: rgba(41, 112, 186, 0.1);
+    }
+
+    .upload-area input[type="file"] {
+      display: none;
+    }
+
+    .upload-icon {
+      font-size: 4rem;
+      color: #ccc;
+      margin-bottom: 1rem;
+    }
+
+    .upload-text {
+      font-size: 1.2rem;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+
+    .upload-subtext {
+      color: #999;
+      font-size: 0.9rem;
+    }
+
+    .template-section {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 20px;
+      background: #f0f0f0;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 1rem 0;
+      display: none;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--success);
+      width: 0%;
+      transition: width 0.3s;
+    }
+
+    .results {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      display: none;
+    }
+
+    .message {
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .message.success {
+      background: rgba(40, 167, 69, 0.1);
+      color: var(--success);
+      border: 1px solid rgba(40, 167, 69, 0.2);
+    }
+
+    .message.error {
+      background: rgba(220, 53, 69, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(220, 53, 69, 0.2);
+    }
+
+    .message.warning {
+      background: rgba(255, 193, 7, 0.1);
+      color: #856404;
+      border: 1px solid rgba(255, 193, 7, 0.2);
+    }
+
+    .csv-preview {
+      overflow-x: auto;
+      margin-top: 2rem;
+    }
+
+    .csv-preview table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .csv-preview th,
+    .csv-preview td {
+      padding: 0.5rem;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+
+    .csv-preview th {
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+    }
+
+    .csv-preview tbody tr:nth-child(even) {
+      background: #f8f9fa;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+
+    .stat-card {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+      border-left: 4px solid var(--primary);
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+
+      .upload-area {
+        padding: 2rem 1rem;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><i class="fas fa-upload"></i> CSV Import</h1>
+      <a href="super-dashboard.html" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+      </a>
+    </div>
+
+    <!-- Template Download Section -->
+    <div class="template-section">
+      <h2><i class="fas fa-download"></i> Download CSV Template</h2>
+      <p>Download the CSV template below to ensure your data is formatted correctly for import.</p>
+      <button class="btn btn-primary" onclick="downloadTemplate()">
+        <i class="fas fa-download"></i> Download Template
+      </button>
+      
+      <div style="margin-top: 2rem;">
+        <h3>Required Columns:</h3>
+        <ul>
+          <li><strong>first_name</strong> - Client's first name</li>
+          <li><strong>last_name</strong> - Client's last name</li>
+          <li><strong>client_id_number</strong> - ID number (13 digits)</li>
+          <li><strong>email</strong> - Email address</li>
+          <li><strong>phone</strong> - Phone number</li>
+          <li><strong>service_type</strong> - Type of service</li>
+          <li><strong>total_amount</strong> - Total amount (numeric)</li>
+          <li><strong>monthly_payment</strong> - Monthly payment (numeric)</li>
+          <li><strong>agent_name</strong> - Agent name</li>
+          <li><strong>branch_name</strong> - Branch name</li>
+          <li><strong>status</strong> - Client status</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Upload Section -->
+    <div class="upload-card">
+      <h2><i class="fas fa-file-csv"></i> Upload CSV File</h2>
+      <div class="upload-area" onclick="document.getElementById('csvFile').click()">
+        <div class="upload-icon">
+          <i class="fas fa-cloud-upload-alt"></i>
+        </div>
+        <div class="upload-text">Click here to select CSV file</div>
+        <div class="upload-subtext">or drag and drop your file here</div>
+        <input type="file" id="csvFile" accept=".csv" onchange="handleFileSelect(event)">
+      </div>
+
+      <div class="progress-bar" id="progressBar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+
+      <div id="fileInfo" style="display: none;">
+        <h3>Selected File:</h3>
+        <p id="fileName"></p>
+        <button class="btn btn-success" onclick="processCSV()">
+          <i class="fas fa-cog"></i> Process CSV
+        </button>
+        <button class="btn btn-danger" onclick="clearFile()">
+          <i class="fas fa-times"></i> Clear
+        </button>
+      </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="results" id="results">
+      <h2><i class="fas fa-chart-bar"></i> Import Results</h2>
+      <div id="importStats" class="stats"></div>
+      <div id="importMessages"></div>
+      <div id="csvPreview" class="csv-preview"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    const supabase = createClient(
+      "https://xzjunkpxvfdpuogoflzh.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ"
+    );
+
+    let selectedFile = null;
+    let parsedData = [];
+
+    // Check authentication
+    (function(){
+      try {
+        const sess = JSON.parse(localStorage.getItem('edsa_staff_session') || 'null');
+        if (!sess || !['admin', 'admin_manager', 'super'].includes(sess.role)) { 
+          window.location.href = 'staff-login.html'; 
+          return; 
+        }
+      } catch(e) {
+        console.error(e);
+        window.location.href = 'staff-login.html';
+      }
+    })();
+
+    // Download CSV template
+    window.downloadTemplate = function() {
+      const templateData = [
+        ['first_name', 'last_name', 'client_id_number', 'email', 'phone', 'service_type', 'total_amount', 'monthly_payment', 'agent_name', 'branch_name', 'status'],
+        ['John', 'Doe', '1234567890123', 'john.doe@example.com', '0123456789', 'Service 1 - DRR C and D3 (Still Paying the DC)', '25000', '1250', 'Agent Name', 'Erase Debt SA - ADMIN', 'active'],
+        ['Jane', 'Smith', '9876543210987', 'jane.smith@example.com', '0987654321', 'Service 2 - D4 BELOW 12M', '35000', '1750', 'Agent Name', 'Erase Debt SA - MP', 'pending']
+      ];
+
+      const csvContent = templateData.map(row => row.join(',')).join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'edsa_client_template.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    // Handle drag and drop
+    const uploadArea = document.querySelector('.upload-area');
+    
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      uploadArea.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      uploadArea.addEventListener(eventName, () => uploadArea.classList.add('dragover'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      uploadArea.addEventListener(eventName, () => uploadArea.classList.remove('dragover'), false);
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        handleFile(files[0]);
+      }
+    });
+
+    // Handle file selection
+    window.handleFileSelect = function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        handleFile(file);
+      }
+    };
+
+    function handleFile(file) {
+      if (!file.name.toLowerCase().endsWith('.csv')) {
+        showMessage('Please select a CSV file.', 'error');
+        return;
+      }
+
+      selectedFile = file;
+      document.getElementById('fileName').textContent = `${file.name} (${formatFileSize(file.size)})`;
+      document.getElementById('fileInfo').style.display = 'block';
+      document.getElementById('results').style.display = 'none';
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    // Clear selected file
+    window.clearFile = function() {
+      selectedFile = null;
+      parsedData = [];
+      document.getElementById('csvFile').value = '';
+      document.getElementById('fileInfo').style.display = 'none';
+      document.getElementById('results').style.display = 'none';
+      document.getElementById('progressBar').style.display = 'none';
+    };
+
+    // Process CSV file
+    window.processCSV = async function() {
+      if (!selectedFile) return;
+
+      try {
+        showProgress(0);
+        document.getElementById('progressBar').style.display = 'block';
+
+        const text = await selectedFile.text();
+        const lines = text.split('\n').filter(line => line.trim());
+        
+        if (lines.length < 2) {
+          throw new Error('CSV file must contain at least a header row and one data row.');
+        }
+
+        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+        const requiredColumns = ['first_name', 'last_name', 'client_id_number', 'email', 'service_type', 'agent_name', 'branch_name'];
+        
+        const missingColumns = requiredColumns.filter(col => !headers.includes(col));
+        if (missingColumns.length > 0) {
+          throw new Error(`Missing required columns: ${missingColumns.join(', ')}`);
+        }
+
+        showProgress(25);
+
+        // Parse data rows
+        parsedData = [];
+        const errors = [];
+        
+        for (let i = 1; i < lines.length; i++) {
+          try {
+            const values = parseCSVLine(lines[i]);
+            if (values.length !== headers.length) {
+              errors.push(`Row ${i + 1}: Column count mismatch`);
+              continue;
+            }
+
+            const row = {};
+            headers.forEach((header, index) => {
+              row[header] = values[index]?.trim() || '';
+            });
+
+            // Validate required fields
+            const missing = requiredColumns.filter(col => !row[col]);
+            if (missing.length > 0) {
+              errors.push(`Row ${i + 1}: Missing values for ${missing.join(', ')}`);
+              continue;
+            }
+
+            // Validate ID number
+            if (!/^\d{13}$/.test(row.client_id_number)) {
+              errors.push(`Row ${i + 1}: Invalid ID number format`);
+              continue;
+            }
+
+            // Validate email
+            if (!/\S+@\S+\.\S+/.test(row.email)) {
+              errors.push(`Row ${i + 1}: Invalid email format`);
+              continue;
+            }
+
+            // Convert numeric fields
+            row.total_amount = parseFloat(row.total_amount) || 0;
+            row.monthly_payment = parseFloat(row.monthly_payment) || 0;
+            row.payment_plan_months = Math.ceil(row.total_amount / Math.max(row.monthly_payment, 1));
+            row.created_at = new Date().toISOString();
+            row.sale_date = new Date().toISOString().split('T')[0];
+            row.status = row.status || 'active';
+
+            parsedData.push(row);
+          } catch (error) {
+            errors.push(`Row ${i + 1}: ${error.message}`);
+          }
+        }
+
+        showProgress(50);
+
+        if (parsedData.length === 0) {
+          throw new Error('No valid data rows found after validation.');
+        }
+
+        // Import to database
+        const batchSize = 50;
+        let imported = 0;
+        const importErrors = [];
+
+        for (let i = 0; i < parsedData.length; i += batchSize) {
+          const batch = parsedData.slice(i, i + batchSize);
+          
+          try {
+            const { data, error } = await supabase
+              .from('edsa_client_database')
+              .insert(batch)
+              .select();
+
+            if (error) {
+              importErrors.push(`Batch ${Math.floor(i/batchSize) + 1}: ${error.message}`);
+            } else {
+              imported += data.length;
+            }
+          } catch (error) {
+            importErrors.push(`Batch ${Math.floor(i/batchSize) + 1}: ${error.message}`);
+          }
+
+          showProgress(50 + (i / parsedData.length) * 50);
+        }
+
+        showProgress(100);
+
+        // Display results
+        displayResults(parsedData.length, imported, errors, importErrors);
+
+      } catch (error) {
+        showMessage(error.message, 'error');
+        document.getElementById('progressBar').style.display = 'none';
+      }
+    };
+
+    function parseCSVLine(line) {
+      const result = [];
+      let current = '';
+      let inQuotes = false;
+      
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        
+        if (char === '"' && (i === 0 || line[i-1] === ',')) {
+          inQuotes = true;
+        } else if (char === '"' && inQuotes && (i === line.length - 1 || line[i+1] === ',')) {
+          inQuotes = false;
+        } else if (char === ',' && !inQuotes) {
+          result.push(current.trim());
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      
+      result.push(current.trim());
+      return result;
+    }
+
+    function showProgress(percent) {
+      document.getElementById('progressFill').style.width = percent + '%';
+    }
+
+    function displayResults(total, imported, validationErrors, importErrors) {
+      const statsHtml = `
+        <div class="stat-card">
+          <div class="stat-number">${total}</div>
+          <div class="stat-label">Total Rows</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">${imported}</div>
+          <div class="stat-label">Successfully Imported</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">${validationErrors.length}</div>
+          <div class="stat-label">Validation Errors</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">${importErrors.length}</div>
+          <div class="stat-label">Import Errors</div>
+        </div>
+      `;
+
+      document.getElementById('importStats').innerHTML = statsHtml;
+
+      let messagesHtml = '';
+      if (imported > 0) {
+        messagesHtml += `<div class="message success"><i class="fas fa-check-circle"></i>Successfully imported ${imported} client records!</div>`;
+      }
+
+      if (validationErrors.length > 0) {
+        messagesHtml += `<div class="message warning"><i class="fas fa-exclamation-triangle"></i>Validation errors found:</div>`;
+        messagesHtml += `<ul>${validationErrors.slice(0, 10).map(error => `<li>${error}</li>`).join('')}</ul>`;
+        if (validationErrors.length > 10) {
+          messagesHtml += `<p>... and ${validationErrors.length - 10} more errors</p>`;
+        }
+      }
+
+      if (importErrors.length > 0) {
+        messagesHtml += `<div class="message error"><i class="fas fa-exclamation-circle"></i>Import errors:</div>`;
+        messagesHtml += `<ul>${importErrors.map(error => `<li>${error}</li>`).join('')}</ul>`;
+      }
+
+      document.getElementById('importMessages').innerHTML = messagesHtml;
+      document.getElementById('results').style.display = 'block';
+    }
+
+    function showMessage(message, type) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${type}`;
+      messageDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'exclamation-circle'}"></i>${message}`;
+      
+      document.body.appendChild(messageDiv);
+      setTimeout(() => {
+        messageDiv.remove();
+      }, 5000);
+    }
+  </script>
+</body>
+</html>
