@@ -4,54 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
-      
-      if (dataToExport.length === 0 || dataToExport[0].cells[0].textContent.includes('No clients found')) {
-        alert('No data to export.');
-        return;
-      }
-
-      // Create CSV content
-      let csvContent = 'ID Number,Name,Email,Phone,Service Type,Branch,Agent,Total Amount,Monthly Payment,Payments Made,Status,Sale Date,Account Number,Bank Name\n';
-      
-      allClients.forEach(client => {
-        const row = [
-          client.client_id_number || '',
-          `"${(client.first_name || '') + ' ' + (client.last_name || '')}"`,
-          client.email || '',
-          client.phone || '',
-          `"${client.service_type || ''}"`,
-          `"${client.branch_name || ''}"`,
-          `"${client.agent_name || ''}"`,
-          client.total_amount || 0,
-          client.monthly_payment || 0,
-          client.total_no_payments_made || 0,
-          client.status || '',
-          client.sale_date ? new Date(client.sale_date).toLocaleDateString() : '',
-          client.account_number || '',
-          `"${client.bank_name || ''}"`
-        ].join(',');
-        csvContent += row + '\n';
-      });
-
-      // Download file
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', `EDSA_Clients_Export_${new Date().toISOString().split('T')[0]}.csv`);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      alert('Client data exported successfully!');
-    }
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.functions.supabase.co;">
   <title>Staff Login - Erase Debt SA</title>
   <link rel="icon" href="erase-debt-logo.png"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -403,7 +355,14 @@
   </div>
 
   <!-- Password Reset Modal -->
-  <div id="resetModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+  <div id="resetModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 2rem; border-radius: 8px; max-width: 400px; width: 90%;">
+      <h3>Password Reset</h3>
+      <p>Please contact your administrator to reset your password.</p>
+      <button onclick="closeResetModal()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Close</button>
+    </div>
+  </div>
+  </div>
 
   <script type="module" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"></script>
   <script type="module">
@@ -594,12 +553,13 @@
 
     window.closeResetModal = function() {
       document.getElementById('resetModal').style.display = 'none';
-      document.getElementById('resetModal').style.alignItems = '';
-      document.getElementById('resetModal').style.justifyContent = '';
+    }
 
     function showMessage(element, message, type) {
       element.innerHTML = `<div class="message ${type}">${message}</div>`;
     }
   </script>
+</body>
+</html>
 </body>
 </html>
