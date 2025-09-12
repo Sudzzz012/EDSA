@@ -688,9 +688,13 @@
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ"
     );
 
+    const SUPABASE_URL = "https://xzjunkpxvfdpuogoflzh.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ";
+
     let allClients = [];
     let currentClient = null;
     let selectedEmailTemplate = null;
+    let currentAgent = null;
 
     // Check authentication
     (function(){
@@ -700,6 +704,7 @@
           window.location.href = 'staff-login.html'; 
           return; 
         }
+        currentAgent = sess;
       } catch(e) {
         console.error(e);
         window.location.href = 'staff-login.html';
@@ -927,15 +932,60 @@
       if (!confirm(`Send ${selectedEmailTemplate} email to ${currentClient.email}?`)) return;
 
       try {
-        const emailContent = generateEmailContent(selectedEmailTemplate, currentClient);
+        showModalMessage('Sending email...', 'info');
         
-        // In production, you would call your email service here
-        console.log('Sending email:', emailContent);
+        // Call the email template function
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/send-email-template`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          },
+          body: JSON.stringify({
+            template: selectedEmailTemplate,
+            clientData: currentClient
+          })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to send email');
+        }
+
+        const result = await response.json();
         
-        showModalMessage(`${selectedEmailTemplate.charAt(0).toUpperCase() + selectedEmailTemplate.slice(1)} email sent successfully!`, 'success');
+        // Log email activity in client audit trail
+        const { error: auditError } = await supabase
+          .from('edsa_client_database')
+          .update({
+            audit_log: [
+              ...(currentClient.audit_log || []),
+              {
+                timestamp: new Date().toISOString(),
+                action: 'email_sent',
+                template: selectedEmailTemplate,
+                recipient: currentClient.email,
+                admin: currentAgent?.name || 'Admin'
+              }
+            ],
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', currentClient.id);
+
+        if (auditError) {
+          console.error('Error logging email activity:', auditError);
+        }
+
+        showModalMessage(`${selectedEmailTemplate.charAt(0).toUpperCase() + selectedEmailTemplate.slice(1)} email sent successfully to ${currentClient.email}!`, 'success');
+        
+        // Reset email selection
+        selectedEmailTemplate = null;
+        document.querySelectorAll('.email-template').forEach(t => t.classList.remove('selected'));
+        document.getElementById('sendEmailBtn').disabled = true;
+        
       } catch (error) {
         console.error('Error sending email:', error);
-        showModalMessage('Failed to send email.', 'error');
+        showModalMessage(`Failed to send email: ${error.message}`, 'error');
       }
     };
 
@@ -963,8 +1013,6 @@
       return templates[template];
     }
 
-    // Export clients to CSV
-    window.exportClients = function() {
       if (allClients.length === 0) {
         alert('No clients to export.');
         return;

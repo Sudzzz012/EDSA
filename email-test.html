@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Email Service Test - Erase Debt SA</title>
+  <link rel="icon" href="erase-debt-logo.png"/>
+  <style>
+    body { font-family: Arial, sans-serif; background: linear-gradient(135deg,#003865,#005c97); margin:0; padding:24px; color:#14243b; }
+    .wrap { max-width: 800px; margin: 0 auto; }
+    .header { display:flex; align-items:center; gap:16px; margin-bottom:14px; color:#fff; }
+    .logo { width:90px; border-radius:12px; box-shadow:0 6px 24px #2970ba55; }
+    .title { font-size:1.7rem; font-weight:800; letter-spacing:-.2px; }
+    .card { background:#fff; border-radius:16px; box-shadow:0 14px 44px #2970ba33; padding:22px; margin-bottom:20px; }
+    .btn { padding:12px 20px; background:#2970ba; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600; margin:5px; }
+    .btn:hover { background:#003865; }
+    .btn.test { background:#28a745; }
+    .btn.test:hover { background:#218838; }
+    label { display:block; font-weight:700; margin:10px 0 6px; }
+    input, select, textarea { width:100%; padding:12px; border-radius:10px; border:1px solid #c7d8ef; font-size:1rem; }
+    .status { margin:10px 0; padding:15px; border-radius:8px; font-family:monospace; font-size:0.9rem; white-space:pre-wrap; }
+    .success { background:#d4edda; color:#155724; }
+    .error { background:#f8d7da; color:#721c24; }
+    .info { background:#d1ecf1; color:#0c5460; }
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <img src="erase-debt-logo.png" alt="Erase Debt SA" class="logo"/>
+      <div class="title">Email Service Diagnostic Test</div>
+    </div>
+
+    <div class="card">
+      <h3>Test Email Configuration</h3>
+      <p>Use this to test and debug your email service setup. Check the console for detailed logs.</p>
+      
+      <div class="two-col">
+        <div>
+          <label>Recipient Email</label>
+          <input id="testEmail" type="email" value="test@example.com" placeholder="Enter test email address"/>
+          
+          <label>Email Subject</label>
+          <input id="testSubject" value="Test Email from Erase Debt SA"/>
+          
+          <label>Email Body</label>
+          <textarea id="testBody" rows="4">This is a test email from the Erase Debt SA system to verify email functionality is working correctly.</textarea>
+        </div>
+        
+        <div>
+          <label>Supabase URL</label>
+          <input id="supabaseUrl" value="https://xzjunkpxvfdpuogoflzh.supabase.co" readonly/>
+          
+          <label>Function Name</label>
+          <input id="functionName" value="send-user-email-public"/>
+          
+          <label>Test Template</label>
+          <select id="testTemplate">
+            <option value="">Send Basic Email</option>
+            <option value="welcome">Welcome Email Template</option>
+            <option value="payment">Payment Reminder Template</option>
+            <option value="documents">Document Request Template</option>
+            <option value="update">Status Update Template</option>
+          </select>
+        </div>
+      </div>
+      
+      <div style="display:flex; gap:10px; margin-top:20px;">
+        <button class="btn test" onclick="testBasicEmail()">🧪 Test Basic Email</button>
+        <button class="btn test" onclick="testEmailTemplate()">📧 Test Email Template</button>
+        <button class="btn" onclick="checkEnvironment()">🔍 Check Environment</button>
+      </div>
+      
+      <div id="testResults" class="status info">Ready to test email functionality...</div>
+    </div>
+
+    <div class="card">
+      <h3>Environment Status</h3>
+      <div id="envStatus" class="status info">Click "Check Environment" to verify setup...</div>
+    </div>
+
+    <div class="card">
+      <a href="super-dashboard.html" style="color:#2970ba; text-decoration:none; font-weight:bold;">← Back to Super Dashboard</a>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://xzjunkpxvfdpuogoflzh.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ";
+
+    function log(message, type = 'info') {
+      const statusEl = document.getElementById('testResults');
+      statusEl.className = `status ${type}`;
+      statusEl.textContent = message;
+      console.log(message);
+    }
+
+    function logEnv(message, type = 'info') {
+      const envEl = document.getElementById('envStatus');
+      envEl.className = `status ${type}`;
+      envEl.textContent = message;
+      console.log(message);
+    }
+
+    window.testBasicEmail = async function() {
+      const email = document.getElementById('testEmail').value.trim();
+      const subject = document.getElementById('testSubject').value.trim();
+      const body = document.getElementById('testBody').value.trim();
+      
+      if (!email) {
+        log('Please enter a test email address.', 'error');
+        return;
+      }
+
+      log('🧪 Testing basic email functionality...');
+
+      try {
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/send-user-email-public`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          },
+          body: JSON.stringify({
+            to: email,
+            subject: subject,
+            body: body
+          })
+        });
+
+        console.log('Response status:', response.status);
+        console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
+        const result = await response.json();
+        console.log('Response data:', result);
+
+        if (response.ok) {
+          log(`✅ Email sent successfully!\n\nTo: ${email}\nSubject: ${subject}\nResult: ${JSON.stringify(result, null, 2)}`, 'success');
+        } else {
+          log(`❌ Email failed!\n\nStatus: ${response.status}\nError: ${result.error}\nDetails: ${result.details || 'No additional details'}`, 'error');
+        }
+      } catch (error) {
+        console.error('Test error:', error);
+        log(`❌ Test failed with error:\n\n${error.message}\n\nCheck console for full details.`, 'error');
+      }
+    };
+
+    window.testEmailTemplate = async function() {
+      const template = document.getElementById('testTemplate').value;
+      const email = document.getElementById('testEmail').value.trim();
+      
+      if (!template) {
+        log('Please select an email template to test.', 'error');
+        return;
+      }
+      
+      if (!email) {
+        log('Please enter a test email address.', 'error');
+        return;
+      }
+
+      log(`📧 Testing ${template} email template...`);
+
+      // Create mock client data for template testing
+      const mockClient = {
+        first_name: 'Test',
+        last_name: 'Client',
+        email: email,
+        service_type: 'Service 1A - DRR C and D3 (Still Paying the DC)',
+        total_amount: 25000,
+        monthly_payment: 1250,
+        sale_reference: 'EDSA-TEST-2025-001',
+        status: 'active',
+        salary_date: '25th of each month'
+      };
+
+      try {
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/send-email-template`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          },
+          body: JSON.stringify({
+            template: template,
+            clientData: mockClient
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          log(`✅ ${template} template email sent successfully!\n\nTo: ${email}\nTemplate: ${template}\nResult: ${JSON.stringify(result, null, 2)}`, 'success');
+        } else {
+          log(`❌ Template email failed!\n\nStatus: ${response.status}\nError: ${result.error}\nDetails: ${result.details || 'No additional details'}`, 'error');
+        }
+      } catch (error) {
+        console.error('Template test error:', error);
+        log(`❌ Template test failed:\n\n${error.message}`, 'error');
+      }
+    };
+
+    window.checkEnvironment = async function() {
+      logEnv('🔍 Checking email service environment...');
+
+      try {
+        // Test function accessibility
+        const testResponse = await fetch(`${SUPABASE_URL}/functions/v1/send-user-email-public`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          },
+          body: JSON.stringify({
+            to: 'test@example.com',
+            subject: 'Environment Test',
+            body: 'Testing environment'
+          })
+        });
+
+        const result = await testResponse.json();
+
+        if (testResponse.status === 500 && result.error === 'Email service not configured') {
+          logEnv(`❌ Email Service Not Configured\n\nThe email function is accessible but missing API keys.\n\nRequired: Set SENDGRIDFINAL or SENDGRID_API_KEY in Supabase Secrets.\n\nAvailable env vars: ${result.availableEnvVars?.join(', ') || 'Unknown'}`, 'error');
+        } else if (testResponse.ok) {
+          logEnv('✅ Email service is fully configured and working!', 'success');
+        } else {
+          logEnv(`⚠️ Function accessible but returned error:\n\nStatus: ${testResponse.status}\nError: ${result.error}\nDetails: ${result.details || 'None'}`, 'error');
+        }
+      } catch (error) {
+        logEnv(`❌ Cannot reach email function:\n\nError: ${error.message}\n\nCheck if the function is deployed and CORS is configured.`, 'error');
+      }
+    };
+  </script>
+</body>
+</html>
