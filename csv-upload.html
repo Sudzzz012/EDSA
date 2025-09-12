@@ -492,6 +492,7 @@
             }
 
             // Convert numeric fields
+            row.id = Date.now().toString() + Math.random().toString(36).substr(2, 9);
             row.total_amount = parseFloat(row.total_amount) || 0;
             row.monthly_payment = parseFloat(row.monthly_payment) || 0;
             row.payment_plan_months = Math.ceil(row.total_amount / Math.max(row.monthly_payment, 1));
