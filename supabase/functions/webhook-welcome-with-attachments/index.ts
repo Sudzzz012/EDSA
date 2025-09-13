@@ -122,7 +122,7 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Log audit trail
+    // Log email activity
     await logAuditTrail(clientData, 'welcome_email_sent_with_attachments')
 
     console.log('✅ Welcome email with service and mandate attachments sent successfully!')

@@ -910,7 +910,26 @@
         displayClients(allClients);
         updateStats();
 
-        showModalMessage(`Status updated to "${newStatus.replace('_', ' ')}" successfully!`, 'success');
+        // Trigger status update email webhook
+        try {
+          await fetch(`${SUPABASE_URL}/functions/v1/sendQueryUpdateEmail`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            },
+            body: JSON.stringify({
+              to: currentClient.email,
+              clientName: `${currentClient.first_name} ${currentClient.last_name}`,
+              statusUpdate: `Status changed to ${newStatus.replace('_', ' ').toUpperCase()}`,
+              serviceType: currentClient.service_type,
+              saleReference: currentClient.sale_reference
+            })
+          });
+          console.log('Status update email webhook triggered');
+        } catch (emailError) {
+          console.error('Failed to trigger status email:', emailError);
+        }
       } catch (error) {
         console.error('Error updating status:', error);
         showModalMessage('Failed to update status.', 'error');
@@ -934,17 +953,50 @@
       try {
         showModalMessage('Sending email...', 'info');
         
-        // Call the email template function
-        const response = await fetch(`${SUPABASE_URL}/functions/v1/send-email-template`, {
+        // Map template to existing function
+        let functionName = 'send-user-email-public';
+        let emailData = {};
+        
+        switch(selectedEmailTemplate) {
+          case 'welcome':
+            functionName = 'sendWelcomeEmail';
+            emailData = {
+              to: currentClient.email,
+              clientName: `${currentClient.first_name} ${currentClient.last_name}`,
+              serviceType: currentClient.service_type,
+              totalAmount: currentClient.total_amount,
+              monthlyPayment: currentClient.monthly_payment,
+              saleReference: currentClient.sale_reference
+            };
+            break;
+          case 'payment':
+          case 'documents':
+          case 'update':
+            functionName = 'sendQueryUpdateEmail';
+            emailData = {
+              to: currentClient.email,
+              clientName: `${currentClient.first_name} ${currentClient.last_name}`,
+              statusUpdate: getEmailMessage(selectedEmailTemplate),
+              serviceType: currentClient.service_type,
+              saleReference: currentClient.sale_reference
+            };
+            break;
+          default:
+            functionName = 'send-user-email-public';
+            emailData = {
+              to: currentClient.email,
+              subject: `${selectedEmailTemplate.charAt(0).toUpperCase() + selectedEmailTemplate.slice(1)} - ${currentClient.service_type}`,
+              body: `Dear ${currentClient.first_name}, this is a ${selectedEmailTemplate} email regarding your ${currentClient.service_type} service.`
+            };
+        }
+        
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/${functionName}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
           },
-          body: JSON.stringify({
-            template: selectedEmailTemplate,
-            clientData: currentClient
-          })
+          body: JSON.stringify(emailData)
         });
 
         if (!response.ok) {
@@ -989,6 +1041,16 @@
       }
     };
 
+    // Helper function to get email message based on template
+    function getEmailMessage(template) {
+      const messages = {
+        payment: `Payment reminder: Your monthly payment of R${(currentClient.monthly_payment || 0).toLocaleString()} is due. Please ensure timely payment to keep your service on track.`,
+        documents: `Document request: We need additional documents to continue processing your ${currentClient.service_type} service. Please submit required documents within 7 days.`,
+        update: `Service update: Your ${currentClient.service_type} case is progressing according to schedule. Our team is actively working on your credit profile.`
+      };
+      return messages[template] || `Update regarding your ${currentClient.service_type} service.`;
+    }
+
     // Generate email content based on template
     function generateEmailContent(template, client) {
       const templates = {
@@ -1013,6 +1075,8 @@
       return templates[template];
     }
 
+    // Export clients to CSV
+    window.exportClients = function() {
       if (allClients.length === 0) {
         alert('No clients to export.');
         return;

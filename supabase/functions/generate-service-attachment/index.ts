@@ -175,15 +175,15 @@ function generateMandateDocument(clientData) {
     <h2>Digital Mandate Setup Instructions</h2>
     <div class="client-highlight">
       <h3>🏦 DebiCheck Authorization Required</h3>
-      <p>To set up your automatic payments, please authorize the following DebiCheck with your bank:</p>
+      <p>To complete your service setup, please authorize the following DebiCheck with your bank:</p>
       <ul>
         <li><strong>Creditor:</strong> Good Converters T/A Erase Debt SA</li>
-        <li><strong>Amount:</strong> <span class="amount">R${(clientData.monthly_payment || 0).toLocaleString()}</span></li>
+        <li><strong>Monthly Amount:</strong> <span class="amount">R${(clientData.monthly_payment || 0).toLocaleString()}</span></li>
         <li><strong>Reference:</strong> ${clientData.sale_reference}</li>
         <li><strong>Collection Date:</strong> ${clientData.salary_date || 'Monthly on your salary date'}</li>
         <li><strong>Duration:</strong> ${Math.ceil((clientData.total_amount || 0) / (clientData.monthly_payment || 1))} months</li>
       </ul>
-      <p><strong>Our banking details will be provided separately by our admin team.</strong></p>
+      <p><strong>Important:</strong> Our admin team will contact you with complete banking details and the DebiCheck mandate form.</p>
     </div>
   </div>
 
@@ -251,7 +251,7 @@ function generateMandateDocument(clientData) {
 }
 
 function generateServiceDocument(clientData) {
-  // Get the appropriate service content
+  // Get the appropriate service content from your existing service files
   const serviceContent = getServiceContent(clientData.service_type)
   
   return `<!DOCTYPE html>
