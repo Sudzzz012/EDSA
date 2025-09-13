@@ -1,0 +1,108 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Authority and Mandate</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; color: #111; line-height: 1.6; }
+    h1, h2 { color: #1a4b7a; text-align: center; }
+    .section { margin-bottom: 2em; }
+    .signature { font-family: 'Brush Script MT', cursive; font-size: 1.7rem; margin-left: 2rem; color: #222; }
+    .audit { font-size: 0.9em; color: #444; background: #f9f9f9; padding: 1em; border-top: 2px solid #ccc; margin-top: 3em; }
+    .header-logo { width: 300px; display: block; margin: 0 auto 30px; }
+    .footer { margin-top: 50px; text-align: center; font-size: 0.9em; color: #333; }
+    .footer img { width: 180px; display: block; margin: 0 auto 10px; }
+  </style>
+</head>
+<body>
+  <img src="erase-debt-logo.jpg" class="header-logo" alt="Erase Debt SA Logo"/>
+
+  <h1>AUTHORITY AND MANDATE FOR PAYMENT INSTRUCTIONS</h1>
+  <p style="text-align:center;">This Authority and Mandate is entered into between Good Converters T/A Erase Debt SA (hereinafter referred to as 'Erase Debt SA') and the undersigned client (hereinafter referred to as 'the Client').</p>
+
+  <div class="section">
+    <h2>Client Details</h2>
+    <p><strong>Client Name:</strong> {{client_name}}</p>
+    <p><strong>Client ID Number:</strong> {{id_number}}</p>
+  </div>
+
+  <div class="section">
+    <h2>Bank Account Details</h2>
+    <p><strong>Bank Name:</strong> {{bank}}</p>
+    <p><strong>Account Number:</strong> {{account_number}}</p>
+    <p><strong>Type of Account:</strong> {{account_type}}</p>
+    <p><strong>Salary Date:</strong> {{salary_date}}</p>
+    <p><strong>Tracking Start Date:</strong> {{tracking_start}}</p>
+    <p><strong>Payment Amount:</strong> R{{amount}}</p>
+    <p><strong>Term:</strong> {{term}} Months</p>
+    <p><strong>Contract Reference Number:</strong> {{ref_number}}</p>
+    <p><strong>Nupay Tracking Reference:</strong> {{nupay_reference}}</p>
+  </div>
+
+  <div class="section">
+    <h2>Selected Service</h2>
+    <p>{{service_content}}</p>
+  </div>
+
+  <div class="section">
+    <h2>Terms and Conditions</h2>
+    <ol>
+      <li><strong>Payment Authorization</strong><br>
+        • The Client authorizes Erase Debt SA to collect the agreed-upon payments via debit order.<br>
+        • The Client agrees that Erase Debt SA may track the Client’s bank account prior to the debit date to ensure the availability of funds.
+      </li>
+      <li><strong>Service Delivery</strong><br>
+        • The selected service will commence only upon receipt of full payment.<br>
+        • The completion time for each service is estimated but not guaranteed, as it depends on external factors, including responses from credit bureaus and financial institutions.
+      </li>
+      <li><strong>Cancellation Policy</strong><br>
+        • The cancellation of this mandate does not terminate the contractual obligation.<br>
+        • A no-refund policy applies, as the service commences upon payment.<br>
+        • If a Client wishes to cancel a service, they must provide written notice, but this does not entitle them to a refund.
+      </li>
+      <li><strong>Confidentiality & Data Protection</strong><br>
+        • Erase Debt SA adheres to data protection laws and ensures the confidentiality of client information.<br>
+        • The Client’s personal and financial data will only be used for the purpose of rendering the selected service.
+      </li>
+      <li><strong>Client Responsibility & Compliance</strong><br>
+        • The Client is responsible for providing accurate and truthful information. Any delays caused by incorrect information provided by the Client will not be the responsibility of Erase Debt SA.<br>
+        • If the Client fails to make payments or provides fraudulent documents, Erase Debt SA reserves the right to terminate services immediately.
+      </li>
+      <li><strong>Assignment & Third-Party Authorization</strong><br>
+        • This mandate may be assigned or ceded to a third party if the agreement is transferred.<br>
+        • Any third party that takes over this contract will be subject to the same terms and conditions.
+      </li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2>Client Declaration</h2>
+    <p>I, the undersigned, confirm that I have read, understood, and agree to the terms of this Authority and Mandate.</p>
+    <p><strong>DebiCheck Accepted at:</strong> {{debi_check_time}}</p>
+    <p><strong>Date:</strong> {{date}}</p>
+    <p><strong>Client Signature:</strong></p>
+    <p class="signature">{{client_name}}</p>
+    <p><strong>Agreement Reference Number:</strong> {{ref_number}}</p>
+    <p><strong>Agent Name:</strong> {{agent_name}}</p>
+  </div>
+
+  <div class="audit">
+    <h3>Audit Trail</h3>
+    <p><strong>Reference Number:</strong> {{ref_number}}</p>
+    <p><strong>Captured By:</strong> {{agent_name}}</p>
+    <p><strong>Date Captured:</strong> {{date}}</p>
+    <p><strong>DebiCheck Accepted:</strong> ✅ Yes</p>
+    <p><strong>Email Sent To:</strong> {{email}}</p>
+    <p><strong>PDF Generated At:</strong> {{generation_time}}</p>
+    <p><strong>IP Address:</strong> {{ip_address}}</p>
+  </div>
+
+  <div class="footer">
+    <img src="erase-debt-logo.jpg" alt="Footer Logo" />
+    <p><strong>GOOD CONVERTERS T/A ERASE DEBT SA | REG NUMBER 2013/198706/07</strong></p>
+    <p>WEBSITE: www.erasedebtsa.co.za | OFFICE NUMBERS: 0315002220 / 031 109 5560</p>
+    <p>EMAIL: admin@erasedebtsa.co.za | 23 Whetstone Drive, Unit 11, Phoenix, DBN, KZN, 4068</p>
+  </div>
+</body>
+</html>
