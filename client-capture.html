@@ -299,7 +299,8 @@
             <div class="form-group">
               <label for="status">Status</label>
               <select id="status" name="status">
-                <option value="pending_verification">Pending Verification</option>
+               <option value="pending" selected>Pending</option>
+               <option value="pending_verification">Pending Verification</option>
                 <option value="active">Active</option>
                 <option value="completed">Completed</option>
                 <option value="cancelled">Cancelled</option>
@@ -499,6 +500,25 @@
 
         showMessage(`Client ${clientData.first_name} ${clientData.last_name} captured successfully! Reference: ${clientData.sale_reference}`, 'success');
         
+        // Trigger welcome email webhook if client is active
+        if (clientData.status === 'active') {
+          try {
+            await fetch('https://xzjunkpxvfdpuogoflzh.supabase.co/functions/v1/webhook-welcome', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ',
+              },
+              body: JSON.stringify({
+                clientData: data
+              })
+            });
+            console.log('Welcome email webhook triggered');
+          } catch (emailError) {
+            console.error('Failed to trigger welcome email:', emailError);
+          }
+        }
+
         // Reset form
         e.target.reset();
 
