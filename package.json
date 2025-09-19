@@ -1,0 +1,16 @@
+{
+  "name": "edsa-client-portal",
+  "version": "1.0.0",
+  "description": "Erase Debt SA Client Portal Website",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo 'Build completed - static files ready'",
+    "dev": "python3 -m http.server 3000",
+    "start": "python3 -m http.server 3000"
+  },
+  "keywords": ["debt", "credit", "portal", "static"],
+  "author": "Erase Debt SA",
+  "license": "ISC",
+  "devDependencies": {},
+  "dependencies": {}
+}
