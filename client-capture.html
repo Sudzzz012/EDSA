@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Client Capture Form - Erase Debt SA</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #003865, #005c97); color: #fff; padding: 2rem; }
+    header { display: flex; align-items: center; justify-content: center; margin-bottom: 2rem; }
+    header img { height: 60px; }
+    h1 { text-align: center; color: #fff; }
+    form { background: #fff; color: #333; padding: 2rem; border-radius: 10px; max-width: 900px; margin: 2rem auto; box-shadow: 0 0 15px rgba(0,0,0,0.2);}
+    .form-group { display: flex; flex-direction: column; margin-bottom: 1rem; }
+    label { font-weight: bold; margin-bottom: 0.3rem; }
+    input, select { padding: 0.6rem; font-size: 1rem; border: 1px solid #ccc; border-radius: 6px; }
+    button { margin-top: 1.5rem; background-color: #005c97; color: #fff; padding: 0.8rem 1.5rem; border: none; font-size: 1rem; border-radius: 6px; cursor: pointer; }
+    button:hover { background-color: #004070; }
+    .back-link { display: block; margin: 2rem auto; text-align: center; }
+
+    /* Suasha AI floating button */
+    #suasha-bubble {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      background-color: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 30px;
+    }
+
+    #suasha-chat {
+      position: fixed;
+      bottom: 100px;
+      right: 30px;
+      width: 350px;
+      height: 480px;
+      display: none;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      border: none;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+<body>
+  <header>
+    <img src="erase-debt-logo.jpg" alt="Erase Debt SA Logo" />
+  </header>
+  <h1>Client Capture Form</h1>
+  <div class="back-link">
+    <button onclick="goBackToDashboard()">← Go Back to Dashboard</button>
+  </div>
+
+  <form id="clientForm">
+    <div class="form-group"><label>Client ID Number</label><input type="number" name="client_id_number" required /></div>
+    <div class="form-group"><label>First Name</label><input type="text" name="first_name" required /></div>
+    <div class="form-group"><label>Last Name</label><input type="text" name="last_name" required /></div>
+    <div class="form-group"><label>Email</label><input type="email" name="email" required /></div>
+    <div class="form-group"><label>Phone</label><input type="number" name="phone" required /></div>
+    <div class="form-group"><label>Gender</label>
+      <select name="gender"><option>Male</option><option>Female</option><option>Other</option></select>
+    </div>
+    <div class="form-group"><label>Province</label>
+      <select name="province">
+        <option>Gauteng</option><option>KwaZulu-Natal</option><option>Western Cape</option>
+        <option>Eastern Cape</option><option>Free State</option><option>Mpumalanga</option>
+        <option>Limpopo</option><option>North West</option><option>Northern Cape</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Branch</label>
+      <select name="branch_name">
+        <option>Erase Debt SA - ADMIN</option><option>SAZZ Debt Solutions</option><option>Credifix SA</option>
+        <option>SA Blacklisting Busters</option><option>Get Credit SA</option><option>Boost My Credit Score</option>
+        <option>Shield Credit Solutions</option><option>National Credit Solutions</option>
+        <option>South African Credit Score Experts - AA</option><option>South African Credit Score Experts - QAA</option>
+        <option>Clean Slate Solutions - RSJ</option><option>Clean Slate Solutions - MSJ</option>
+        <option>Increase My Credit Score</option><option>Credit Boost SA</option><option>Credit Renew SA</option>
+        <option>Fix My Credit Score</option><option>Clean Credit Consultants</option>
+        <option>Erase Debt SA - SS</option><option>Erase Debt SA - MP</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Agent Name</label><input type="text" name="agent_name" /></div>
+    <div class="form-group"><label>Sale Date</label><input type="date" name="sale_date" /></div>
+    <div class="form-group"><label>Sale Reference</label><input type="text" name="sale_reference" /></div>
+    <div class="form-group"><label>Service Type</label>
+      <select name="service_type">
+        <option>SERVICE 1 - DRR(C & D3) - NP</option><option>SERVICE 1 - DRR(C & D3) - P</option>
+        <option>SERVICE 2 - D4 - BELOW 12M</option><option>SERVICE 3 - D4 - AITC</option>
+        <option>SERVICE 4 - NL/CR</option><option>SERVICE 5 - NL ITC CLEARANCE</option>
+        <option>SERVICE 6 - RN - A - NL</option><option>SERVICE 7 - RN - OTHER/NL</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Payment Plan Months</label><input type="number" name="payment_plan_months" /></div>
+    <div class="form-group"><label>Bank</label>
+      <select name="bank"><option>ABSA</option><option>Capitec</option><option>FNB</option>
+      <option>Nedbank</option><option>Standard Bank</option><option>TymeBank</option><option>Investec</option></select>
+    </div>
+    <div class="form-group"><label>Account Type</label><select name="account_type"><option>Savings</option><option>Cheque</option></select></div>
+    <div class="form-group"><label>Account Number</label><input type="number" name="account_number" /></div>
+    <div class="form-group"><label>Salary Date</label><input type="date" name="salary_date" /></div>
+    <div class="form-group"><label>Tracking Date</label><input type="date" name="tracking_date" /></div>
+    <div class="form-group"><label>Nupay Reference</label><input type="text" name="nupay_reference" /></div>
+    <div class="form-group"><label>Total Amount</label><input type="number" name="total_amount" /></div>
+    <div class="form-group"><label>Monthly Payment</label><input type="number" name="monthly_payment" /></div>
+    <div class="form-group"><label>Status</label><select name="status"><option>Pending</option><option>Active</option><option>Cancelled</option></select></div>
+    <div class="form-group"><label>Total No. Payments Made</label><input type="text" name="total_no_payments_made" /></div>
+    <div class="form-group"><label>Total No. Missed Payments</label><input type="text" name="total_no_missed_payments" /></div>
+    <button type="submit">Submit Client</button>
+  </form>
+
+  <div id="suasha-bubble" onclick="toggleSuasha()">💬</div>
+  <iframe id="suasha-chat" src="https://chat.openai.com" title="Suasha AI Assistant"></iframe>
+
+  <script>
+    const { createClient } = supabase;
+    const supabaseClient = createClient('https://xzjunkpxvfdpuogoflzh.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ');
+    const TABLE_NAME = 'edsa_client_database';
+
+    document.getElementById("clientForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        id: crypto.randomUUID(),
+        client_id_number: form.client_id_number.value || null,
+        first_name: form.first_name.value,
+        last_name: form.last_name.value,
+        email: form.email.value,
+        phone: form.phone.value || null,
+        gender: form.gender.value,
+        province: form.province.value,
+        branch_name: form.branch_name.value,
+        agent_name: form.agent_name.value,
+        sale_date: form.sale_date.value,
+        sale_reference: form.sale_reference.value,
+        service_type: form.service_type.value,
+        payment_plan_months: form.payment_plan_months.value || null,
+        bank: form.bank.value,
+        account_type: form.account_type.value,
+        account_number: form.account_number.value || null,
+        salary_date: form.salary_date.value,
+        tracking_date: form.tracking_date.value,
+        nupay_reference: form.nupay_reference.value,
+        total_amount: form.total_amount.value || null,
+        monthly_payment: form.monthly_payment.value || null,
+        status: form.status.value,
+        total_no_payments_made: form.total_no_payments_made.value,
+        total_no_missed_payments: form.total_no_missed_payments.value,
+      };
+
+      const { error } = await supabaseClient.from(TABLE_NAME).insert([data]);
+      if (error) {
+        alert("❌ Error saving client: " + error.message);
+      } else {
+        alert("✅ Client captured and saved to Erase Debt SA Database!");
+        form.reset();
+      }
+    });
+
+    function goBackToDashboard() {
+      const role = sessionStorage.getItem("user_role");
+      if (role === "agent") window.location.href = "agent-dashboard.html";
+      else if (role === "admin") window.location.href = "admin-dashboard.html";
+      else if (role === "admin_manager") window.location.href = "admin-manager-dashboard.html";
+      else if (role === "super") window.location.href = "super-dashboard.html";
+      else window.location.href = "index.html";
+    }
+
+    function toggleSuasha() {
+      const chat = document.getElementById("suasha-chat");
+      chat.style.display = chat.style.display === "block" ? "none" : "block";
+    }
+  </script>
+</body>
+</html>
