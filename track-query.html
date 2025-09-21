@@ -178,12 +178,10 @@
         <div class="search-section primary">
           <h3><i class="fa-solid fa-hashtag"></i> Method 1: Reference Number Search</h3>
           <p>If you have your query reference number, enter it below for instant access:</p>
-          <form id="refForm">
-            <label>Query Reference Number</label>
-            <input name="ref" type="text" placeholder="EDSA20250120-1234" id="refInput">
-            <button type="submit" id="refBtn">Search by Reference</button>
-            <div class="msg" id="refMsg"></div>
-          </form>
+          <label>Query Reference Number</label>
+          <input name="ref" type="text" placeholder="EDSA20250120-1234" id="refInput">
+          <button type="button" id="refBtn">Search by Reference</button>
+          <div class="msg" id="refMsg"></div>
         </div>
 
         <div class="or-divider"><span>OR</span></div>
@@ -192,14 +190,12 @@
         <div class="search-section">
           <h3><i class="fa-solid fa-envelope"></i> Method 2: ID + Email Search (OTP Required)</h3>
           <p>If you don't have a reference number, we'll send you a verification code:</p>
-          <form id="otpForm">
-            <label>ID Number</label>
-            <input name="id_number" type="text" placeholder="8804015196086" id="idInput">
-            <label>Email Address</label>
-            <input name="email" type="email" placeholder="your@email.com" id="emailInput">
-            <button type="submit" id="otpBtn">Send OTP & Search</button>
-            <div class="msg" id="otpMsg"></div>
-          </form>
+          <label>ID Number</label>
+          <input name="id_number" type="text" placeholder="8804015196086" id="idInput">
+          <label>Email Address</label>
+          <input name="email" type="email" placeholder="your@email.com" id="emailInput">
+          <button type="button" id="otpBtn">Send OTP & Search</button>
+          <div class="msg" id="otpMsg"></div>
         </div>
       </div>
 
@@ -209,12 +205,10 @@
         <div class="instructions">
           We've sent a 6-digit verification code to your email address. Please enter it below to view your query and application details.
         </div>
-        <form id="verifyOtpForm">
-          <label>Enter 6-digit OTP</label>
-          <input name="otp" type="text" maxlength="6" required placeholder="123456" id="otpCodeInput">
-          <button type="submit" id="verifyBtn">Verify & Access</button>
-          <div class="msg" id="verifyMsg"></div>
-        </form>
+        <label>Enter 6-digit OTP</label>
+        <input name="otp" type="text" maxlength="6" required placeholder="123456" id="otpCodeInput">
+        <button type="button" id="verifyBtn">Verify & Access</button>
+        <div class="msg" id="verifyMsg"></div>
         <button onclick="goBackToStep1()" style="background:#666; margin-top:10px;">← Try Again</button>
       </div>
 
@@ -306,7 +300,8 @@
 
     let currentQuery = null;
     let currentClient = null;
-    let currentSearchData = null;
+    let storedOTP = null;
+    let otpEmail = null;
 
     function showStep(stepNum) {
       document.getElementById('step1').classList.add('hidden');
@@ -345,12 +340,14 @@
       clearMessage('refMsg');
       clearMessage('otpMsg');
       clearMessage('verifyMsg');
-      document.getElementById('refForm').reset();
-      document.getElementById('otpForm').reset();
-      document.getElementById('verifyOtpForm').reset();
+      document.getElementById('refInput').value = '';
+      document.getElementById('idInput').value = '';
+      document.getElementById('emailInput').value = '';
+      document.getElementById('otpCodeInput').value = '';
       currentQuery = null;
       currentClient = null;
-      currentSearchData = null;
+      storedOTP = null;
+      otpEmail = null;
     }
 
     function show(el, text, type = 'info') {
@@ -380,6 +377,8 @@
     // Send OTP via Supabase Edge Function
     async function sendOTP(email, otp, queryRef, firstName) {
       try {
+        console.log('Sending OTP to:', email, 'OTP:', otp, 'Ref:', queryRef);
+        
         const response = await fetch(`https://xzjunkpxvfdpuogoflzh.supabase.co/functions/v1/send-otp-email`, {
           method: 'POST',
           headers: {
@@ -394,14 +393,16 @@
           })
         });
         
+        console.log('OTP Email Response Status:', response.status);
+        
         if (!response.ok) {
           const errorText = await response.text();
-          console.error('SendOTP Error:', errorText);
+          console.error('SendOTP Error Response:', errorText);
           return false;
         }
         
         const result = await response.json();
-        console.log('SendOTP Response:', result);
+        console.log('SendOTP Success Response:', result);
         return result.success === true;
       } catch (error) {
         console.error('Error sending OTP:', error);
@@ -411,6 +412,8 @@
 
     // Find query by reference number OR by ID + email
     async function findQuery(searchCriteria) {
+      console.log('Searching for query with criteria:', searchCriteria);
+      
       let query = supabaseClient.from('QUERIES').select('*');
       
       if (searchCriteria.ref) {
@@ -422,12 +425,13 @@
           .eq('id_number', searchCriteria.id_number)
           .eq('email', searchCriteria.email);
       } else {
+        console.log('Invalid search criteria');
         return null;
       }
 
-      const { data, error } = await query
-        .order('created_at', { ascending: false })
-        .limit(1);
+      const { data, error } = await query.order('created_at', { ascending: false });
+
+      console.log('Query search result - Data:', data, 'Error:', error);
 
       if (error) {
         console.error('Query search error:', error);
@@ -439,6 +443,8 @@
 
     // Load application data for this client
     async function loadApplicationData(idNumber, email) {
+      console.log('Loading application data for:', idNumber, email);
+      
       const { data, error } = await supabaseClient
         .from('edsa_client_database')
         .select('*')
@@ -446,11 +452,15 @@
         .eq('email', email)
         .maybeSingle();
 
+      console.log('Application data result - Data:', data, 'Error:', error);
+
       return error ? null : data;
     }
 
     // Load all queries for this client
     async function loadAllQueries(idNumber, email) {
+      console.log('Loading all queries for:', idNumber, email);
+      
       const { data, error } = await supabaseClient
         .from('QUERIES')
         .select('*')
@@ -458,11 +468,15 @@
         .eq('email', email)
         .order('created_at', { ascending: false });
 
+      console.log('All queries result - Data:', data, 'Error:', error);
+
       return error ? [] : (data || []);
     }
 
     // Display query data (PRIMARY FOCUS)
     function displayQueryData(queries, primaryQuery) {
+      console.log('Displaying query data. Primary:', primaryQuery, 'All queries:', queries);
+      
       const primaryInfo = document.getElementById('primaryQueryInfo');
       const historyBody = document.getElementById('queryHistory');
       
@@ -472,14 +486,13 @@
         return;
       }
 
-      console.log('Displaying primary query:', primaryQuery);
-      console.log('All queries:', queries);
-
+      const clientName = [primaryQuery.first_name, primaryQuery.last_name].filter(Boolean).join(' ') || 'Client';
+      
       // Show primary query details
       primaryInfo.innerHTML = `
         <table>
           <tr><th>Reference</th><td><strong>${primaryQuery.reference_number || '—'}</strong></td></tr>
-          <tr><th>Client Name</th><td><strong>${primaryQuery.first_name || ''} ${primaryQuery.last_name || ''}</strong></td></tr>
+          <tr><th>Client Name</th><td><strong>${clientName}</strong></td></tr>
           <tr><th>Query Type</th><td>${primaryQuery.query_type || 'GENERAL'}</td></tr>
           <tr><th>Date Submitted</th><td>${fmtDate(primaryQuery.created_at)}</td></tr>
           <tr><th>Current Status</th><td><strong>${primaryQuery.status || 'PENDING'}</strong></td></tr>
@@ -519,15 +532,6 @@
       
       if (!appData) {
         document.getElementById('appTable').innerHTML = '<tr><td colspan="2" class="muted">No application found - Query-only client</td></tr>';
-        document.getElementById('clientName').textContent = '—';
-        document.getElementById('serviceType').textContent = '—';
-        document.getElementById('appStatus').textContent = '—';
-        document.getElementById('branch').textContent = '—';
-        document.getElementById('paymentsMade').textContent = '—';
-        document.getElementById('missedPayments').textContent = '—';
-        document.getElementById('monthlyPayment').textContent = '—';
-        document.getElementById('outstanding').textContent = '—';
-        document.getElementById('nextPayment').textContent = '—';
         return;
       }
 
@@ -648,16 +652,10 @@
       displayQueryData(queries, currentQuery);
     }
 
-    // Store OTP for verification
-    let storedOTP = null;
-    let otpEmail = null;
-
     // Method 1: Reference Number Search (Direct Access)
-    document.getElementById('refForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const form = e.target;
+    document.getElementById('refBtn').addEventListener('click', async function() {
+      const refNumber = document.getElementById('refInput').value.trim();
       const refBtn = document.getElementById('refBtn');
-      const refNumber = form.ref.value.trim();
 
       clearMessage('refMsg');
       refBtn.disabled = true;
@@ -669,6 +667,8 @@
           return;
         }
 
+        console.log('Searching by reference:', refNumber);
+
         // Search for query by reference
         const queryData = await findQuery({ ref: refNumber });
 
@@ -677,6 +677,7 @@
           return;
         }
 
+        console.log('Found query by reference:', queryData);
         currentQuery = queryData;
         
         // Load both query and application data
@@ -701,12 +702,10 @@
     });
 
     // Method 2: ID + Email Search (Send OTP)
-    document.getElementById('otpForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const form = e.target;
+    document.getElementById('otpBtn').addEventListener('click', async function() {
+      const idNumber = document.getElementById('idInput').value.trim();
+      const email = document.getElementById('emailInput').value.trim();
       const otpBtn = document.getElementById('otpBtn');
-      const idNumber = form.id_number.value.trim();
-      const email = form.email.value.trim();
 
       clearMessage('otpMsg');
       otpBtn.disabled = true;
@@ -718,6 +717,8 @@
           return;
         }
 
+        console.log('Searching by ID + email:', idNumber, email);
+
         // Search for query
         const queryData = await findQuery({ id_number: idNumber, email: email });
 
@@ -726,12 +727,14 @@
           return;
         }
 
-        currentSearchData = { id_number: idNumber, email: email };
+        console.log('Found query by ID + email:', queryData);
         currentQuery = queryData;
         
         // Generate and store OTP
         storedOTP = generateOTP();
         otpEmail = queryData.email;
+        
+        console.log('Generated OTP:', storedOTP, 'for email:', otpEmail);
         
         otpBtn.textContent = 'Sending OTP...';
         
@@ -747,10 +750,8 @@
           showMessage('otpMsg', `✅ Verification code sent to ${queryData.email}`, false);
           setTimeout(() => showStep(2), 1500);
         } else {
-          showMessage('otpMsg', 'Email service temporarily unavailable. Try the reference number method if you have it.', true);
-          // For demo purposes, allow manual OTP entry
-          storedOTP = '123456'; // Demo OTP
-          showMessage('otpMsg', `Demo Mode: Use OTP 123456 to continue`, false);
+          console.log('Email send failed, using demo mode');
+          showMessage('otpMsg', `Email service issue. Demo Mode: Use OTP ${storedOTP} to continue`, false);
           setTimeout(() => showStep(2), 2000);
         }
 
@@ -764,17 +765,17 @@
     });
 
     // Step 2: Verify OTP and load data
-    document.getElementById('verifyOtpForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const form = e.target;
+    document.getElementById('verifyBtn').addEventListener('click', async function() {
+      const enteredOtp = document.getElementById('otpCodeInput').value.trim();
       const verifyBtn = document.getElementById('verifyBtn');
-      const enteredOtp = form.otp.value.trim();
 
       clearMessage('verifyMsg');
       verifyBtn.disabled = true;
       verifyBtn.textContent = 'Verifying...';
 
       try {
+        console.log('Verifying OTP. Entered:', enteredOtp, 'Expected:', storedOTP);
+        
         // Verify OTP
         if (enteredOtp === storedOTP) {
           showMessage('verifyMsg', '✅ Verified! Loading your information...', false);
@@ -782,6 +783,8 @@
           // Load both query and application data
           const allQueries = await loadAllQueries(currentQuery.id_number, currentQuery.email);
           currentClient = await loadApplicationData(currentQuery.id_number, currentQuery.email);
+          
+          console.log('Loading complete. All queries:', allQueries, 'Client data:', currentClient);
           
           setTimeout(() => {
             displayQueryData(allQueries, currentQuery);
@@ -809,6 +812,12 @@
       let value = e.target.value.replace(/\D/g, '');
       if (value.length > 13) value = value.substring(0, 13);
       e.target.value = value;
+      
+      // Clear reference field when typing ID
+      if (value) {
+        document.getElementById('refInput').value = '';
+        clearMessage('refMsg');
+      }
     });
 
     // Auto-format OTP input (numbers only, max 6 digits)
@@ -819,7 +828,7 @@
       
       // Auto-submit when 6 digits entered
       if (value.length === 6) {
-        setTimeout(() => document.getElementById('verifyOtpForm').dispatchEvent(new Event('submit')), 300);
+        setTimeout(() => document.getElementById('verifyBtn').click(), 500);
       }
     });
 
@@ -832,13 +841,6 @@
       }
     });
 
-    document.getElementById('idInput').addEventListener('input', function(e) {
-      if (e.target.value.trim()) {
-        document.getElementById('refInput').value = '';
-        clearMessage('refMsg');
-      }
-    });
-
     document.getElementById('emailInput').addEventListener('input', function(e) {
       if (e.target.value.trim()) {
         document.getElementById('refInput').value = '';
@@ -846,7 +848,7 @@
       }
     });
 
-    console.log('🔍 Track Query page loaded - Two Separate Search Methods');
+    console.log('🔍 Track Query page loaded successfully');
   </script>
 </body>
 </html>
