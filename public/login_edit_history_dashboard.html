@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login & Edit History Dashboard - Erase Debt SA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(to right, #0f172a, #1e3a8a);
+      color: white;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1.5rem;
+      padding: 2rem;
+      box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+    }
+    .back-button {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background-color: #2563eb;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-weight: bold;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+<body class="min-h-screen px-6 py-10">
+  <a href="super-dashboard.html" class="back-button">← Back to Dashboard</a>
+  <header class="flex items-center justify-between mb-10">
+    <img src="/images/edsa-logo.png" alt="EDSA Logo" class="w-32">
+    <h1 class="text-3xl font-extrabold">Login & Edit History Dashboard</h1>
+  </header>
+
+  <section class="card">
+    <h2 class="text-xl font-semibold mb-4">User Login Activity</h2>
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm text-white">
+        <thead class="border-b border-blue-400">
+          <tr>
+            <th class="text-left py-2 px-4">Date</th>
+            <th class="text-left py-2 px-4">User</th>
+            <th class="text-left py-2 px-4">Role</th>
+            <th class="text-left py-2 px-4">Branch</th>
+            <th class="text-left py-2 px-4">Action</th>
+          </tr>
+        </thead>
+        <tbody id="login-log">
+          <!-- Example Row -->
+          <tr class="border-t border-blue-300">
+            <td class="py-2 px-4">2025-08-06</td>
+            <td class="py-2 px-4">admin@edsa.net</td>
+            <td class="py-2 px-4">Admin</td>
+            <td class="py-2 px-4">EDSA - MP</td>
+            <td class="py-2 px-4">Logged In</td>
+          </tr>
+          <!-- Fetched rows go here -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card mt-10">
+    <h2 class="text-xl font-semibold mb-4">Client Edit History</h2>
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm text-white">
+        <thead class="border-b border-blue-400">
+          <tr>
+            <th class="text-left py-2 px-4">Timestamp</th>
+            <th class="text-left py-2 px-4">Editor</th>
+            <th class="text-left py-2 px-4">Client ID</th>
+            <th class="text-left py-2 px-4">Field</th>
+            <th class="text-left py-2 px-4">Old Value</th>
+            <th class="text-left py-2 px-4">New Value</th>
+          </tr>
+        </thead>
+        <tbody id="edit-log">
+          <!-- Dynamic rows inserted here -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="text-center text-blue-200 mt-12">
+    &copy; 2025 Erase Debt SA. All rights reserved.
+  </footer>
+</body>
+</html>

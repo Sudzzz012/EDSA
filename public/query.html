@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Submit a Query | Erase Debt SA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" href="erase-debt-logo.png" />
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"></script>
+  <style>
+    body {
+      background: #f8fafc;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 430px;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 38px #2970ba22;
+      margin: 48px auto 0 auto;
+      padding: 38px 28px 20px 28px;
+    }
+    .logo {
+      display:block;
+      margin: 0 auto 15px auto;
+      width: 92px;
+    }
+    h2 {
+      color: #2970ba;
+      text-align: center;
+      margin-bottom: 18px;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin: 10px 0 5px 0;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #c7d8ef;
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+    button {
+      background: #2970ba;
+      color: #fff;
+      border:none;
+      border-radius: 9px;
+      width:100%;
+      font-size:1.15rem;
+      padding: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    button:hover { background: #003865; }
+    .msg {
+      margin: 18px 0 0 0;
+      text-align: center;
+      font-weight: bold;
+    }
+    .back-link {
+      display: block;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .back-link a {
+      text-decoration: none;
+      color: #2970ba;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="back-link"><a href="index.html">← Back to Home</a></div>
+    <img src="erase-debt-logo.png" alt="Erase Debt SA Logo" class="logo" />
+    <h2>Submit a Query</h2>
+    <form id="queryForm">
+      <label>First Name</label>
+      <input name="first_name" type="text" required>
+      <label>Last Name</label>
+      <input name="last_name" type="text" required>
+      <label>ID Number</label>
+      <input name="id_number" type="text" required>
+      <label>Phone Number</label>
+      <input name="phone" type="text" required>
+      <label>Email Address</label>
+      <input name="email" type="email" required>
+      <label>Query Type</label>
+      <select name="query_type" required>
+        <option value="">-- Select Query --</option>
+        <option>I Need a Callback</option>
+        <option>I Have a Complaint</option>
+        <option>I Have Fully Paid My Fees</option>
+        <option>I Have Submitted Documents And Am Awaiting a Reply</option>
+        <option>I Want to Pay My Outstanding Funds</option>
+        <option>I Want To Settle My Arrears</option>
+        <option>I Need A Follow Up On My Process</option>
+        <option>I Did Not Get a Welcome Email</option>
+      </select>
+      <label>Additional Information</label>
+      <textarea name="query_text" required rows="3"></textarea>
+      <label>Attach Supporting Document (optional)</label>
+      <input name="attachment" type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+      <button type="submit">Submit Query</button>
+      <div class="msg" id="queryFormMsg"></div>
+    </form>
+  </div>
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+    const supabase = createClient(
+      "https://xzjunkpxvfdpuogoflzh.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ"
+    );
+
+    document.getElementById("queryForm").onsubmit = async function (e) {
+      e.preventDefault();
+      const form = e.target;
+      const msg = document.getElementById("queryFormMsg");
+      msg.textContent = "";
+
+      const today = new Date();
+      const ref = `EDSA${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+      let attachment_url = null;
+      const file = form.attachment.files[0];
+      if (file) {
+        const { data, error } = await supabase.storage
+          .from("attachments")
+          .upload(`${ref}_${file.name}`, file, { upsert: true });
+        if (error) {
+          msg.style.color = "#d32f2f";
+          msg.textContent = "File upload failed: " + error.message;
+          return;
+        }
+        attachment_url = data.path;
+      }
+
+      const payload = {
+        reference_number: ref,
+        id_number: form.id_number.value,
+        first_name: form.first_name.value,
+        last_name: form.last_name.value,
+        email: form.email.value,
+        phone: form.phone.value,
+        query_type: form.query_type.value,
+        query_text: form.query_text.value,
+        attachment_url: attachment_url,
+        status: "new",
+        responded_by: "",
+        response_text: "",
+        branch_name: "",
+        audit_log: [],
+      };
+
+      const { error } = await supabase.from("QUERIES").insert([payload]);
+      if (error) {
+        msg.style.color = "#d32f2f";
+        msg.textContent = "Submission failed: " + error.message;
+        return;
+      }
+
+      msg.style.color = "#256029";
+      msg.innerHTML = `Your query was submitted!<br>Your reference number is <b>${ref}</b>.`;
+
+      form.reset();
+    };
+  </script>
+</body>
+</html>

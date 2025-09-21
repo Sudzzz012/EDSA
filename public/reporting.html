@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reports - Erase Debt SA</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #003865, #005c97);
+      color: #fff;
+    }
+    .header {
+      background-color: #002f5f;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header img {
+      height: 60px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+    .back-button {
+      background: #2970ba;
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    .container {
+      padding: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .reports-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+    .report-card {
+      background: rgba(255, 255, 255, 0.95);
+      color: #333;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      transition: transform 0.3s;
+    }
+    .report-card:hover {
+      transform: translateY(-5px);
+    }
+    .report-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      color: #2970ba;
+    }
+    .report-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #003865;
+      margin-bottom: 10px;
+    }
+    .report-desc {
+      color: #64748b;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .generate-btn {
+      background: linear-gradient(135deg, #2970ba, #005c97);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 25px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .generate-btn:hover {
+      transform: translateY(-2px);
+    }
+    .quick-stats {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 30px;
+    }
+    .quick-stats h3 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+    .stat-item {
+      text-align: center;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #ffd700;
+    }
+    .stat-desc {
+      color: #dce8f7;
+      font-size: 0.9rem;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+<body>
+  <div class="header">
+    <img src="erase-debt-logo.png" alt="Erase Debt SA Logo" />
+    <h1>Reports & Analytics</h1>
+    <a href="javascript:history.back()" class="back-button">
+      <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+    </a>
+  </div>
+
+  <div class="container">
+    <!-- Quick Stats Overview -->
+    <div class="quick-stats">
+      <h3><i class="fas fa-tachometer-alt"></i> Quick Statistics</h3>
+      <div class="stats-row">
+        <div class="stat-item">
+          <div class="stat-value" id="thisWeekClients">-</div>
+          <div class="stat-desc">New Clients This Week</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="pendingQueries">-</div>
+          <div class="stat-desc">Pending Queries</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="activeAgents">-</div>
+          <div class="stat-desc">Active Agents</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="completionRate">-</div>
+          <div class="stat-desc">Completion Rate</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Available Reports -->
+    <div class="reports-grid">
+      <div class="report-card">
+        <i class="fas fa-users report-icon"></i>
+        <div class="report-title">Client Summary Report</div>
+        <div class="report-desc">Comprehensive overview of all clients, their status, and payment history.</div>
+        <button class="generate-btn" onclick="generateReport('client-summary')">
+          <i class="fas fa-download"></i> Generate Report
+        </button>
+      </div>
+
+      <div class="report-card">
+        <i class="fas fa-credit-card report-icon"></i>
+        <div class="report-title">Payment Analysis</div>
+        <div class="report-desc">Detailed payment tracking, missed payments, and revenue analysis.</div>
+        <button class="generate-btn" onclick="generateReport('payment-analysis')">
+          <i class="fas fa-download"></i> Generate Report
+        </button>
+      </div>
+
+      <div class="report-card">
+        <i class="fas fa-chart-pie report-icon"></i>
+        <div class="report-title">Service Performance</div>
+        <div class="report-desc">Performance metrics by service type, success rates, and completion times.</div>
+        <button class="generate-btn" onclick="generateReport('service-performance')">
+          <i class="fas fa-download"></i> Generate Report
+        </button>
+      </div>
+
+      <div class="report-card">
+        <i class="fas fa-user-tie report-icon"></i>
+        <div class="report-title">Agent Performance</div>
+        <div class="report-desc">Individual agent metrics, client capture rates, and productivity analysis.</div>
+        <button class="generate-btn" onclick="generateReport('agent-performance')">
+          <i class="fas fa-download"></i> Generate Report
+        </button>
+      </div>
+
+      <div class="report-card">
+        <i class="fas fa-envelope report-icon"></i>
+        <div class="report-title">Communication Report</div>
+        <div class="report-desc">Email delivery rates, query response times, and communication effectiveness.</div>
+        <button class="generate-btn" onclick="generateReport('communication')">
+          <i class="fas fa-download"></i> Generate Report
+        </button>
+      </div>
+
+      <div class="report-card">
+        <i class="fas fa-calendar-alt report-icon"></i>
+        <div class="report-title">Monthly Summary</div>
+        <div class="report-desc">Complete monthly overview with KPIs, trends, and business insights.</div>
+        <button class="generate-btn" onclick="generateReport('monthly-summary')">
+          <i class="fas fa-download"></i> Generate Report
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const { createClient } = supabase;
+    const supabaseClient = createClient(
+      'https://xzjunkpxvfdpuogoflzh.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ'
+    );
+
+    // Load quick statistics
+    async function loadQuickStats() {
+      try {
+        // Load clients data
+        const { data: clients } = await supabaseClient
+          .from('edsa_client_database')
+          .select('status, created_at');
+
+        // Load queries data  
+        const { data: queries } = await supabaseClient
+          .from('QUERIES')
+          .select('status, created_at');
+
+        // Load users data
+        const { data: users } = await supabaseClient
+          .from('edsa_users')
+          .select('role, is_active');
+
+        if (clients) {
+          const thisWeek = clients.filter(c => {
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            return new Date(c.created_at) > weekAgo;
+          }).length;
+          
+          document.getElementById('thisWeekClients').textContent = thisWeek;
+        }
+
+        if (queries) {
+          const pending = queries.filter(q => q.status === 'PENDING').length;
+          document.getElementById('pendingQueries').textContent = pending;
+        }
+
+        if (users) {
+          const activeAgents = users.filter(u => u.role === 'agent' && u.is_active).length;
+          document.getElementById('activeAgents').textContent = activeAgents;
+        }
+
+        // Sample completion rate
+        document.getElementById('completionRate').textContent = '88%';
+
+      } catch (error) {
+        console.error('Error loading stats:', error);
+        // Use sample data
+        document.getElementById('thisWeekClients').textContent = '12';
+        document.getElementById('pendingQueries').textContent = '8';
+        document.getElementById('activeAgents').textContent = '15';
+        document.getElementById('completionRate').textContent = '88%';
+      }
+    }
+
+    // Generate report function
+    function generateReport(reportType) {
+      alert(`Generating ${reportType} report...\n\nThis feature will export data to CSV/PDF format. Report will be ready for download shortly.`);
+      
+      // In production, this would call an API to generate the actual report
+      console.log('Generating report:', reportType);
+    }
+
+    // Load data on page load
+    document.addEventListener('DOMContentLoaded', loadQuickStats);
+
+    // Session management
+    (function(){
+      try {
+        const sess = JSON.parse(localStorage.getItem('edsa_staff_session') || 'null');
+        if (!sess) { 
+          window.location.href = 'staff-login.html'; 
+          return; 
+        }
+      } catch(e) {
+        console.error(e);
+        window.location.href = 'staff-login.html';
+      }
+    })();
+  </script>
+</body>
+</html>

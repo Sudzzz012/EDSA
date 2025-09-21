@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Click-Away Support | Erase Debt SA</title>
+  <link rel="icon" href="erase-debt-logo.png"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #003865, #005c97);
+      color: #fff;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .logo {
+      width: 120px;
+      margin-bottom: 20px;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+    .subtitle {
+      font-size: 1.2rem;
+      color: #dce8f7;
+      margin-bottom: 30px;
+    }
+    .support-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+    .support-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .support-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    }
+    .support-icon {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      color: #ffd700;
+    }
+    .support-title {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      color: #fff;
+    }
+    .support-desc {
+      color: #dce8f7;
+      margin-bottom: 25px;
+      line-height: 1.6;
+    }
+    .support-btn {
+      display: inline-block;
+      padding: 12px 25px;
+      background: linear-gradient(135deg, #2970ba, #005c97);
+      color: white;
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: bold;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .support-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(41, 112, 186, 0.3);
+    }
+    .contact-section {
+      background: rgba(255, 255, 255, 0.95);
+      color: #333;
+      border-radius: 20px;
+      padding: 40px;
+      text-align: center;
+      margin-top: 40px;
+    }
+    .contact-title {
+      color: #2970ba;
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+    .contact-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      margin: 30px 0;
+    }
+    .contact-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      padding: 20px;
+      background: #f8fafc;
+      border-radius: 15px;
+    }
+    .contact-icon {
+      font-size: 1.5rem;
+      color: #2970ba;
+    }
+    .contact-text {
+      font-weight: bold;
+      color: #333;
+    }
+    .chat-widget {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+    .chat-bubble {
+      background: linear-gradient(135deg, #2970ba, #005c97);
+      color: white;
+      border-radius: 50px;
+      padding: 15px 25px;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(41, 112, 186, 0.4);
+      transition: transform 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .chat-bubble:hover {
+      transform: scale(1.05);
+    }
+    .back-link {
+      text-align: center;
+      margin-top: 40px;
+    }
+    .back-link a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 25px;
+      transition: background 0.3s;
+    }
+    .back-link a:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="erase-debt-logo.png" alt="Erase Debt SA Logo" class="logo" />
+      <h1>Click-Away Support</h1>
+      <p class="subtitle">Professional help is just a click away. We're here to assist you every step of the way.</p>
+    </div>
+
+    <div class="support-grid">
+      <div class="support-card">
+        <div class="support-icon">
+          <i class="fa-solid fa-headset"></i>
+        </div>
+        <h3 class="support-title">Phone Support</h3>
+        <p class="support-desc">Speak directly with our experienced consultants during business hours for immediate assistance.</p>
+        <a href="tel:0315002220" class="support-btn">
+          <i class="fa-solid fa-phone"></i> Call Now
+        </a>
+      </div>
+
+      <div class="support-card">
+        <div class="support-icon">
+          <i class="fa-solid fa-envelope"></i>
+        </div>
+        <h3 class="support-title">Email Support</h3>
+        <p class="support-desc">Send us detailed queries and receive comprehensive responses within 24 hours.</p>
+        <a href="mailto:queries@erasedebtsa.co.za" class="support-btn">
+          <i class="fa-solid fa-envelope"></i> Send Email
+        </a>
+      </div>
+
+      <div class="support-card">
+        <div class="support-icon">
+          <i class="fa-solid fa-comments"></i>
+        </div>
+        <h3 class="support-title">Submit Query</h3>
+        <p class="support-desc">Use our secure online form to submit detailed queries with file attachments.</p>
+        <a href="query.html" class="support-btn">
+          <i class="fa-solid fa-paper-plane"></i> Submit Query
+        </a>
+      </div>
+
+      <div class="support-card">
+        <div class="support-icon">
+          <i class="fa-solid fa-search"></i>
+        </div>
+        <h3 class="support-title">Track Progress</h3>
+        <p class="support-desc">Monitor your application status, payments, and communication history in real-time.</p>
+        <a href="track-application.html" class="support-btn">
+          <i class="fa-solid fa-chart-line"></i> Track Now
+        </a>
+      </div>
+
+      <div class="support-card">
+        <div class="support-icon">
+          <i class="fa-solid fa-robot"></i>
+        </div>
+        <h3 class="support-title">AI Assistant</h3>
+        <p class="support-desc">Get instant answers to common questions with our intelligent virtual assistant.</p>
+        <a href="#" onclick="openChatWidget()" class="support-btn">
+          <i class="fa-solid fa-robot"></i> Chat Now
+        </a>
+      </div>
+
+      <div class="support-card">
+        <div class="support-icon">
+          <i class="fa-solid fa-book"></i>
+        </div>
+        <h3 class="support-title">Knowledge Base</h3>
+        <p class="support-desc">Browse our comprehensive guides and frequently asked questions.</p>
+        <a href="#faq" class="support-btn">
+          <i class="fa-solid fa-book"></i> Learn More
+        </a>
+      </div>
+    </div>
+
+    <div class="contact-section">
+      <h2 class="contact-title">Contact Information</h2>
+      <div class="contact-info">
+        <div class="contact-item">
+          <i class="fa-solid fa-phone contact-icon"></i>
+          <div class="contact-text">
+            031 500 2220<br>
+            031 109 5560
+          </div>
+        </div>
+        <div class="contact-item">
+          <i class="fa-solid fa-envelope contact-icon"></i>
+          <div class="contact-text">
+            queries@erasedebtsa.co.za<br>
+            admin@erasedebtsa.co.za
+          </div>
+        </div>
+        <div class="contact-item">
+          <i class="fa-solid fa-clock contact-icon"></i>
+          <div class="contact-text">
+            Mon - Fri: 8:00 AM - 5:00 PM<br>
+            Sat: 8:00 AM - 1:00 PM
+          </div>
+        </div>
+        <div class="contact-item">
+          <i class="fa-solid fa-map-marker-alt contact-icon"></i>
+          <div class="contact-text">
+            23 Whetstone Drive, Unit 11<br>
+            Phoenix, Durban, 4068
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="back-link">
+      <a href="index.html">
+        <i class="fa-solid fa-arrow-left"></i>
+        Back to Homepage
+      </a>
+    </div>
+  </div>
+
+  <!-- Floating Chat Widget -->
+  <div class="chat-widget">
+    <div class="chat-bubble" onclick="openChatWidget()">
+      <i class="fa-solid fa-comments"></i>
+      <span>Need Help?</span>
+    </div>
+  </div>
+
+  <script>
+    function openChatWidget() {
+      // Simple chat simulation - in production, integrate with actual chat service
+      const chatOptions = [
+        "📞 Call us at 031 500 2220",
+        "📧 Email: queries@erasedebtsa.co.za", 
+        "📝 Submit a query form",
+        "📊 Track your application"
+      ];
+      
+      const choice = confirm(
+        "Choose your preferred support method:\n\n" +
+        "OK = Phone Call\n" +
+        "Cancel = Submit Query Form"
+      );
+      
+      if (choice) {
+        window.location.href = "tel:0315002220";
+      } else {
+        window.location.href = "query.html";
+      }
+    }
+
+    // Add some interactive elements
+    document.addEventListener('DOMContentLoaded', function() {
+      // Animate cards on scroll
+      const cards = document.querySelectorAll('.support-card');
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+          }
+        });
+      });
+      
+      cards.forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.6s, transform 0.6s';
+        observer.observe(card);
+      });
+    });
+  </script>
+</body>
+</html>
