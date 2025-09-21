@@ -727,15 +727,25 @@
     document.getElementById('idInput').addEventListener('input', function(e) {
       if (e.target.value.trim()) {
         document.getElementById('refInput').value = '';
+        clearMessage('refMsg');
       }
     });
 
     document.getElementById('emailInput').addEventListener('input', function(e) {
       if (e.target.value.trim()) {
         document.getElementById('refInput').value = '';
+        clearMessage('refMsg');
       }
     });
 
+    // Clear ID/email fields when reference is entered
+    document.getElementById('refInput').addEventListener('input', function(e) {
+      if (e.target.value.trim()) {
+        document.getElementById('idInput').value = '';
+        document.getElementById('emailInput').value = '';
+        clearMessage('lookupMsg');
+      }
+    });</parameter>
     console.log('🔍 Track Query page loaded - Simple OTP Flow');
   </script>
 </body>
