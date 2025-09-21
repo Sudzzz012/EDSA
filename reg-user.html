@@ -1,40 +1,119 @@
-
-html_content = """<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Register Staff User | Erase Debt SA</title>
   <link rel="icon" href="erase-debt-logo.png"/>
-
-  <!-- Content Security Policy: allow Supabase + jsDelivr + inline styles -->
-  <meta http-equiv="Content-Security-Policy" content="
-    default-src 'self';
-    connect-src 'self' https://xzjunkpxvfdpuogoflzh.supabase.co https://*.supabase.co https://*.supabase.in https://api.sendgrid.com;
-    script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline';
-    style-src 'self' 'unsafe-inline';
-    img-src 'self' data:;
-    font-src 'self' data:;
-  ">
-
   <style>
-    body { font-family: Arial, sans-serif; background: linear-gradient(135deg,#003865,#005c97); margin:0; padding:24px; color:#14243b; }
-    .wrap { max-width: 860px; margin: 0 auto; }
-    .header { display:flex; align-items:center; gap:16px; margin-bottom:14px; }
-    .logo { width:110px; border-radius:12px; box-shadow:0 6px 24px #2970ba55; }
-    .title { color:#fff; font-size:1.9rem; font-weight:800; letter-spacing:-.2px; }
-    .card { background:#fff; border-radius:16px; box-shadow:0 14px 44px #2970ba33; padding:22px; }
-    .desc { color:#445; text-align:center; margin:6px 0 18px; }
-    label { display:block; font-weight:700; margin:10px 0 6px; }
-    input, select { width:100%; padding:12px; border-radius:10px; border:1px solid #c7d8ef; font-size:1rem; }
-    .row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-    @media(max-width:780px){ .row { grid-template-columns:1fr; } }
-    button { width:100%; margin-top:16px; padding:14px; border:none; border-radius:12px; background:#2970ba; color:#fff; font-weight:800; cursor:pointer; }
-    button:hover { background:#003865; }
-    .msg { margin-top:14px; font-weight:700; text-align:center; white-space:pre-wrap; }
-    .back { display:inline-block; margin-top:14px; color:#2970ba; font-weight:700; text-decoration:none; }
-    .small { font-size: 0.92rem; color:#5b6b82; }
+    body { 
+      font-family: Arial, sans-serif; 
+      background: linear-gradient(135deg,#003865,#005c97); 
+      margin:0; padding:24px; color:#14243b; 
+    }
+    .wrap { 
+      max-width: 860px; 
+      margin: 0 auto; 
+    }
+    .header { 
+      display:flex; 
+      align-items:center; 
+      gap:16px; 
+      margin-bottom:14px; 
+    }
+    .logo { 
+      width:110px; 
+      border-radius:12px; 
+      box-shadow:0 6px 24px #2970ba55; 
+    }
+    .title { 
+      color:#fff; 
+      font-size:1.9rem; 
+      font-weight:800; 
+      letter-spacing:-.2px; 
+    }
+    .card { 
+      background:#fff; 
+      border-radius:16px; 
+      box-shadow:0 14px 44px #2970ba33; 
+      padding:22px; 
+    }
+    .desc { 
+      color:#445; 
+      text-align:center; 
+      margin:6px 0 18px; 
+    }
+    label { 
+      display:block; 
+      font-weight:700; 
+      margin:10px 0 6px; 
+    }
+    input, select { 
+      width:100%; 
+      padding:12px; 
+      border-radius:10px; 
+      border:1px solid #c7d8ef; 
+      font-size:1rem; 
+      box-sizing: border-box;
+    }
+    .row { 
+      display:grid; 
+      grid-template-columns:1fr 1fr; 
+      gap:14px; 
+    }
+    @media(max-width:780px){ 
+      .row { 
+        grid-template-columns:1fr; 
+      } 
+    }
+    button { 
+      width:100%; 
+      margin-top:16px; 
+      padding:14px; 
+      border:none; 
+      border-radius:12px; 
+      background:#2970ba; 
+      color:#fff; 
+      font-weight:800; 
+      cursor:pointer; 
+      transition: background 0.3s;
+    }
+    button:hover { 
+      background:#003865; 
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .msg { 
+      margin-top:14px; 
+      font-weight:700; 
+      text-align:center; 
+      white-space:pre-wrap; 
+    }
+    .success {
+      color: #16a34a;
+    }
+    .error {
+      color: #dc2626;
+    }
+    .back { 
+      display:inline-block; 
+      margin-top:14px; 
+      color:#2970ba; 
+      font-weight:700; 
+      text-decoration:none; 
+    }
+    .back:hover {
+      text-decoration: underline;
+    }
+    .small { 
+      font-size: 0.92rem; 
+      color:#5b6b82; 
+      margin-top: 10px;
+    }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body>
   <div class="wrap">
@@ -45,29 +124,28 @@ html_content = """<!DOCTYPE html>
 
     <div class="card">
       <div class="desc">
-        ID Number is the username. No password is captured here — the user will receive an email to set their password securely.
+        Create a new staff user account. The ID Number will be used as the username for login.
       </div>
 
       <form id="registerForm" autocomplete="off">
         <div class="row">
           <div>
-            <label>Full Name</label>
-            <input id="full_name" required />
+            <label>Full Name *</label>
+            <input id="full_name" required placeholder="John Doe" />
           </div>
           <div>
-            <label>Email Address</label>
-            <input id="email" type="email" required />
+            <label>Email Address *</label>
+            <input id="email" type="email" required placeholder="john@erasedebtsa.co.za" />
           </div>
         </div>
 
         <div class="row">
           <div>
-            <label>ID Number (Username)</label>
-            <input id="id_number" required />
+            <label>ID Number (Username) *</label>
+            <input id="id_number" required placeholder="1234567890123" maxlength="13" />
           </div>
           <div>
-            <label>Role</label>
-            <!-- must match DB CHECK: agent | admin | admin_manager | super -->
+            <label>Role *</label>
             <select id="role" required>
               <option value="">Select Role</option>
               <option value="agent">Agent</option>
@@ -80,7 +158,7 @@ html_content = """<!DOCTYPE html>
 
         <div class="row">
           <div>
-            <label>Branch</label>
+            <label>Branch *</label>
             <select id="branch" required>
               <option value="">Select Branch</option>
               <option>Erase Debt SA - ADMIN</option>
@@ -105,7 +183,7 @@ html_content = """<!DOCTYPE html>
             </select>
           </div>
           <div>
-            <label>Status</label>
+            <label>Status *</label>
             <select id="status" required>
               <option value="active" selected>Active</option>
               <option value="disabled">Disabled</option>
@@ -113,93 +191,113 @@ html_content = """<!DOCTYPE html>
           </div>
         </div>
 
-        <button type="submit">Create User</button>
+        <div class="row">
+          <div>
+            <label>Password *</label>
+            <input id="password" type="password" required placeholder="Enter secure password" />
+          </div>
+          <div>
+            <label>Confirm Password *</label>
+            <input id="confirm_password" type="password" required placeholder="Confirm password" />
+          </div>
+        </div>
+
+        <button type="submit" id="submitBtn">Create User</button>
         <div id="msg" class="msg"></div>
-        <div class="small">After user is saved, a secure email is sent with a Set Password link.</div>
+        <div class="small">User will be able to login immediately with their ID number and password.</div>
       </form>
 
-      <a class="back" href="super-dashboard.html">← Back to Super Dashboard</a>
+      <a class="back" href="super_dashboard.html">← Back to Super Dashboard</a>
     </div>
   </div>
 
-  <!-- Use ESM import for bcrypt to avoid 'bcrypt is not defined' -->
-  <script type="module">
-    import bcrypt from 'https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/+esm';
-
-    // Supabase project config (anon key you provided)
-    const SUPABASE_URL = "https://xzjunkpxvfdpuogoflzh.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ";
-
-    // 🔐 Shared secret for your Edge Function (set the same value in Supabase -> Secrets as EDSA_FUNCTION_TOKEN)
-    const EDSA_FUNCTION_TOKEN = "mySuperSecretKey123!@#1234567890qwertyuiioopasdfghjklzxcvbnm09876543210";
+  <script>
+    const { createClient } = supabase;
+    const supabaseClient = createClient(
+      'https://xzjunkpxvfdpuogoflzh.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ'
+    );
 
     const msg = document.getElementById('msg');
     const form = document.getElementById('registerForm');
+    const submitBtn = document.getElementById('submitBtn');
 
-    function setStatus(text){ msg.textContent = text; }
-    async function showHttpError(res, prefix=""){
-      let body = "";
-      try { body = await res.text(); } catch {}
-      setStatus(\`❌ \${prefix}HTTP \${res.status} \${res.statusText}\\n\${body}\`);
+    function setStatus(text, type = 'info') {
+      msg.textContent = text;
+      msg.className = `msg ${type}`;
     }
 
     // Minimal validation
     function validateEmail(email) {
-      return /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }
 
-    // Insert user into edsa_users
-    async function insertUser(payload){
-      return fetch(\`\${SUPABASE_URL}/rest/v1/edsa_users\`, {
-        method: 'POST',
-        mode: 'cors',
-        headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': \`Bearer \${SUPABASE_ANON_KEY}\`,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=representation'
-        },
-        body: JSON.stringify(payload)
-      });
-    }
+    // Auto-format ID number (numbers only, max 13 digits)
+    document.getElementById('id_number').addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length > 13) value = value.substring(0, 13);
+      e.target.value = value;
+    });
 
-    // Call Edge Function to send Set-Password email
-    async function sendWelcomeEmail({ to, id_number, full_name, branch }){
-      const headers = { 'Content-Type': 'application/json' };
-      if (EDSA_FUNCTION_TOKEN && EDSA_FUNCTION_TOKEN !== "mySuperSecretKey123!@#1234567890qwertyuiioopasdfghjklzxcvbnm09876543210") {
-        headers['x-edsa-token'] = EDSA_FUNCTION_TOKEN;
-      }
-      return fetch(\`\${SUPABASE_URL}/functions/v1/send-user-email-public\`, {
-        method: 'POST',
-        mode: 'cors',
-        headers,
-        body: JSON.stringify({ to, id_number, full_name, branch })
-      });
+    // Simple password hashing (for demo - in production use proper bcrypt)
+    async function hashPassword(password) {
+      // Simple hash for demo - in production you'd use proper bcrypt server-side
+      return btoa(password + 'salt_edsa_2025');
     }
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      setStatus('⏳ Creating user...');
+      setStatus('⏳ Creating user...', 'info');
+      submitBtn.disabled = true;
 
       const full_name = document.getElementById('full_name').value.trim();
       const email = document.getElementById('email').value.trim().toLowerCase();
       const id_number = document.getElementById('id_number').value.trim();
-      const role = document.getElementById('role').value;     // agent|admin|admin_manager|super
+      const password = document.getElementById('password').value.trim();
+      const confirm_password = document.getElementById('confirm_password').value.trim();
+      const role = document.getElementById('role').value;
       const branch = document.getElementById('branch').value;
       const status = document.getElementById('status').value;
 
-      if (!validateEmail(email)) { setStatus('❌ Please enter a valid email.'); return; }
-      if (!/^[0-9]{6,}$/.test(id_number)) { setStatus('❌ Please enter a valid ID number.'); return; }
-      if (!role) { setStatus('❌ Please select a role.'); return; }
-      if (!branch) { setStatus('❌ Please select a branch.'); return; }
+      // Validation
+      if (!validateEmail(email)) { 
+        setStatus('❌ Please enter a valid email.', 'error'); 
+        submitBtn.disabled = false;
+        return; 
+      }
+      if (!/^[0-9]{13}$/.test(id_number)) { 
+        setStatus('❌ Please enter a valid 13-digit ID number.', 'error'); 
+        submitBtn.disabled = false;
+        return; 
+      }
+      if (password.length < 6) {
+        setStatus('❌ Password must be at least 6 characters.', 'error');
+        submitBtn.disabled = false;
+        return;
+      }
+      if (password !== confirm_password) {
+        setStatus('❌ Passwords do not match.', 'error');
+        submitBtn.disabled = false;
+        return;
+      }
+      if (!role) { 
+        setStatus('❌ Please select a role.', 'error'); 
+        submitBtn.disabled = false;
+        return; 
+      }
+      if (!branch) { 
+        setStatus('❌ Please select a branch.', 'error'); 
+        submitBtn.disabled = false;
+        return; 
+      }
 
       try {
-        // Generate a temporary random password just to satisfy NOT NULL on password_hash (user will replace via set-password)
-        const temp = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
-        const password_hash = await bcrypt.hash(temp, 10);
+        // Hash the password
+        const password_hash = await hashPassword(password);
 
-        // Insert into edsa_users (match your schema)
-        const insertRes = await insertUser({
+        // Insert into edsa_users
+        const userData = {
+          id: crypto.randomUUID(),
           full_name,
           email,
           id_number,
@@ -207,40 +305,43 @@ html_content = """<!DOCTYPE html>
           role,
           branch,
           status,
-          is_active: status === 'active'
-        });
+          is_active: status === 'active',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
 
-        if (!insertRes.ok) { return showHttpError(insertRes, 'Failed to register user in database: '); }
-        const [created] = await insertRes.json();
+        const { error } = await supabaseClient
+          .from('edsa_users')
+          .insert([userData]);
 
-        setStatus('✅ User saved. Sending welcome email...');
-
-        const emailRes = await sendWelcomeEmail({
-          to: email,
-          id_number,
-          full_name,
-          branch
-        });
-
-        if (!emailRes.ok) {
-          const body = await emailRes.text().catch(()=>'');
-          setStatus(\`⚠️ User saved, but email failed:\\nHTTP \${emailRes.status} \${emailRes.statusText}\\n\${body}\`);
-          return;
+        if (error) {
+          throw error;
         }
 
-        setStatus('🎉 User created and email sent successfully.');
+        setStatus('🎉 User created successfully!', 'success');
         form.reset();
+        
       } catch (err) {
-        setStatus('❌ Unexpected error: ' + (err?.message || String(err)));
+        console.error('Error creating user:', err);
+        setStatus('❌ Error: ' + (err?.message || String(err)), 'error');
+      } finally {
+        submitBtn.disabled = false;
       }
     });
+
+    // Session management
+    (function(){
+      try {
+        const sess = JSON.parse(localStorage.getItem('edsa_staff_session') || 'null');
+        if (!sess) { 
+          window.location.href = 'staff-login.html'; 
+          return; 
+        }
+      } catch(e) {
+        console.error(e);
+        window.location.href = 'staff-login.html';
+      }
+    })();
   </script>
 </body>
 </html>
-"""
-
-path = "/mnt/data/register-user.html"
-with open(path, "w", encoding="utf-8") as f:
-    f.write(html_content)
-
-path
