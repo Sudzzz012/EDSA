@@ -22,7 +22,7 @@
     
     /* Login Form Styles */
     .login-container { 
-      max-width: 440px; 
+      max-width: 540px; 
       background: #fff; 
       border-radius: 22px; 
       box-shadow: 0 10px 44px #2970ba44; 
@@ -36,6 +36,30 @@
       font-size: 0.95rem; color: #444; margin-bottom: 20px; 
       line-height: 1.5; text-align: center; 
     }
+    
+    /* Two Search Methods */
+    .search-section {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 15px 0;
+    }
+    .search-section.primary {
+      background: #f0f9ff;
+      border-color: #0ea5e9;
+    }
+    .search-section h3 {
+      color: #2970ba;
+      margin: 0 0 10px 0;
+      font-size: 16px;
+    }
+    .search-section p {
+      color: #64748b;
+      font-size: 14px;
+      margin: 0 0 15px 0;
+    }
+    
     label { font-weight: bold; display: block; margin: 11px 0 6px 0; }
     input { 
       width: 100%; padding: 13px; border-radius: 8px; border: 1px solid #c7d8ef; 
@@ -54,8 +78,8 @@
     .hidden { display: none; }
     .step { display: block; }
     .or-divider { 
-      text-align: center; margin: 15px 0; color: #888; 
-      position: relative; font-size: 0.9em;
+      text-align: center; margin: 20px 0; color: #888; 
+      position: relative; font-size: 0.9em; font-weight: bold;
     }
     .or-divider::before {
       content: ''; position: absolute; top: 50%; left: 0; right: 0; 
@@ -143,29 +167,40 @@
     <div class="login-container">
       <img src="erase-debt-logo.png" alt="Erase Debt SA Logo" class="logo" />
       
-      <!-- Step 1: Enter Query Details -->
+      <!-- Step 1: Two Search Methods -->
       <div id="step1" class="step">
         <h2>Track Your Query</h2>
         <div class="instructions">
-          Enter your <strong>query reference number</strong><br>
-          <div class="or-divider"><span>OR</span></div>
-          Enter your <strong>ID number</strong> and <strong>email address</strong><br><br>
-          We'll send you a <strong>verification code via email</strong> to access your query details.
+          Choose one of the methods below to find and view your query details and responses.
         </div>
-        <form id="lookupForm">
-          <label>Query Reference Number (if you have it)</label>
-          <input name="ref" type="text" placeholder="EDSA20250120-1234" id="refInput">
-          
-          <div class="or-divider"><span>OR</span></div>
-          
-          <label>ID Number</label>
-          <input name="id_number" type="text" placeholder="8804015196086" id="idInput">
-          <label>Email Address</label>
-          <input name="email" type="email" placeholder="your@email.com" id="emailInput">
-          
-          <button type="submit" id="lookupBtn">Search & Send OTP</button>
-          <div class="msg" id="lookupMsg"></div>
-        </form>
+
+        <!-- Method 1: Reference Number Search -->
+        <div class="search-section primary">
+          <h3><i class="fa-solid fa-hashtag"></i> Method 1: Reference Number Search</h3>
+          <p>If you have your query reference number, enter it below for instant access:</p>
+          <form id="refForm">
+            <label>Query Reference Number</label>
+            <input name="ref" type="text" placeholder="EDSA20250120-1234" id="refInput">
+            <button type="submit" id="refBtn">Search by Reference</button>
+            <div class="msg" id="refMsg"></div>
+          </form>
+        </div>
+
+        <div class="or-divider"><span>OR</span></div>
+
+        <!-- Method 2: ID + Email with OTP -->
+        <div class="search-section">
+          <h3><i class="fa-solid fa-envelope"></i> Method 2: ID + Email Search (OTP Required)</h3>
+          <p>If you don't have a reference number, we'll send you a verification code:</p>
+          <form id="otpForm">
+            <label>ID Number</label>
+            <input name="id_number" type="text" placeholder="8804015196086" id="idInput">
+            <label>Email Address</label>
+            <input name="email" type="email" placeholder="your@email.com" id="emailInput">
+            <button type="submit" id="otpBtn">Send OTP & Search</button>
+            <div class="msg" id="otpMsg"></div>
+          </form>
+        </div>
       </div>
 
       <!-- Step 2: Enter OTP -->
@@ -174,11 +209,11 @@
         <div class="instructions">
           We've sent a 6-digit verification code to your email address. Please enter it below to view your query and application details.
         </div>
-        <form id="otpForm">
+        <form id="verifyOtpForm">
           <label>Enter 6-digit OTP</label>
-          <input name="otp" type="text" maxlength="6" required placeholder="123456" id="otpInput">
-          <button type="submit" id="otpBtn">Verify & Access</button>
-          <div class="msg" id="otpMsg"></div>
+          <input name="otp" type="text" maxlength="6" required placeholder="123456" id="otpCodeInput">
+          <button type="submit" id="verifyBtn">Verify & Access</button>
+          <div class="msg" id="verifyMsg"></div>
         </form>
         <button onclick="goBackToStep1()" style="background:#666; margin-top:10px;">← Try Again</button>
       </div>
@@ -271,7 +306,7 @@
 
     let currentQuery = null;
     let currentClient = null;
-    let currentSearchData = null; // Store search criteria for OTP verification
+    let currentSearchData = null;
 
     function showStep(stepNum) {
       document.getElementById('step1').classList.add('hidden');
@@ -307,10 +342,12 @@
 
     function goBackToStep1() {
       showStep(1);
-      clearMessage('lookupMsg');
+      clearMessage('refMsg');
       clearMessage('otpMsg');
-      document.getElementById('lookupForm').reset();
+      clearMessage('verifyMsg');
+      document.getElementById('refForm').reset();
       document.getElementById('otpForm').reset();
+      document.getElementById('verifyOtpForm').reset();
       currentQuery = null;
       currentClient = null;
       currentSearchData = null;
@@ -589,47 +626,92 @@
       displayQueryData(queries, currentQuery);
     }
 
-    // Store OTP for verification (in production, this would be server-side)
+    // Store OTP for verification
     let storedOTP = null;
     let otpEmail = null;
 
-    // STEP 1: Search for query and send OTP
-    document.getElementById('lookupForm').addEventListener('submit', async function(e) {
+    // Method 1: Reference Number Search (Direct Access)
+    document.getElementById('refForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       const form = e.target;
-      const lookupBtn = document.getElementById('lookupBtn');
+      const refBtn = document.getElementById('refBtn');
       const refNumber = form.ref.value.trim();
+
+      clearMessage('refMsg');
+      refBtn.disabled = true;
+      refBtn.textContent = 'Searching...';
+
+      try {
+        if (!refNumber) {
+          showMessage('refMsg', 'Please enter a reference number.', true);
+          return;
+        }
+
+        // Search for query by reference
+        const queryData = await findQuery({ ref: refNumber });
+
+        if (!queryData) {
+          showMessage('refMsg', 'No query found with this reference number.', true);
+          return;
+        }
+
+        currentQuery = queryData;
+        
+        // Load both query and application data
+        const allQueries = await loadAllQueries(queryData.id_number, queryData.email);
+        currentClient = await loadApplicationData(queryData.id_number, queryData.email);
+        
+        showMessage('refMsg', '✅ Query found! Loading your information...', false);
+        
+        setTimeout(() => {
+          displayQueryData(allQueries, currentQuery);
+          displayApplicationData(currentClient);
+          showDashboard();
+        }, 1000);
+
+      } catch (error) {
+        console.error('Reference search error:', error);
+        showMessage('refMsg', 'An error occurred. Please try again.', true);
+      } finally {
+        refBtn.disabled = false;
+        refBtn.textContent = 'Search by Reference';
+      }
+    });
+
+    // Method 2: ID + Email Search (Send OTP)
+    document.getElementById('otpForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const otpBtn = document.getElementById('otpBtn');
       const idNumber = form.id_number.value.trim();
       const email = form.email.value.trim();
 
-      clearMessage('lookupMsg');
-      lookupBtn.disabled = true;
-      lookupBtn.textContent = 'Searching...';
+      clearMessage('otpMsg');
+      otpBtn.disabled = true;
+      otpBtn.textContent = 'Searching...';
 
       try {
-        // Validate input
-        if (!refNumber && (!idNumber || !email)) {
-          showMessage('lookupMsg', 'Please enter either a reference number OR both ID number and email.', true);
+        if (!idNumber || !email) {
+          showMessage('otpMsg', 'Please enter both ID number and email address.', true);
           return;
         }
 
         // Search for query
-        const searchCriteria = refNumber ? { ref: refNumber } : { id_number: idNumber, email: email };
-        const queryData = await findQuery(searchCriteria);
+        const queryData = await findQuery({ id_number: idNumber, email: email });
 
         if (!queryData) {
-          showMessage('lookupMsg', 'No query found. Please check your reference number or ID/email combination.', true);
+          showMessage('otpMsg', 'No query found. Please check your ID number and email combination.', true);
           return;
         }
 
-        currentSearchData = searchCriteria;
+        currentSearchData = { id_number: idNumber, email: email };
         currentQuery = queryData;
         
         // Generate and store OTP
         storedOTP = generateOTP();
         otpEmail = queryData.email;
         
-        lookupBtn.textContent = 'Sending OTP...';
+        otpBtn.textContent = 'Sending OTP...';
         
         // Send OTP email
         const emailSent = await sendOTP(
@@ -640,36 +722,36 @@
         );
         
         if (emailSent) {
-          showMessage('lookupMsg', `✅ Verification code sent to ${queryData.email}`, false);
+          showMessage('otpMsg', `✅ Verification code sent to ${queryData.email}`, false);
           setTimeout(() => showStep(2), 1500);
         } else {
-          showMessage('lookupMsg', 'Failed to send verification code. Please try again.', true);
+          showMessage('otpMsg', 'Failed to send verification code. Please try again.', true);
         }
 
       } catch (error) {
-        console.error('Lookup error:', error);
-        showMessage('lookupMsg', 'An error occurred. Please try again.', true);
+        console.error('OTP search error:', error);
+        showMessage('otpMsg', 'An error occurred. Please try again.', true);
       } finally {
-        lookupBtn.disabled = false;
-        lookupBtn.textContent = 'Search & Send OTP';
+        otpBtn.disabled = false;
+        otpBtn.textContent = 'Send OTP & Search';
       }
     });
 
-    // STEP 2: Verify OTP and load data
-    document.getElementById('otpForm').addEventListener('submit', async function(e) {
+    // Step 2: Verify OTP and load data
+    document.getElementById('verifyOtpForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       const form = e.target;
-      const otpBtn = document.getElementById('otpBtn');
+      const verifyBtn = document.getElementById('verifyBtn');
       const enteredOtp = form.otp.value.trim();
 
-      clearMessage('otpMsg');
-      otpBtn.disabled = true;
-      otpBtn.textContent = 'Verifying...';
+      clearMessage('verifyMsg');
+      verifyBtn.disabled = true;
+      verifyBtn.textContent = 'Verifying...';
 
       try {
         // Verify OTP
         if (enteredOtp === storedOTP) {
-          showMessage('otpMsg', '✅ Verified! Loading your information...', false);
+          showMessage('verifyMsg', '✅ Verified! Loading your information...', false);
           
           // Load both query and application data
           const allQueries = await loadAllQueries(currentQuery.id_number, currentQuery.email);
@@ -681,14 +763,14 @@
             showDashboard();
           }, 1000);
         } else {
-          showMessage('otpMsg', '❌ Invalid verification code. Please try again.', true);
+          showMessage('verifyMsg', '❌ Invalid verification code. Please try again.', true);
         }
       } catch (error) {
         console.error('OTP verification error:', error);
-        showMessage('otpMsg', 'Verification failed. Please try again.', true);
+        showMessage('verifyMsg', 'Verification failed. Please try again.', true);
       } finally {
-        otpBtn.disabled = false;
-        otpBtn.textContent = 'Verify & Access';
+        verifyBtn.disabled = false;
+        verifyBtn.textContent = 'Verify & Access';
       }
     });
 
@@ -704,26 +786,26 @@
     });
 
     // Auto-format OTP input (numbers only, max 6 digits)
-    document.getElementById('otpInput').addEventListener('input', function(e) {
+    document.getElementById('otpCodeInput').addEventListener('input', function(e) {
       let value = e.target.value.replace(/\D/g, '');
       if (value.length > 6) value = value.substring(0, 6);
       e.target.value = value;
       
       // Auto-submit when 6 digits entered
       if (value.length === 6) {
-        setTimeout(() => document.getElementById('otpForm').dispatchEvent(new Event('submit')), 300);
+        setTimeout(() => document.getElementById('verifyOtpForm').dispatchEvent(new Event('submit')), 300);
       }
     });
 
-    // Clear other fields when reference number is entered
+    // Clear other fields when switching methods
     document.getElementById('refInput').addEventListener('input', function(e) {
       if (e.target.value.trim()) {
         document.getElementById('idInput').value = '';
         document.getElementById('emailInput').value = '';
+        clearMessage('otpMsg');
       }
     });
 
-    // Clear reference field when ID/email is entered
     document.getElementById('idInput').addEventListener('input', function(e) {
       if (e.target.value.trim()) {
         document.getElementById('refInput').value = '';
@@ -738,15 +820,7 @@
       }
     });
 
-    // Clear ID/email fields when reference is entered
-    document.getElementById('refInput').addEventListener('input', function(e) {
-      if (e.target.value.trim()) {
-        document.getElementById('idInput').value = '';
-        document.getElementById('emailInput').value = '';
-        clearMessage('lookupMsg');
-      }
-    });</parameter>
-    console.log('🔍 Track Query page loaded - Simple OTP Flow');
+    console.log('🔍 Track Query page loaded - Two Separate Search Methods');
   </script>
 </body>
 </html>
