@@ -5,7 +5,6 @@
   "main": "index.html",
   "scripts": {
     "dev": "npx http-server . -p 8080 -o",
-    "dev": "python -m http.server 3000 2>/dev/null || python3 -m http.server 3000 2>/dev/null || echo 'Python not available for dev server'",
     "start": "npm run dev"
   },
   "keywords": ["erase-debt-sa", "client-portal", "static-website"],
