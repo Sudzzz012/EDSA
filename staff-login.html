@@ -557,6 +557,85 @@
     });
 
     console.log('🔐 Staff Login page loaded');
+
+    // Role Selection Logic
+    let selectedRole = null;
+    
+    const roleCards = document.querySelectorAll('.role-card');
+    const continueBtn = document.getElementById('continueBtn');
+    const roleSelection = document.getElementById('roleSelection');
+    const loginFormDiv = document.getElementById('loginForm');
+    const selectedRoleTitle = document.getElementById('selectedRoleTitle');
+    const selectedRoleDesc = document.getElementById('selectedRoleDesc');
+    const backToRolesBtn = document.getElementById('backToRoles');
+    
+    // Role card click handlers
+    roleCards.forEach(card => {
+      card.addEventListener('click', function() {
+        // Remove selected class from all cards
+        roleCards.forEach(c => c.classList.remove('selected'));
+        
+        // Add selected class to clicked card
+        this.classList.add('selected');
+        
+        // Store selected role
+        selectedRole = this.dataset.role;
+        
+        // Enable continue button
+        continueBtn.disabled = false;
+        continueBtn.textContent = `Continue as ${this.querySelector('h3').textContent}`;
+        
+        console.log('Selected role:', selectedRole);
+      });
+    });
+    
+    // Continue to login form
+    continueBtn.addEventListener('click', function() {
+      if (!selectedRole) return;
+      
+      // Update role info in login form
+      const roleInfo = {
+        'agent': { title: 'Agent Login', desc: 'Client management & lead capture' },
+        'admin': { title: 'Admin Login', desc: 'System administration' },
+        'admin_manager': { title: 'Admin Manager Login', desc: 'Advanced management tools' },
+        'super': { title: 'Super User Login', desc: 'Full system access' }
+      };
+      
+      const info = roleInfo[selectedRole] || { title: 'Staff Login', desc: 'System access' };
+      selectedRoleTitle.textContent = info.title;
+      selectedRoleDesc.textContent = info.desc;
+      
+      // Show login form, hide role selection
+      roleSelection.style.display = 'none';
+      loginFormDiv.style.display = 'block';
+      
+      // Focus on username input
+      setTimeout(() => {
+        usernameInput.focus();
+      }, 100);
+    });
+    
+    // Back to role selection
+    backToRolesBtn.addEventListener('click', function() {
+      roleSelection.style.display = 'block';
+      loginFormDiv.style.display = 'none';
+      
+      // Clear form
+      usernameInput.value = '';
+      passwordInput.value = '';
+      hideMessages();
+      
+      // Reset role selection
+      roleCards.forEach(c => c.classList.remove('selected'));
+      selectedRole = null;
+      continueBtn.disabled = true;
+      continueBtn.textContent = 'Continue to Login';
+    });
+    
+    // Function to create super user (for testing)
+    window.goBackToRoleSelection = function() {
+      backToRolesBtn.click();
+    };
   </script>
 </body>
 </html>
