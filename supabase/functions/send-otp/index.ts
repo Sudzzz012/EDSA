@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'npm:@supabase/supabase-js@2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -24,6 +23,8 @@ async function hashOTP(otp: string): Promise<string> {
 }
 
 serve(async (req) => {
+  console.log('🔍 Send OTP function called with method:', req.method)
+  
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -31,32 +32,40 @@ serve(async (req) => {
 
   try {
     if (req.method !== 'POST') {
+      console.log('❌ Invalid method:', req.method)
       return new Response(
         JSON.stringify({ ok: false, error: 'Method not allowed' }),
         { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    // Verify token
+    // Verify token if configured
     const token = req.headers.get('x-edsa-token')
     if (EDSA_FUNCTION_TOKEN && token !== EDSA_FUNCTION_TOKEN) {
+      console.log('❌ Invalid token provided')
       return new Response(
-        JSON.stringify({ ok: false, error: 'Unauthorized' }),
+        JSON.stringify({ ok: false, error: 'Unauthorized access' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    const { ref_number, id_number, email } = await req.json()
+    const body = await req.json()
+    console.log('📝 Request body:', { ...body, email: body.email ? body.email.substring(0, 3) + '***' : 'missing' })
+    
+    const { ref_number, id_number, email } = body
 
     if (!ref_number || !id_number || !email) {
+      console.log('❌ Missing required fields:', { ref_number: !!ref_number, id_number: !!id_number, email: !!email })
       return new Response(
-        JSON.stringify({ ok: false, error: 'Missing required fields' }),
+        JSON.stringify({ ok: false, error: 'Missing required fields: ref_number, id_number, email' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
     // Generate 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString()
+    console.log('🔢 Generated OTP for ref:', ref_number)
+    
     const otp_hash = await hashOTP(otp)
     const expiresAt = new Date(Date.now() + OTP_TTL_MINUTES * 60 * 1000)
     
@@ -66,24 +75,32 @@ serve(async (req) => {
                'unknown'
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')! // Use anon key instead of service role
     
+    console.log('🗑️ Cleaning up existing OTPs...')
     // Clean up any existing OTPs for this user first
-    await fetch(`${supabaseUrl}/rest/v1/edsa_otp_codes?ref_number=eq.${ref_number}&id_number=eq.${id_number}&email=eq.${email}`, {
+    const cleanupResponse = await fetch(`${supabaseUrl}/rest/v1/edsa_otp_codes?ref_number=eq.${ref_number}&id_number=eq.${id_number}&email=eq.${email}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${supabaseKey}`,
-        'apikey': supabaseKey
+        'apikey': supabaseKey,
+        'Content-Type': 'application/json'
       }
     })
     
+    if (!cleanupResponse.ok) {
+      console.log('⚠️ Cleanup failed but continuing:', await cleanupResponse.text())
+    }
+    
+    console.log('💾 Storing new OTP...')
     // Store new OTP
     const storeResponse = await fetch(`${supabaseUrl}/rest/v1/edsa_otp_codes`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${supabaseKey}`,
         'Content-Type': 'application/json',
-        'apikey': supabaseKey
+        'apikey': supabaseKey,
+        'Prefer': 'return=representation'
       },
       body: JSON.stringify({
         ref_number,
@@ -99,15 +116,24 @@ serve(async (req) => {
 
     if (!storeResponse.ok) {
       const errorText = await storeResponse.text()
-      console.error('Failed to store OTP:', errorText)
+      console.error('❌ Failed to store OTP:', errorText)
       return new Response(
-        JSON.stringify({ ok: false, error: 'Failed to store OTP' }),
+        JSON.stringify({ 
+          ok: false, 
+          error: 'Failed to store OTP code',
+          details: errorText
+        }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    // Send email via SendGrid
+    const storedOtp = await storeResponse.json()
+    console.log('✅ OTP stored successfully:', storedOtp[0]?.id)
+
+    // Send email via SendGrid if configured
     if (SENDGRID_API_KEY) {
+      console.log('📧 Sending email via SendGrid...')
+      
       const emailPayload = {
         personalizations: [{
           to: [{ email: email }],
@@ -167,23 +193,45 @@ serve(async (req) => {
       })
 
       if (!emailResponse.ok) {
-        console.error('SendGrid error:', await emailResponse.text())
+        const emailError = await emailResponse.text()
+        console.error('❌ SendGrid error:', emailError)
+        return new Response(
+          JSON.stringify({ 
+            ok: false, 
+            error: 'Failed to send email',
+            details: emailError
+          }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
       }
+      
+      console.log('✅ Email sent successfully')
+    } else {
+      console.log('⚠️ SendGrid not configured, OTP stored but email not sent')
     }
 
     return new Response(
       JSON.stringify({ 
         ok: true, 
         message: `OTP sent to ${email}`,
-        expires_in_minutes: OTP_TTL_MINUTES
+        expires_in_minutes: OTP_TTL_MINUTES,
+        debug_info: {
+          sendgrid_configured: !!SENDGRID_API_KEY,
+          ref_number,
+          stored_at: new Date().toISOString()
+        }
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
 
   } catch (error) {
-    console.error('Function error:', error)
+    console.error('❌ Function error:', error)
     return new Response(
-      JSON.stringify({ ok: false, error: 'Internal server error' }),
+      JSON.stringify({ 
+        ok: false, 
+        error: 'Internal server error',
+        details: error.message
+      }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   }

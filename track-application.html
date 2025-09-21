@@ -18,8 +18,11 @@
     button:disabled{opacity:.6;cursor:not-allowed}
     .notice{margin-top:12px;padding:10px;border-radius:10px;background:#0b1a33;color:#cfe0ff;display:none}
     .error{background:#331016;color:#ffd3d8}
+    .success{background:#0d4a1f;color:#c3f0ca}
+    .warning{background:#4a3100;color:#ffeaa7}
     .hidden{display:none}
     .back{display:inline-block;margin-top:16px;color:#c9d7ff;text-decoration:none;text-align:center}
+    .debug{font-size:12px;color:#64748b;margin-top:8px;font-family:monospace;background:#1e2a3a;padding:8px;border-radius:6px;overflow-x:auto}
   </style>
 </head>
 <body>
@@ -37,13 +40,16 @@
 
       <button id="sendBtn">Find & Send OTP</button>
       <div id="msg1" class="notice"></div>
+      <div id="debug1" class="debug hidden"></div>
     </div>
 
     <div id="step2" class="hidden">
       <label>Enter OTP</label>
-      <input id="otp" placeholder="6-digit code" inputmode="numeric" autocomplete="one-time-code"/>
+      <input id="otp" placeholder="6-digit code" inputmode="numeric" autocomplete="one-time-code" maxlength="6"/>
       <button id="verifyBtn">Verify & Continue</button>
       <div id="msg2" class="notice"></div>
+      <div id="debug2" class="debug hidden"></div>
+      <button onclick="goBackToStep1()" style="background:#666; margin-top:10px;">← Go Back</button>
     </div>
 
     <div style="text-align:center;">
@@ -57,74 +63,156 @@ const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsI
 const SHARED_TOKEN = "mySuperSecretKey123!@#1234567890qwertyuiioopasdfghjklzxcvbnm09876543210";
 
 let REF_NUMBER = null;
+let DEBUG_MODE = new URLSearchParams(window.location.search).has('debug');
 
 const sendBtn = document.getElementById("sendBtn");
 const verifyBtn = document.getElementById("verifyBtn");
 const msg1 = document.getElementById("msg1");
 const msg2 = document.getElementById("msg2");
+const debug1 = document.getElementById("debug1");
+const debug2 = document.getElementById("debug2");
 const step1 = document.getElementById("step1");
 const step2 = document.getElementById("step2");
 
-function show(el, text, isError=false){
+function show(el, text, type = 'info') {
   el.style.display = "block";
-  el.className = "notice" + (isError ? " error" : "");
+  el.className = "notice " + type;
   el.textContent = text;
 }
-function hide(el){ el.style.display = "none"; el.textContent = ""; }
 
-async function lookupRef(idn, email){
-  const resp = await fetch(`${PROJECT_URL}/functions/v1/lookup-ref`, {
+function hide(el) {
+  el.style.display = "none";
+  el.textContent = "";
+}
+
+function showDebug(el, data) {
+  if (DEBUG_MODE) {
+    el.style.display = "block";
+    el.textContent = JSON.stringify(data, null, 2);
+  }
+}
+
+function goBackToStep1() {
+  step1.classList.remove("hidden");
+  step2.classList.add("hidden");
+  hide(msg1);
+  hide(msg2);
+  hide(debug1);
+  hide(debug2);
+  REF_NUMBER = null;
+}
+
+// Format ID number input
+document.getElementById('idn').addEventListener('input', function(e) {
+  // Remove any non-numeric characters
+  let value = e.target.value.replace(/\D/g, '');
+  // Limit to 13 digits (SA ID number length)
+  if (value.length > 13) {
+    value = value.substring(0, 13);
+  }
+  e.target.value = value;
+});
+
+// Format OTP input
+document.getElementById('otp').addEventListener('input', function(e) {
+  // Remove any non-numeric characters and limit to 6 digits
+  let value = e.target.value.replace(/\D/g, '');
+  if (value.length > 6) {
+    value = value.substring(0, 6);
+  }
+  e.target.value = value;
+});
+
+async function lookupRef(idn, email) {
+  console.log('🔍 Looking up reference for:', { idn, email: email.substring(0, 3) + '***' });
+  
+  const response = await fetch(`${PROJECT_URL}/functions/v1/lookup-ref`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${ANON_KEY}`,
+      "apikey": ANON_KEY,
       "x-edsa-token": SHARED_TOKEN
     },
     body: JSON.stringify({ id_number: idn, email })
   });
-  const data = await resp.json();
-  if(!resp.ok || !data?.ok || !data?.ref_number){
-    throw new Error(data?.error || `Lookup failed (HTTP ${resp.status})`);
+  
+  const data = await response.json();
+  console.log('📊 Lookup response:', { ok: response.ok, status: response.status, data });
+  
+  if (!response.ok || !data?.ok || !data?.ref_number) {
+    throw new Error(data?.error || `Lookup failed (HTTP ${response.status})`);
   }
+  
   return data.ref_number;
 }
 
 sendBtn.addEventListener("click", async () => {
   hide(msg1);
+  hide(debug1);
+  
   const idn = document.getElementById("idn").value.trim();
-  const email = document.getElementById("email").value.trim();
+  const email = document.getElementById("email").value.trim().toLowerCase();
 
-  if(!idn || !email) {
-    return show(msg1, "Please fill in both ID and Email.", true);
+  // Validation
+  if (!idn || !email) {
+    return show(msg1, "Please fill in both ID number and email address.", 'error');
+  }
+  
+  if (!/^[0-9]{13}$/.test(idn)) {
+    return show(msg1, "Please enter a valid 13-digit South African ID number.", 'error');
+  }
+  
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return show(msg1, "Please enter a valid email address.", 'error');
   }
 
   sendBtn.disabled = true;
   sendBtn.textContent = "Finding...";
   
   try {
+    console.log('🚀 Starting lookup process...');
+    
     // 1) Find the client's ref number securely
     REF_NUMBER = await lookupRef(idn, email);
+    console.log('✅ Reference found:', REF_NUMBER);
 
+    sendBtn.textContent = "Sending OTP...";
+    
     // 2) Send OTP tied to that ref
-    const resp = await fetch(`${PROJECT_URL}/functions/v1/send-otp`, {
+    console.log('📧 Sending OTP...');
+    const otpResponse = await fetch(`${PROJECT_URL}/functions/v1/send-otp`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${ANON_KEY}`,
+        "apikey": ANON_KEY,
         "x-edsa-token": SHARED_TOKEN
       },
       body: JSON.stringify({ ref_number: REF_NUMBER, id_number: idn, email })
     });
-    const data = await resp.json();
-    if (!resp.ok || !data.ok) {
-      show(msg1, data?.error || `Failed to send OTP (HTTP ${resp.status}).`, true);
+    
+    const otpData = await otpResponse.json();
+    console.log('📊 OTP response:', { ok: otpResponse.ok, status: otpResponse.status, data: otpData });
+    
+    showDebug(debug1, { lookup: REF_NUMBER, otp_response: otpData });
+    
+    if (!otpResponse.ok || !otpData.ok) {
+      show(msg1, otpData?.error || `Failed to send OTP (HTTP ${otpResponse.status}).`, 'error');
       return;
     }
-    show(msg1, `OTP sent for Ref ${REF_NUMBER}. Please check your email (valid for ${data.expires_in_minutes || 10} minutes).`);
-    step1.classList.add("hidden");
-    step2.classList.remove("hidden");
-  } catch(e){
-    show(msg1, e?.message || "Lookup failed. Please check your details.", true);
+    
+    show(msg1, `✅ Verification code sent to ${email}. Please check your email (valid for ${otpData.expires_in_minutes || 10} minutes).`, 'success');
+    
+    setTimeout(() => {
+      step1.classList.add("hidden");
+      step2.classList.remove("hidden");
+    }, 1500);
+    
+  } catch(error) {
+    console.error('❌ Error:', error);
+    show(msg1, error?.message || "Failed to process request. Please check your details and try again.", 'error');
+    showDebug(debug1, { error: error.message, stack: error.stack });
   } finally {
     sendBtn.disabled = false;
     sendBtn.textContent = "Find & Send OTP";
@@ -133,45 +221,82 @@ sendBtn.addEventListener("click", async () => {
 
 verifyBtn.addEventListener("click", async () => {
   hide(msg2);
+  hide(debug2);
+  
   const idn = document.getElementById("idn").value.trim();
-  const email = document.getElementById("email").value.trim();
+  const email = document.getElementById("email").value.trim().toLowerCase();
   const otp = document.getElementById("otp").value.trim();
 
-  if(!otp) {
-    return show(msg2, "Enter the OTP from your email.", true);
+  // Validation
+  if (!otp) {
+    return show(msg2, "Please enter the 6-digit OTP from your email.", 'error');
+  }
+  
+  if (!/^[0-9]{6}$/.test(otp)) {
+    return show(msg2, "OTP must be exactly 6 digits.", 'error');
   }
 
-  if(!REF_NUMBER){
-    return show(msg2, "Reference not found. Please go back and try again.", true);
+  if (!REF_NUMBER) {
+    return show(msg2, "Reference not found. Please go back and try again.", 'error');
   }
 
   verifyBtn.disabled = true;
   verifyBtn.textContent = "Verifying...";
   
   try {
-    const resp = await fetch(`${PROJECT_URL}/functions/v1/verify-otp`, {
+    console.log('🔐 Verifying OTP...');
+    
+    const verifyResponse = await fetch(`${PROJECT_URL}/functions/v1/verify-otp`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${ANON_KEY}`,
+        "apikey": ANON_KEY,
         "x-edsa-token": SHARED_TOKEN
       },
       body: JSON.stringify({ ref_number: REF_NUMBER, id_number: idn, email, otp })
     });
-    const data = await resp.json();
-    if (!resp.ok || !data.ok) {
-      show(msg2, data?.error || `Could not verify OTP (HTTP ${resp.status}).`, true);
+    
+    const verifyData = await verifyResponse.json();
+    console.log('📊 Verify response:', { ok: verifyResponse.ok, status: verifyResponse.status, data: verifyData });
+    
+    showDebug(debug2, { verify_response: verifyData });
+    
+    if (!verifyResponse.ok || !verifyData.ok) {
+      show(msg2, verifyData?.error || `Verification failed (HTTP ${verifyResponse.status}).`, 'error');
       return;
     }
+    
+    show(msg2, "✅ Code verified! Redirecting to your portfolio...", 'success');
+    
     // Redirect to portfolio with the looked-up ref
-    window.location.href = `track-portfolio.html?ref=${encodeURIComponent(REF_NUMBER)}`;
-  } catch(e){
-    show(msg2, e?.message || "Network error.", true);
+    setTimeout(() => {
+      window.location.href = `track-portfolio.html?ref=${encodeURIComponent(REF_NUMBER)}`;
+    }, 1500);
+    
+  } catch(error) {
+    console.error('❌ Verification error:', error);
+    show(msg2, error?.message || "Verification failed. Please try again.", 'error');
+    showDebug(debug2, { error: error.message, stack: error.stack });
   } finally {
     verifyBtn.disabled = false;
     verifyBtn.textContent = "Verify & Continue";
   }
 });
+
+// Auto-submit OTP when 6 digits are entered
+document.getElementById('otp').addEventListener('input', function(e) {
+  if (e.target.value.length === 6 && /^[0-9]{6}$/.test(e.target.value)) {
+    setTimeout(() => {
+      if (!verifyBtn.disabled) {
+        verifyBtn.click();
+      }
+    }, 500);
+  }
+});
+
+console.log('🚀 Track Application page loaded');
+console.log('🔧 Debug mode:', DEBUG_MODE ? 'ON (add ?debug to URL to see technical details)' : 'OFF');
 </script>
 </body>
 </html>
