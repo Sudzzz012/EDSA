@@ -9,6 +9,16 @@ const corsHeaders = {
 const EDSA_FUNCTION_TOKEN = Deno.env.get('EDSA_FUNCTION_TOKEN')
 const MAX_ATTEMPTS = parseInt(Deno.env.get('EDSA_OTP_MAX_ATTEMPTS') || '5')
 
+// Hash function for OTP verification
+async function hashOTP(otp: string): Promise<string> {
+  const encoder = new TextEncoder()
+  const data = encoder.encode(otp)
+  const hash = await crypto.subtle.digest('SHA-256', data)
+  return Array.from(new Uint8Array(hash))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('')
+}
+
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -44,9 +54,9 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
-    // Get the OTP record
+    // Get the most recent unverified OTP record
     const otpResponse = await fetch(
-      `${supabaseUrl}/rest/v1/otp_codes?ref_number=eq.${ref_number}&id_number=eq.${id_number}&email=eq.${email}&select=*`,
+      `${supabaseUrl}/rest/v1/edsa_otp_codes?ref_number=eq.${ref_number}&id_number=eq.${id_number}&email=eq.${email}&verified=eq.false&order=created_at.desc&limit=1`,
       {
         headers: {
           'Authorization': `Bearer ${supabaseKey}`,
@@ -82,10 +92,12 @@ serve(async (req) => {
       )
     }
 
-    // Verify OTP
-    if (otpRecord.otp_code !== otp) {
+    // Hash the provided OTP and compare
+    const providedOtpHash = await hashOTP(otp)
+    
+    if (otpRecord.otp_hash !== providedOtpHash) {
       // Increment attempts
-      await fetch(`${supabaseUrl}/rest/v1/otp_codes?id=eq.${otpRecord.id}`, {
+      await fetch(`${supabaseUrl}/rest/v1/edsa_otp_codes?id=eq.${otpRecord.id}`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${supabaseKey}`,
@@ -107,13 +119,17 @@ serve(async (req) => {
       )
     }
 
-    // OTP is valid - delete the record
-    await fetch(`${supabaseUrl}/rest/v1/otp_codes?id=eq.${otpRecord.id}`, {
-      method: 'DELETE',
+    // OTP is valid - mark as verified
+    await fetch(`${supabaseUrl}/rest/v1/edsa_otp_codes?id=eq.${otpRecord.id}`, {
+      method: 'PATCH',
       headers: {
         'Authorization': `Bearer ${supabaseKey}`,
+        'Content-Type': 'application/json',
         'apikey': supabaseKey
-      }
+      },
+      body: JSON.stringify({
+        verified: true
+      })
     })
 
     return new Response(
