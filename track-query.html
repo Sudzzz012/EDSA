@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Track Your Query & Application | Erase Debt SA</title>
+  <title>Track Your Query | Erase Debt SA</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="icon" href="erase-debt-logo.png"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -53,6 +53,17 @@
     .success { color: #256029; }
     .hidden { display: none; }
     .step { display: block; }
+    .or-divider { 
+      text-align: center; margin: 15px 0; color: #888; 
+      position: relative; font-size: 0.9em;
+    }
+    .or-divider::before {
+      content: ''; position: absolute; top: 50%; left: 0; right: 0; 
+      height: 1px; background: #ddd; z-index: 1;
+    }
+    .or-divider span {
+      background: #fff; padding: 0 15px; position: relative; z-index: 2;
+    }
 
     /* Dashboard Styles */
     .dashboard { padding: 24px; max-width: 1400px; margin: 0 auto; }
@@ -136,18 +147,23 @@
       <div id="step1" class="step">
         <h2>Track Your Query</h2>
         <div class="instructions">
-          Enter your <strong>reference number</strong><br><em>OR</em><br>your <strong>ID number</strong> and <strong>email address</strong>.<br><br>
-          We'll send you a <strong>verification code via email</strong> to access your query details and application status.
+          Enter your <strong>query reference number</strong><br>
+          <div class="or-divider"><span>OR</span></div>
+          Enter your <strong>ID number</strong> and <strong>email address</strong><br><br>
+          We'll send you a <strong>verification code via email</strong> to access your query details.
         </div>
         <form id="lookupForm">
-          <label>Reference Number (if known)</label>
-          <input name="ref" type="text" placeholder="EDSA20250720-1234">
-          <div style="text-align:center;margin-bottom:9px;font-size:0.97em;color:#888">OR</div>
+          <label>Query Reference Number (if you have it)</label>
+          <input name="ref" type="text" placeholder="EDSA20250120-1234" id="refInput">
+          
+          <div class="or-divider"><span>OR</span></div>
+          
           <label>ID Number</label>
-          <input name="id_number" type="text" required>
+          <input name="id_number" type="text" placeholder="8804015196086" id="idInput">
           <label>Email Address</label>
-          <input name="email" type="email" required>
-          <button type="submit" id="lookupBtn">Search Query</button>
+          <input name="email" type="email" placeholder="your@email.com" id="emailInput">
+          
+          <button type="submit" id="lookupBtn">Search & Send OTP</button>
           <div class="msg" id="lookupMsg"></div>
         </form>
       </div>
@@ -156,15 +172,15 @@
       <div id="step2" class="step hidden">
         <h2>Enter Verification Code</h2>
         <div class="instructions">
-          We've sent a verification code to your email address. Please enter it below to view your query and application details.
+          We've sent a 6-digit verification code to your email address. Please enter it below to view your query and application details.
         </div>
         <form id="otpForm">
           <label>Enter 6-digit OTP</label>
-          <input name="otp" type="text" maxlength="6" required placeholder="000000">
-          <button type="submit" id="otpBtn">Verify Code</button>
+          <input name="otp" type="text" maxlength="6" required placeholder="123456" id="otpInput">
+          <button type="submit" id="otpBtn">Verify & Access</button>
           <div class="msg" id="otpMsg"></div>
         </form>
-        <button onclick="goBackToStep1()" style="background:#666; margin-top:10px;">← Go Back</button>
+        <button onclick="goBackToStep1()" style="background:#666; margin-top:10px;">← Try Again</button>
       </div>
 
       <div class="back-link">
@@ -177,30 +193,30 @@
   <div id="dashboardView" class="hidden">
     <header class="header">
       <img src="erase-debt-logo.png" alt="Erase Debt SA">
-      <h1>Your Query & Application Status</h1>
+      <h1>Your Query & Application Dashboard</h1>
       <div id="refChip" class="ref">Ref: —</div>
     </header>
 
     <div class="dashboard">
       <div class="grid">
-        <!-- Query Details Section -->
+        <!-- Query Details Section (PRIMARY) -->
         <div class="section">
           <h3><i class="fa-regular fa-comments"></i> Query Details & Communication</h3>
           <div id="primaryQueryInfo"></div>
           
-          <h4 style="margin-top: 20px; color: var(--brand);">Communication History</h4>
+          <h4 style="margin-top: 20px; color: var(--brand);">All Communication History</h4>
           <table>
             <thead>
-              <tr><th>Date</th><th>Message</th><th>Admin Reply</th><th>Status</th></tr>
+              <tr><th>Date</th><th>Type</th><th>Message</th><th>Admin Reply</th><th>Status</th></tr>
             </thead>
             <tbody id="queryHistory">
-              <tr><td colspan="4" class="muted">Loading...</td></tr>
+              <tr><td colspan="5" class="muted">Loading...</td></tr>
             </tbody>
           </table>
 
           <div class="feedback-section">
             <h4>Add Follow-up Message</h4>
-            <textarea id="followupText" rows="3" placeholder="Type your follow-up message..."></textarea>
+            <textarea id="followupText" rows="3" placeholder="Type your follow-up message or question..."></textarea>
             <button id="submitFollowup" class="btn">
               <i class="fa-solid fa-paper-plane"></i> Send Follow-up
             </button>
@@ -208,9 +224,9 @@
           </div>
         </div>
 
-        <!-- Application Status Section -->
+        <!-- Application Status Section (SECONDARY) -->
         <div class="section">
-          <h3><i class="fa-solid fa-file-contract"></i> Application Status <span id="statusChip" class="chip"></span></h3>
+          <h3><i class="fa-solid fa-file-contract"></i> Your Application Status</h3>
           <table>
             <tbody id="appTable">
               <tr><th>Client Name</th><td id="clientName">—</td></tr>
@@ -226,8 +242,8 @@
           </table>
           
           <div class="feedback-section">
-            <h4>Submit Document / Update</h4>
-            <textarea id="appFeedbackText" rows="3" placeholder="Type your update or message..."></textarea>
+            <h4>Submit Document / Application Update</h4>
+            <textarea id="appFeedbackText" rows="3" placeholder="Payment proof, document, or update message..."></textarea>
             <div class="row">
               <input id="fileInput" type="file" />
               <button id="submitAppFeedback" class="btn">
@@ -255,14 +271,14 @@
 
     let currentQuery = null;
     let currentClient = null;
-    let currentOtpToken = null;
+    let currentSearchData = null; // Store search criteria for OTP verification
 
     function showStep(stepNum) {
       document.getElementById('step1').classList.add('hidden');
       document.getElementById('step2').classList.add('hidden');
-      document.getElementById('step1').classList.remove('hidden');
-      if (stepNum === 2) {
-        document.getElementById('step1').classList.add('hidden');
+      if (stepNum === 1) {
+        document.getElementById('step1').classList.remove('hidden');
+      } else if (stepNum === 2) {
         document.getElementById('step2').classList.remove('hidden');
       }
     }
@@ -286,6 +302,7 @@
 
     function clearMessage(elementId) {
       document.getElementById(elementId).textContent = '';
+      document.getElementById(elementId).className = 'msg';
     }
 
     function goBackToStep1() {
@@ -296,7 +313,7 @@
       document.getElementById('otpForm').reset();
       currentQuery = null;
       currentClient = null;
-      currentOtpToken = null;
+      currentSearchData = null;
     }
 
     function show(el, text, type = 'info') {
@@ -323,7 +340,7 @@
       return Math.floor(100000 + Math.random() * 900000).toString();
     }
 
-    // Send OTP via email
+    // Send OTP via Supabase Edge Function
     async function sendOTP(email, otp, queryRef, firstName) {
       try {
         const response = await fetch(`${supabaseClient.supabaseUrl}/functions/v1/send-otp-email`, {
@@ -335,7 +352,7 @@
           body: JSON.stringify({
             email: email,
             otp: otp,
-            reference: queryRef || 'N/A',
+            reference: queryRef || 'Query Lookup',
             firstName: firstName || ''
           })
         });
@@ -348,7 +365,36 @@
       }
     }
 
-    // Load application data
+    // Find query by reference number OR by ID + email
+    async function findQuery(searchCriteria) {
+      let query = supabaseClient.from('QUERIES').select('*');
+      
+      if (searchCriteria.ref) {
+        // Search by reference number
+        query = query.eq('reference_number', searchCriteria.ref);
+      } else if (searchCriteria.id_number && searchCriteria.email) {
+        // Search by ID number + email  
+        query = query
+          .eq('id_number', searchCriteria.id_number)
+          .eq('email', searchCriteria.email);
+      } else {
+        return null;
+      }
+
+      const { data, error } = await query
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Query search error:', error);
+        return null;
+      }
+
+      return data;
+    }
+
+    // Load application data for this client
     async function loadApplicationData(idNumber, email) {
       const { data, error } = await supabaseClient
         .from('edsa_client_database')
@@ -357,8 +403,7 @@
         .eq('email', email)
         .maybeSingle();
 
-      if (error || !data) return null;
-      return data;
+      return error ? null : data;
     }
 
     // Load all queries for this client
@@ -373,10 +418,57 @@
       return error ? [] : (data || []);
     }
 
-    // Display application data
+    // Display query data (PRIMARY FOCUS)
+    function displayQueryData(queries, primaryQuery) {
+      const primaryInfo = document.getElementById('primaryQueryInfo');
+      const historyBody = document.getElementById('queryHistory');
+      
+      if (!primaryQuery) {
+        primaryInfo.innerHTML = '<p class="muted">No queries found</p>';
+        historyBody.innerHTML = '<tr><td colspan="5" class="muted">No queries found</td></tr>';
+        return;
+      }
+
+      // Show primary query details
+      primaryInfo.innerHTML = `
+        <table>
+          <tr><th>Reference</th><td><strong>${primaryQuery.reference_number || '—'}</strong></td></tr>
+          <tr><th>Query Type</th><td>${primaryQuery.query_type || 'GENERAL'}</td></tr>
+          <tr><th>Date Submitted</th><td>${fmtDate(primaryQuery.created_at)}</td></tr>
+          <tr><th>Current Status</th><td><strong>${primaryQuery.status || 'PENDING'}</strong></td></tr>
+          <tr><th>Your Message</th><td>${primaryQuery.query_text || primaryQuery.client_message || '—'}</td></tr>
+          <tr><th>Admin Response</th><td>${primaryQuery.response_text || primaryQuery.admin_reply || 'Pending response'}</td></tr>
+        </table>
+      `;
+
+      // Show all communication history
+      if (!queries || queries.length === 0) {
+        historyBody.innerHTML = '<tr><td colspan="5" class="muted">No communication history</td></tr>';
+        return;
+      }
+
+      const rows = queries.map(q => {
+        const status = (q.status || 'PENDING').toUpperCase();
+        const dotClass = status.includes('RESOLVED') ? 'dot-ok' : 
+                        status.includes('PENDING') ? 'dot-warn' : 'dot-bad';
+        return `<tr>
+          <td>${fmtDate(q.created_at)}</td>
+          <td>${q.query_type || 'GENERAL'}</td>
+          <td>${q.query_text || q.client_message || '—'}</td>
+          <td>${q.response_text || q.admin_reply || 'Pending response'}</td>
+          <td><span class="status-dot ${dotClass}"></span> ${status}</td>
+        </tr>`;
+      }).join('');
+      historyBody.innerHTML = rows;
+
+      // Set reference number in header
+      document.getElementById('refChip').textContent = `Ref: ${primaryQuery.reference_number || 'N/A'}`;
+    }
+
+    // Display application data (SECONDARY)
     function displayApplicationData(appData) {
       if (!appData) {
-        document.getElementById('appTable').innerHTML = '<tr><td colspan="2" class="muted">No application found</td></tr>';
+        document.getElementById('appTable').innerHTML = '<tr><td colspan="2" class="muted">No application found for this client</td></tr>';
         return;
       }
 
@@ -397,56 +489,9 @@
       document.getElementById('monthlyPayment').textContent = monthly ? `R${monthly.toLocaleString()}` : "—";
       document.getElementById('outstanding').textContent = monthly ? `R${outstanding.toLocaleString()}` : "—";
       document.getElementById('nextPayment').textContent = na(appData.salary_date || appData.tracking_date);
-
-      const chip = document.getElementById('statusChip');
-      chip.textContent = na(appData.status || 'PENDING').toUpperCase();
     }
 
-    // Display query data
-    function displayQueryData(queries) {
-      const primaryQuery = queries[0]; // Most recent
-      const historyBody = document.getElementById('queryHistory');
-      
-      if (!primaryQuery) {
-        document.getElementById('primaryQueryInfo').innerHTML = '<p class="muted">No queries found</p>';
-        historyBody.innerHTML = '<tr><td colspan="4" class="muted">No communication history</td></tr>';
-        return;
-      }
-
-      // Show primary query details
-      document.getElementById('primaryQueryInfo').innerHTML = `
-        <table>
-          <tr><th>Reference</th><td>${primaryQuery.reference_number || '—'}</td></tr>
-          <tr><th>Query Type</th><td>${primaryQuery.query_type || '—'}</td></tr>
-          <tr><th>Date Submitted</th><td>${fmtDate(primaryQuery.created_at)}</td></tr>
-          <tr><th>Current Status</th><td><strong>${primaryQuery.status || 'PENDING'}</strong></td></tr>
-        </table>
-      `;
-
-      // Show all query history
-      if (queries.length === 0) {
-        historyBody.innerHTML = '<tr><td colspan="4" class="muted">No messages yet</td></tr>';
-        return;
-      }
-
-      const rows = queries.map(q => {
-        const status = (q.status || 'PENDING').toUpperCase();
-        const dotClass = status.includes('RESOLVED') ? 'dot-ok' : 
-                        status.includes('PENDING') ? 'dot-warn' : 'dot-bad';
-        return `<tr>
-          <td>${fmtDate(q.created_at)}</td>
-          <td>${q.query_text || q.client_message || '—'}</td>
-          <td>${q.response_text || q.admin_reply || 'Pending response'}</td>
-          <td><span class="status-dot ${dotClass}"></span> ${status}</td>
-        </tr>`;
-      }).join('');
-      historyBody.innerHTML = rows;
-
-      // Set reference number
-      document.getElementById('refChip').textContent = `Ref: ${primaryQuery.reference_number || 'N/A'}`;
-    }
-
-    // Submit follow-up
+    // Submit follow-up to existing query
     async function submitFollowup() {
       const msgEl = document.getElementById('followupMsg');
       hide(msgEl);
@@ -483,7 +528,7 @@
       
       // Refresh query history
       const queries = await loadAllQueries(currentQuery.id_number, currentQuery.email);
-      displayQueryData(queries);
+      displayQueryData(queries, currentQuery);
     }
 
     // Submit application feedback
@@ -497,13 +542,13 @@
         return show(msgEl, 'Please enter a message or attach a file.', 'err');
       }
 
-      if (!currentClient) {
-        return show(msgEl, 'No application found.', 'err');
+      if (!currentQuery) {
+        return show(msgEl, 'No query data found.', 'err');
       }
 
       let fileUrl = null;
       if (file) {
-        const path = `${currentClient.sale_reference}/${Date.now()}_${file.name}`;
+        const path = `${currentQuery.reference_number || 'query'}/${Date.now()}_${file.name}`;
         const { data: up, error: upErr } = await supabaseClient.storage
           .from('edsa-queries').upload(path, file, { upsert: false });
         
@@ -516,13 +561,13 @@
         fileUrl = pub?.publicUrl || null;
       }
 
-      // Insert as new query
+      // Insert as application update query
       const payload = {
-        reference_number: currentClient.sale_reference,
-        id_number: currentClient.client_id_number,
-        email: currentClient.email,
-        first_name: currentClient.first_name,
-        last_name: currentClient.last_name,
+        reference_number: currentQuery.reference_number,
+        id_number: currentQuery.id_number,
+        email: currentQuery.email,
+        first_name: currentQuery.first_name,
+        last_name: currentQuery.last_name,
         query_type: 'APPLICATION_UPDATE',
         query_text: text,
         attachment_url: fileUrl,
@@ -535,16 +580,20 @@
         return show(msgEl, 'Could not submit. Please try again.', 'err');
       }
 
-      show(msgEl, 'Submitted successfully!', 'success');
+      show(msgEl, 'Application update submitted successfully!', 'success');
       document.getElementById('appFeedbackText').value = '';
       document.getElementById('fileInput').value = '';
       
       // Refresh query history
-      const queries = await loadAllQueries(currentClient.client_id_number, currentClient.email);
-      displayQueryData(queries);
+      const queries = await loadAllQueries(currentQuery.id_number, currentQuery.email);
+      displayQueryData(queries, currentQuery);
     }
 
-    // Event listeners
+    // Store OTP for verification (in production, this would be server-side)
+    let storedOTP = null;
+    let otpEmail = null;
+
+    // STEP 1: Search for query and send OTP
     document.getElementById('lookupForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       const form = e.target;
@@ -558,56 +607,40 @@
       lookupBtn.textContent = 'Searching...';
 
       try {
-        // Search by reference number OR by ID + email
-        let queryData = null;
-        
-        if (refNumber) {
-          const { data, error } = await supabaseClient
-            .from("QUERIES")
-            .select("*")
-            .eq("reference_number", refNumber)
-            .order("created_at", { ascending: false })
-            .limit(1)
-            .maybeSingle();
-
-          if (!error && data) {
-            queryData = data;
-          }
-        } else if (idNumber && email) {
-          const { data, error } = await supabaseClient
-            .from("QUERIES")
-            .select("*")
-            .eq("id_number", idNumber)
-            .eq("email", email)
-            .order("created_at", { ascending: false })
-            .limit(1)
-            .maybeSingle();
-
-          if (!error && data) {
-            queryData = data;
-          }
-        }
-
-        if (!queryData) {
-          showMessage('lookupMsg', 'No query found with the provided information.', true);
+        // Validate input
+        if (!refNumber && (!idNumber || !email)) {
+          showMessage('lookupMsg', 'Please enter either a reference number OR both ID number and email.', true);
           return;
         }
 
+        // Search for query
+        const searchCriteria = refNumber ? { ref: refNumber } : { id_number: idNumber, email: email };
+        const queryData = await findQuery(searchCriteria);
+
+        if (!queryData) {
+          showMessage('lookupMsg', 'No query found. Please check your reference number or ID/email combination.', true);
+          return;
+        }
+
+        currentSearchData = searchCriteria;
         currentQuery = queryData;
         
-        // Generate OTP and send email
-        const otp = generateOTP();
-        currentOtpToken = otp;
+        // Generate and store OTP
+        storedOTP = generateOTP();
+        otpEmail = queryData.email;
         
+        lookupBtn.textContent = 'Sending OTP...';
+        
+        // Send OTP email
         const emailSent = await sendOTP(
           queryData.email, 
-          otp, 
+          storedOTP, 
           queryData.reference_number,
           queryData.first_name
         );
         
         if (emailSent) {
-          showMessage('lookupMsg', `Verification code sent to ${queryData.email}`, false);
+          showMessage('lookupMsg', `✅ Verification code sent to ${queryData.email}`, false);
           setTimeout(() => showStep(2), 1500);
         } else {
           showMessage('lookupMsg', 'Failed to send verification code. Please try again.', true);
@@ -618,10 +651,11 @@
         showMessage('lookupMsg', 'An error occurred. Please try again.', true);
       } finally {
         lookupBtn.disabled = false;
-        lookupBtn.textContent = 'Search Query';
+        lookupBtn.textContent = 'Search & Send OTP';
       }
     });
 
+    // STEP 2: Verify OTP and load data
     document.getElementById('otpForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       const form = e.target;
@@ -633,50 +667,76 @@
       otpBtn.textContent = 'Verifying...';
 
       try {
-        if (enteredOtp === currentOtpToken) {
-          showMessage('otpMsg', 'Code verified! Loading your information...', false);
+        // Verify OTP
+        if (enteredOtp === storedOTP) {
+          showMessage('otpMsg', '✅ Verified! Loading your information...', false);
           
-          // Load both application and query data
-          currentClient = await loadApplicationData(currentQuery.id_number, currentQuery.email);
+          // Load both query and application data
           const allQueries = await loadAllQueries(currentQuery.id_number, currentQuery.email);
+          currentClient = await loadApplicationData(currentQuery.id_number, currentQuery.email);
           
           setTimeout(() => {
+            displayQueryData(allQueries, currentQuery);
             displayApplicationData(currentClient);
-            displayQueryData(allQueries);
             showDashboard();
           }, 1000);
         } else {
-          showMessage('otpMsg', 'Invalid verification code. Please try again.', true);
+          showMessage('otpMsg', '❌ Invalid verification code. Please try again.', true);
         }
       } catch (error) {
         console.error('OTP verification error:', error);
         showMessage('otpMsg', 'Verification failed. Please try again.', true);
       } finally {
         otpBtn.disabled = false;
-        otpBtn.textContent = 'Verify Code';
+        otpBtn.textContent = 'Verify & Access';
       }
     });
 
+    // Event listeners for feedback
     document.getElementById('submitFollowup').addEventListener('click', submitFollowup);
     document.getElementById('submitAppFeedback').addEventListener('click', submitAppFeedback);
 
-    // Auto-format ID input
-    document.querySelector('input[name="id_number"]').addEventListener('input', function(e) {
+    // Auto-format ID input (numbers only, max 13 digits)
+    document.getElementById('idInput').addEventListener('input', function(e) {
       let value = e.target.value.replace(/\D/g, '');
       if (value.length > 13) value = value.substring(0, 13);
       e.target.value = value;
     });
 
-    // Auto-format and submit OTP
-    document.querySelector('input[name="otp"]').addEventListener('input', function(e) {
+    // Auto-format OTP input (numbers only, max 6 digits)
+    document.getElementById('otpInput').addEventListener('input', function(e) {
       let value = e.target.value.replace(/\D/g, '');
       if (value.length > 6) value = value.substring(0, 6);
       e.target.value = value;
       
+      // Auto-submit when 6 digits entered
       if (value.length === 6) {
-        setTimeout(() => document.getElementById('otpForm').dispatchEvent(new Event('submit')), 100);
+        setTimeout(() => document.getElementById('otpForm').dispatchEvent(new Event('submit')), 300);
       }
     });
+
+    // Clear other fields when reference number is entered
+    document.getElementById('refInput').addEventListener('input', function(e) {
+      if (e.target.value.trim()) {
+        document.getElementById('idInput').value = '';
+        document.getElementById('emailInput').value = '';
+      }
+    });
+
+    // Clear reference field when ID/email is entered
+    document.getElementById('idInput').addEventListener('input', function(e) {
+      if (e.target.value.trim()) {
+        document.getElementById('refInput').value = '';
+      }
+    });
+
+    document.getElementById('emailInput').addEventListener('input', function(e) {
+      if (e.target.value.trim()) {
+        document.getElementById('refInput').value = '';
+      }
+    });
+
+    console.log('🔍 Track Query page loaded - Simple OTP Flow');
   </script>
 </body>
 </html>
