@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Email Service Test - Erase Debt SA</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: linear-gradient(135deg,#003865,#005c97); color:#fff; margin:0; padding:24px; }
+    .container { max-width: 600px; margin: 0 auto; background: #fff; color: #333; padding: 24px; border-radius: 12px; }
+    .logo { width: 80px; margin-bottom: 16px; }
+    input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; }
+    button { width: 100%; padding: 14px; background: #2970ba; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin: 8px 0; }
+    .result { margin-top: 16px; padding: 12px; border-radius: 8px; font-weight: bold; }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+    .info { background: #d1ecf1; color: #0c5460; }
+    .debug { background: #f8f9fa; color: #495057; font-family: monospace; white-space: pre-wrap; font-size: 12px; max-height: 200px; overflow-y: auto; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="erase-debt-logo.png" alt="Erase Debt SA" class="logo"/>
+    <h1>Email Service Test</h1>
+    <p>Use this page to test if the SendGrid email service is working correctly.</p>
+    
+    <input type="email" id="testEmail" placeholder="Enter email address to test" />
+    <button onclick="testEmailService()">Test Email Service</button>
+    <button onclick="checkFunctionStatus()">Check Function Status</button>
+    
+    <div id="result"></div>
+    <div id="debug"></div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://xzjunkpxvfdpuogoflzh.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ";
+
+    function showResult(message, type = 'info') {
+      const result = document.getElementById('result');
+      result.className = `result ${type}`;
+      result.innerHTML = message;
+    }
+
+    function showDebug(data) {
+      const debug = document.getElementById('debug');
+      debug.className = 'result debug';
+      debug.textContent = JSON.stringify(data, null, 2);
+    }
+
+    async function testEmailService() {
+      const email = document.getElementById('testEmail').value.trim();
+      if (!email) {
+        showResult('Please enter an email address', 'error');
+        return;
+      }
+
+      showResult('Testing email service...', 'info');
+      
+      try {
+        const testOTP = '123456';
+        const functionUrl = `${SUPABASE_URL}/functions/v1/send-otp-email`;
+        
+        console.log('Testing function at:', functionUrl);
+        
+        const payload = {
+          email: email,
+          otp: testOTP,
+          reference: 'TEST-EMAIL-SERVICE',
+          firstName: 'Test User'
+        };
+        
+        const response = await fetch(functionUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'apikey': SUPABASE_KEY
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const responseData = {
+          status: response.status,
+          statusText: response.statusText,
+          headers: Object.fromEntries(response.headers.entries()),
+          url: functionUrl,
+          payload: payload
+        };
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          showResult(`Email service failed: ${response.status} ${response.statusText}`, 'error');
+          showDebug({
+            ...responseData,
+            errorBody: errorText
+          });
+          return;
+        }
+
+        const result = await response.json();
+        showResult('✅ Email service is working! Check your inbox.', 'success');
+        showDebug({
+          ...responseData,
+          result: result
+        });
+
+      } catch (error) {
+        showResult(`Network error: ${error.message}`, 'error');
+        showDebug({
+          error: error.message,
+          stack: error.stack
+        });
+      }
+    }
+
+    async function checkFunctionStatus() {
+      showResult('Checking function status...', 'info');
+      
+      try {
+        // Try to access the function with a simple GET request to see if it exists
+        const functionUrl = `${SUPABASE_URL}/functions/v1/send-otp-email`;
+        
+        const response = await fetch(functionUrl, {
+          method: 'OPTIONS', // OPTIONS request should always be allowed
+          headers: {
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'apikey': SUPABASE_KEY
+          }
+        });
+
+        const statusInfo = {
+          status: response.status,
+          statusText: response.statusText,
+          headers: Object.fromEntries(response.headers.entries()),
+          url: functionUrl
+        };
+
+        if (response.status === 200 || response.status === 404) {
+          showResult('✅ Function endpoint is reachable', 'success');
+        } else if (response.status === 405) {
+          showResult('✅ Function exists but only accepts POST requests', 'success');
+        } else {
+          showResult(`⚠️ Function status: ${response.status} ${response.statusText}`, 'error');
+        }
+
+        showDebug(statusInfo);
+
+      } catch (error) {
+        showResult(`❌ Cannot reach function: ${error.message}`, 'error');
+        showDebug({
+          error: error.message,
+          stack: error.stack
+        });
+      }
+    }
+  </script>
+</body>
+</html>
