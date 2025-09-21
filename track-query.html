@@ -543,6 +543,13 @@
       const monthly = parseFloat(appData.monthly_payment || 0);
       const outstanding = Math.max(0, Math.round((remaining * monthly + Number.EPSILON) * 100) / 100);
 
+      // Also update client details section with application data
+      if (fullName) document.getElementById('fullClientName').textContent = fullName;
+      if (appData.client_id_number) document.getElementById('clientIdNumber').textContent = appData.client_id_number;
+      if (appData.email) document.getElementById('clientEmail').textContent = appData.email;
+      if (appData.phone) document.getElementById('clientPhone').textContent = appData.phone;
+      if (appData.sale_reference) document.getElementById('clientReference').textContent = appData.sale_reference;
+      if (appData.branch_name) document.getElementById('clientBranch').textContent = appData.branch_name;
       document.getElementById('clientName').textContent = na(fullName);
       document.getElementById('serviceType').textContent = na(appData.service_type);
       document.getElementById('appStatus').textContent = na(appData.status);
