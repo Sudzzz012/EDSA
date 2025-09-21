@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Client Capture Form - Erase Debt SA</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      background: linear-gradient(135deg, #003865, #005c97); 
+      color: #fff; 
+      padding: 2rem; 
+      margin: 0;
+    }
+    header { 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      margin-bottom: 2rem; 
+    }
+    header img { 
+      height: 60px; 
+    }
+    h1 { 
+      text-align: center; 
+      color: #fff; 
+      margin-bottom: 2rem;
+    }
+    form { 
+      background: #fff; 
+      color: #333; 
+      padding: 2rem; 
+      border-radius: 10px; 
+      max-width: 900px; 
+      margin: 2rem auto; 
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+    .form-group { 
+      display: flex; 
+      flex-direction: column; 
+      margin-bottom: 1rem; 
+    }
+    label { 
+      font-weight: bold; 
+      margin-bottom: 0.5rem; 
+      color: #003865;
+    }
+    input, select { 
+      padding: 12px; 
+      font-size: 1rem; 
+      border: 2px solid #ddd; 
+      border-radius: 8px; 
+      transition: border-color 0.3s;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #2970ba;
+      box-shadow: 0 0 0 3px rgba(41, 112, 186, 0.1);
+    }
+    button { 
+      margin-top: 1.5rem; 
+      background-color: #005c97; 
+      color: #fff; 
+      padding: 15px 30px; 
+      border: none; 
+      font-size: 1.1rem; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      width: 100%;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    button:hover { 
+      background-color: #004070; 
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .back-link { 
+      display: block; 
+      margin: 2rem auto; 
+      text-align: center; 
+    }
+    .back-link button {
+      background: #666;
+      width: auto;
+      padding: 10px 20px;
+      font-size: 1rem;
+    }
+    .back-link button:hover {
+      background: #555;
+    }
+    .message {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 8px;
+      font-weight: bold;
+      text-align: center;
+      display: none;
+    }
+    .success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+<body>
+  <header>
+    <img src="erase-debt-logo.jpg" alt="Erase Debt SA Logo" />
+  </header>
+  <h1>Client Capture Form</h1>
+  <div class="back-link">
+    <button onclick="goBackToDashboard()">← Go Back to Dashboard</button>
+  </div>
+
+  <form id="clientForm">
+    <div class="form-row">
+      <div class="form-group">
+        <label>Client ID Number *</label>
+        <input type="text" name="client_id_number" required maxlength="13" />
+      </div>
+      <div class="form-group">
+        <label>Sale Reference</label>
+        <input type="text" name="sale_reference" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>First Name *</label>
+        <input type="text" name="first_name" required />
+      </div>
+      <div class="form-group">
+        <label>Last Name *</label>
+        <input type="text" name="last_name" required />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Email *</label>
+        <input type="email" name="email" required />
+      </div>
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="tel" name="phone" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Gender</label>
+        <select name="gender">
+          <option>Male</option>
+          <option>Female</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Province</label>
+        <select name="province">
+          <option>Gauteng</option>
+          <option>KwaZulu-Natal</option>
+          <option>Western Cape</option>
+          <option>Eastern Cape</option>
+          <option>Free State</option>
+          <option>Mpumalanga</option>
+          <option>Limpopo</option>
+          <option>North West</option>
+          <option>Northern Cape</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Branch *</label>
+        <select name="branch_name" required>
+          <option value="">Select Branch</option>
+          <option>Erase Debt SA - ADMIN</option>
+          <option>SAZZ Debt Solutions</option>
+          <option>Credifix SA</option>
+          <option>SA Blacklisting Busters</option>
+          <option>Get Credit SA</option>
+          <option>Boost My Credit Score</option>
+          <option>Shield Credit Solutions</option>
+          <option>National Credit Solutions</option>
+          <option>South African Credit Score Experts - AA</option>
+          <option>South African Credit Score Experts - QAA</option>
+          <option>Clean Slate Solutions - RSJ</option>
+          <option>Clean Slate Solutions - MSJ</option>
+          <option>Increase My Credit Score</option>
+          <option>Credit Boost SA</option>
+          <option>Credit Renew SA</option>
+          <option>Fix My Credit Score</option>
+          <option>Clean Credit Consultants</option>
+          <option>Erase Debt SA - SS</option>
+          <option>Erase Debt SA - MP</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Agent Name</label>
+        <input type="text" name="agent_name" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Sale Date</label>
+        <input type="date" name="sale_date" />
+      </div>
+      <div class="form-group">
+        <label>Service Type *</label>
+        <select name="service_type" required>
+          <option value="">Select Service Type</option>
+          <option>SERVICE 1 - DRR(C & D3) - NP</option>
+          <option>SERVICE 1 - DRR(C & D3) - P</option>
+          <option>SERVICE 2 - D4 - BELOW 12M</option>
+          <option>SERVICE 3 - D4 - AITC</option>
+          <option>SERVICE 4 - NL/CR</option>
+          <option>SERVICE 5 - NL ITC CLEARANCE</option>
+          <option>SERVICE 6 - RN - A - NL</option>
+          <option>SERVICE 7 - RN - OTHER/NL</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Payment Plan (Months)</label>
+        <input type="number" name="payment_plan_months" min="1" max="60" />
+      </div>
+      <div class="form-group">
+        <label>Monthly Payment (R)</label>
+        <input type="number" name="monthly_payment" step="0.01" min="0" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Total Amount (R)</label>
+        <input type="number" name="total_amount" step="0.01" min="0" />
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select name="status">
+          <option>Pending</option>
+          <option>Active</option>
+          <option>Cancelled</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Bank</label>
+        <select name="bank">
+          <option>ABSA</option>
+          <option>Capitec</option>
+          <option>FNB</option>
+          <option>Nedbank</option>
+          <option>Standard Bank</option>
+          <option>TymeBank</option>
+          <option>Investec</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Account Type</label>
+        <select name="account_type">
+          <option>Savings</option>
+          <option>Cheque</option>
+          <option>Current</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Account Number</label>
+        <input type="text" name="account_number" />
+      </div>
+      <div class="form-group">
+        <label>Salary Date</label>
+        <input type="date" name="salary_date" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Tracking Date</label>
+        <input type="date" name="tracking_date" />
+      </div>
+      <div class="form-group">
+        <label>Nupay Reference</label>
+        <input type="text" name="nupay_reference" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Total Payments Made</label>
+        <input type="number" name="total_no_payments_made" min="0" value="0" />
+      </div>
+      <div class="form-group">
+        <label>Total Missed Payments</label>
+        <input type="number" name="total_no_missed_payments" min="0" value="0" />
+      </div>
+    </div>
+
+    <button type="submit" id="submitBtn">Capture Client</button>
+    <div id="message" class="message"></div>
+  </form>
+
+  <script>
+    const { createClient } = supabase;
+    const supabaseClient = createClient(
+      'https://xzjunkpxvfdpuogoflzh.supabase.co', 
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ'
+    );
+    const TABLE_NAME = 'edsa_client_database';
+
+    // Generate reference number
+    function generateReference() {
+      const now = new Date();
+      const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '');
+      const timeStr = now.getTime().toString().slice(-4);
+      return `EDSA${dateStr}-${timeStr}`;
+    }
+
+    // Show message
+    function showMessage(text, type = 'success') {
+      const messageEl = document.getElementById('message');
+      messageEl.textContent = text;
+      messageEl.className = `message ${type}`;
+      messageEl.style.display = 'block';
+    }
+
+    // Auto-format ID number
+    document.querySelector('input[name="client_id_number"]').addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length > 13) value = value.substring(0, 13);
+      e.target.value = value;
+    });
+
+    // Auto-generate reference if empty
+    document.querySelector('input[name="sale_reference"]').addEventListener('focus', function(e) {
+      if (!e.target.value.trim()) {
+        e.target.value = generateReference();
+      }
+    });
+
+    document.getElementById("clientForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const submitBtn = document.getElementById('submitBtn');
+      const messageEl = document.getElementById('message');
+      
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Saving...';
+      messageEl.style.display = 'none';
+
+      try {
+        const form = e.target;
+        const data = {
+          id: crypto.randomUUID(),
+          client_id_number: form.client_id_number.value || null,
+          first_name: form.first_name.value,
+          last_name: form.last_name.value,
+          email: form.email.value.toLowerCase(),
+          phone: form.phone.value || null,
+          gender: form.gender.value,
+          province: form.province.value,
+          branch_name: form.branch_name.value,
+          agent_name: form.agent_name.value || null,
+          sale_date: form.sale_date.value || null,
+          sale_reference: form.sale_reference.value || generateReference(),
+          service_type: form.service_type.value,
+          payment_plan_months: parseInt(form.payment_plan_months.value) || null,
+          bank: form.bank.value,
+          account_type: form.account_type.value,
+          account_number: form.account_number.value || null,
+          salary_date: form.salary_date.value || null,
+          tracking_date: form.tracking_date.value || null,
+          nupay_reference: form.nupay_reference.value || null,
+          total_amount: parseFloat(form.total_amount.value) || null,
+          monthly_payment: parseFloat(form.monthly_payment.value) || null,
+          status: form.status.value,
+          total_no_payments_made: parseInt(form.total_no_payments_made.value) || 0,
+          total_no_missed_payments: parseInt(form.total_no_missed_payments.value) || 0,
+          created_at: new Date().toISOString()
+        };
+
+        const { error } = await supabaseClient.from(TABLE_NAME).insert([data]);
+        
+        if (error) {
+          throw error;
+        }
+
+        showMessage(`✅ Client captured successfully! Reference: ${data.sale_reference}`, 'success');
+        form.reset();
+        
+      } catch (error) {
+        console.error('Error saving client:', error);
+        showMessage(`❌ Error: ${error.message}`, 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Capture Client';
+      }
+    });
+
+    function goBackToDashboard() {
+      // Try to determine user role from session
+      try {
+        const session = JSON.parse(localStorage.getItem('edsa_staff_session') || '{}');
+        const role = session.role;
+        
+        const dashboardMap = {
+          'agent': 'agent_dashboard.html',
+          'admin': 'admin_dashboard.html',
+          'admin_manager': 'admin_manager_dashboard.html',
+          'super': 'super_dashboard.html'
+        };
+        
+        if (role && dashboardMap[role]) {
+          window.location.href = dashboardMap[role];
+        } else {
+          window.location.href = 'staff-login.html';
+        }
+      } catch (e) {
+        window.location.href = 'staff-login.html';
+      }
+    }
+
+    // Session management
+    (function(){
+      try {
+        const sess = JSON.parse(localStorage.getItem('edsa_staff_session') || 'null');
+        if (!sess) { 
+          window.location.href = 'staff-login.html'; 
+          return; 
+        }
+        // Auto-fill agent name if available
+        if (sess.name) {
+          document.querySelector('input[name="agent_name"]').value = sess.name;
+        }
+      } catch(e) {
+        console.error(e);
+        window.location.href = 'staff-login.html';
+      }
+    })();
+  </script>
+</body>
+</html>

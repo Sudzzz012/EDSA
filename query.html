@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Submit a Query | Erase Debt SA</title>
+  <link rel="icon" href="erase-debt-logo.png"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #003865, #005c97);
+      color: #fff;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: #fff;
+      color: #333;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+    }
+    .logo {
+      display: block;
+      margin: 0 auto 20px auto;
+      width: 100px;
+      border-radius: 15px;
+    }
+    h1 {
+      text-align: center;
+      color: #2970ba;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+    }
+    .form-group {
+      margin-bottom: 25px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #003865;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e1e8f0;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+      box-sizing: border-box;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #2970ba;
+      box-shadow: 0 0 0 3px rgba(41, 112, 186, 0.1);
+    }
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+    .file-upload {
+      border: 2px dashed #2970ba;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      background: #f8fafc;
+      transition: background-color 0.3s;
+    }
+    .file-upload:hover {
+      background: #f1f5f9;
+    }
+    .submit-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #2970ba, #005c97);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 20px;
+    }
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(41, 112, 186, 0.3);
+    }
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .message {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      font-weight: bold;
+      display: none;
+    }
+    .success {
+      background: #e8f5e8;
+      color: #2e7d32;
+      border-left: 4px solid #4caf50;
+    }
+    .error {
+      background: #ffebee;
+      color: #c62828;
+      border-left: 4px solid #f44336;
+    }
+    .back-link {
+      text-align: center;
+      margin-top: 30px;
+    }
+    .back-link a {
+      color: #2970ba;
+      text-decoration: none;
+      font-weight: bold;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .back-link a:hover {
+      color: #005c97;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="erase-debt-logo.png" alt="Erase Debt SA Logo" class="logo" />
+    <h1>Submit a Query</h1>
+    
+    <form id="queryForm">
+      <div class="form-group">
+        <label>First Name *</label>
+        <input type="text" id="firstName" required />
+      </div>
+      
+      <div class="form-group">
+        <label>Last Name *</label>
+        <input type="text" id="lastName" required />
+      </div>
+      
+      <div class="form-group">
+        <label>ID Number *</label>
+        <input type="text" id="idNumber" maxlength="13" required />
+      </div>
+      
+      <div class="form-group">
+        <label>Email Address *</label>
+        <input type="email" id="email" required />
+      </div>
+      
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" id="phone" />
+      </div>
+      
+      <div class="form-group">
+        <label>Reference Number (if you have one)</label>
+        <input type="text" id="reference" placeholder="e.g., EDSA-2025-001234" />
+      </div>
+      
+      <div class="form-group">
+        <label>Query Type *</label>
+        <select id="queryType" required>
+          <option value="">Select Query Type</option>
+          <option value="GENERAL">General Inquiry</option>
+          <option value="APPLICATION_STATUS">Application Status</option>
+          <option value="PAYMENT">Payment Related</option>
+          <option value="DOCUMENT">Document Submission</option>
+          <option value="COMPLAINT">Complaint</option>
+          <option value="TECHNICAL">Technical Support</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label>Your Message *</label>
+        <textarea id="queryText" required placeholder="Please describe your query in detail..."></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label>Attach File (optional)</label>
+        <div class="file-upload">
+          <input type="file" id="attachment" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" />
+          <p style="margin: 10px 0 0 0; color: #666;">
+            <i class="fa-solid fa-upload"></i>
+            Upload documents, screenshots, or other relevant files
+          </p>
+        </div>
+      </div>
+      
+      <button type="submit" class="submit-btn" id="submitBtn">
+        <i class="fa-solid fa-paper-plane"></i>
+        Submit Query
+      </button>
+      
+      <div id="message" class="message"></div>
+    </form>
+    
+    <div class="back-link">
+      <a href="index.html">
+        <i class="fa-solid fa-arrow-left"></i>
+        Back to Homepage
+      </a>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script>
+    const { createClient } = supabase;
+    const supabaseClient = createClient(
+      'https://xzjunkpxvfdpuogoflzh.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ'
+    );
+
+    // Generate reference number
+    function generateReference() {
+      const now = new Date();
+      const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '');
+      const timeStr = now.getTime().toString().slice(-4);
+      return `EDSA${dateStr}-${timeStr}`;
+    }
+
+    // Show message
+    function showMessage(text, type = 'success') {
+      const messageEl = document.getElementById('message');
+      messageEl.textContent = text;
+      messageEl.className = `message ${type}`;
+      messageEl.style.display = 'block';
+      messageEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Auto-format ID number
+    document.getElementById('idNumber').addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length > 13) value = value.substring(0, 13);
+      e.target.value = value;
+    });
+
+    // Handle form submission
+    document.getElementById('queryForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+
+      try {
+        // Get form data
+        const formData = {
+          reference_number: document.getElementById('reference').value || generateReference(),
+          first_name: document.getElementById('firstName').value,
+          last_name: document.getElementById('lastName').value,
+          id_number: document.getElementById('idNumber').value,
+          email: document.getElementById('email').value.toLowerCase(),
+          phone: document.getElementById('phone').value,
+          query_type: document.getElementById('queryType').value,
+          query_text: document.getElementById('queryText').value,
+          status: 'PENDING'
+        };
+
+        // Handle file upload
+        const fileInput = document.getElementById('attachment');
+        let attachmentUrl = null;
+        
+        if (fileInput.files.length > 0) {
+          const file = fileInput.files[0];
+          const fileName = `${formData.reference_number}_${file.name}`;
+          
+          const { data: uploadData, error: uploadError } = await supabaseClient.storage
+            .from('edsa-queries')
+            .upload(fileName, file);
+
+          if (uploadError) {
+            console.error('Upload error:', uploadError);
+            throw new Error('File upload failed');
+          }
+
+          const { data: urlData } = supabaseClient.storage
+            .from('edsa-queries')
+            .getPublicUrl(fileName);
+          
+          attachmentUrl = urlData.publicUrl;
+        }
+
+        if (attachmentUrl) {
+          formData.attachment_url = attachmentUrl;
+        }
+
+        // Submit to database
+        const { data, error } = await supabaseClient
+          .from('QUERIES')
+          .insert([formData]);
+
+        if (error) {
+          console.error('Database error:', error);
+          throw new Error('Failed to submit query');
+        }
+
+        showMessage(
+          `✅ Query submitted successfully! Your reference number is: ${formData.reference_number}. We'll respond within 24 hours.`,
+          'success'
+        );
+
+        // Reset form
+        document.getElementById('queryForm').reset();
+        
+      } catch (error) {
+        console.error('Submission error:', error);
+        showMessage('❌ Failed to submit query. Please try again.', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Query';
+      }
+    });
+  </script>
+</body>
+</html>

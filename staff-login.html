@@ -135,16 +135,6 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
-    .role-badge {
-      display: inline-block;
-      padding: 4px 12px;
-      background: #e3f2fd;
-      color: #1976d2;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: bold;
-      margin-top: 10px;
-    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
@@ -249,13 +239,6 @@
       }
     }
 
-    // Hash password using bcrypt (simplified for demo - use proper hashing in production)
-    async function hashPassword(password) {
-      // For demo purposes, we'll use a simple hash
-      // In production, use bcrypt.hash on the server side
-      return btoa(password); // Base64 encoding as placeholder
-    }
-
     // Verify credentials against database
     async function verifyCredentials(username, password) {
       try {
@@ -276,9 +259,6 @@
           return { success: false, message: 'Invalid username or password.' };
         }
 
-        // For demo purposes, we'll accept any password
-        // In production, use bcrypt.compare(password, data.password_hash)
-        
         // Check if user is active
         if (data.status !== 'active') {
           return { success: false, message: 'Your account has been deactivated. Please contact your administrator.' };

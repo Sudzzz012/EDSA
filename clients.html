@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Client Management - Erase Debt SA</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #003865, #005c97);
+      color: #fff;
+    }
+    .header {
+      background-color: #002f5f;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header img {
+      height: 60px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+    .back-button {
+      background: #2970ba;
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    .container {
+      padding: 30px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .stat-card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .stat-label {
+      color: #dce8f7;
+      font-size: 0.9rem;
+    }
+    .filters {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+    }
+    .filter-group label {
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .filter-group select,
+    .filter-group input {
+      padding: 8px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .clients-table {
+      background: #fff;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th {
+      background: #2970ba;
+      color: white;
+      padding: 15px 12px;
+      text-align: left;
+      font-weight: bold;
+    }
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #333;
+    }
+    tr:nth-child(even) {
+      background: #f8fafc;
+    }
+    tr:hover {
+      background: #e6f3ff;
+    }
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    .status-active {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .status-cancelled {
+      background: #fecaca;
+      color: #991b1b;
+    }
+    .client-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-view {
+      background: #2970ba;
+      color: white;
+    }
+    .btn-edit {
+      background: #059669;
+      color: white;
+    }
+    .btn-track {
+      background: #7c3aed;
+      color: white;
+    }
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #333;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+<body>
+  <div class="header">
+    <img src="erase-debt-logo.png" alt="Erase Debt SA Logo" />
+    <h1>Client Management</h1>
+    <a href="javascript:history.back()" class="back-button">
+      <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+    </a>
+  </div>
+
+  <div class="container">
+    <!-- Statistics Cards -->
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-number" id="totalClients">-</div>
+        <div class="stat-label">Total Clients</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="activeClients">-</div>
+        <div class="stat-label">Active</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="pendingClients">-</div>
+        <div class="stat-label">Pending</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="cancelledClients">-</div>
+        <div class="stat-label">Cancelled</div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+      <div class="filter-group">
+        <label>Status</label>
+        <select id="statusFilter">
+          <option value="">All Statuses</option>
+          <option value="Active">Active</option>
+          <option value="Pending">Pending</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Service Type</label>
+        <select id="serviceFilter">
+          <option value="">All Services</option>
+          <option value="SERVICE 1 - DRR(C & D3) - NP">Service 1 - DRR (Not Paying)</option>
+          <option value="SERVICE 1 - DRR(C & D3) - P">Service 1 - DRR (Paying)</option>
+          <option value="SERVICE 2 - D4 - BELOW 12M">Service 2 - D4 Below 12M</option>
+          <option value="SERVICE 3 - D4 - AITC">Service 3 - D4 AITC</option>
+          <option value="SERVICE 4 - NL/CR">Service 4 - NL/CR</option>
+          <option value="SERVICE 5 - NL ITC CLEARANCE">Service 5 - NL ITC Clearance</option>
+          <option value="SERVICE 6 - RN - A - NL">Service 6 - RN A NL</option>
+          <option value="SERVICE 7 - RN - OTHER/NL">Service 7 - RN Other/NL</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Branch</label>
+        <select id="branchFilter">
+          <option value="">All Branches</option>
+          <option value="Erase Debt SA - ADMIN">EDSA - Admin</option>
+          <option value="Erase Debt SA - MP">EDSA - MP</option>
+          <option value="Erase Debt SA - SS">EDSA - SS</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Search</label>
+        <input type="text" id="searchInput" placeholder="Search by name, ID, or email..." />
+      </div>
+    </div>
+
+    <!-- Clients Table -->
+    <div class="clients-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Client Details</th>
+            <th>Contact</th>
+            <th>Service</th>
+            <th>Payment Info</th>
+            <th>Status</th>
+            <th>Branch</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="clientsTableBody">
+          <tr>
+            <td colspan="7" class="loading">
+              <i class="fa-solid fa-spinner fa-spin"></i> Loading clients...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const { createClient } = supabase;
+    const supabaseClient = createClient(
+      'https://xzjunkpxvfdpuogoflzh.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ'
+    );
+
+    let allClients = [];
+    let filteredClients = [];
+
+    // Load all clients
+    async function loadClients() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('edsa_client_database')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          throw error;
+        }
+
+        allClients = data || [];
+        filteredClients = [...allClients];
+        updateStats();
+        displayClients();
+      } catch (error) {
+        console.error('Error loading clients:', error);
+        document.getElementById('clientsTableBody').innerHTML = `
+          <tr><td colspan="7" style="color: red; text-align: center;">
+            Error loading clients: ${error.message}
+          </td></tr>
+        `;
+      }
+    }
+
+    // Update statistics
+    function updateStats() {
+      const total = allClients.length;
+      const active = allClients.filter(c => c.status === 'Active').length;
+      const pending = allClients.filter(c => c.status === 'Pending').length;
+      const cancelled = allClients.filter(c => c.status === 'Cancelled').length;
+
+      document.getElementById('totalClients').textContent = total;
+      document.getElementById('activeClients').textContent = active;
+      document.getElementById('pendingClients').textContent = pending;
+      document.getElementById('cancelledClients').textContent = cancelled;
+    }
+
+    // Display clients in table
+    function displayClients() {
+      const tbody = document.getElementById('clientsTableBody');
+      
+      if (filteredClients.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #666;">No clients found</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filteredClients.map(client => {
+        const statusClass = `status-${client.status?.toLowerCase() || 'pending'}`;
+        const fullName = [client.first_name, client.last_name].filter(Boolean).join(' ') || 'Unknown';
+        const paymentsMade = parseInt(client.total_no_payments_made || 0);
+        const missedPayments = parseInt(client.total_no_missed_payments || 0);
+        const monthlyPayment = parseFloat(client.monthly_payment || 0);
+        
+        return `
+          <tr>
+            <td>
+              <strong>${fullName}</strong><br>
+              <small>ID: ${client.client_id_number || 'N/A'}</small><br>
+              <small>Ref: ${client.sale_reference || 'N/A'}</small>
+            </td>
+            <td>
+              ${client.email || 'N/A'}<br>
+              <small>${client.phone || 'No phone'}</small>
+            </td>
+            <td>
+              <div style="max-width: 180px; font-size: 12px;">
+                ${client.service_type || 'Not specified'}
+              </div>
+            </td>
+            <td>
+              <small>
+                Paid: ${paymentsMade} | Missed: ${missedPayments}<br>
+                Monthly: ${monthlyPayment ? `R${monthlyPayment.toLocaleString()}` : 'N/A'}
+              </small>
+            </td>
+            <td><span class="status-badge ${statusClass}">${client.status || 'PENDING'}</span></td>
+            <td>
+              <small>${client.branch_name || 'N/A'}</small>
+            </td>
+            <td>
+              <div class="client-actions">
+                <button class="btn btn-view" onclick="viewClient('${client.id}')">
+                  <i class="fa-solid fa-eye"></i> View
+                </button>
+                <button class="btn btn-track" onclick="trackClient('${client.sale_reference}')">
+                  <i class="fa-solid fa-chart-line"></i> Track
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Filter clients
+    function filterClients() {
+      const statusFilter = document.getElementById('statusFilter').value;
+      const serviceFilter = document.getElementById('serviceFilter').value;
+      const branchFilter = document.getElementById('branchFilter').value;
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
+      filteredClients = allClients.filter(client => {
+        // Status filter
+        if (statusFilter && client.status !== statusFilter) return false;
+        
+        // Service filter
+        if (serviceFilter && client.service_type !== serviceFilter) return false;
+        
+        // Branch filter
+        if (branchFilter && client.branch_name !== branchFilter) return false;
+        
+        // Search filter
+        if (searchTerm) {
+          const searchableText = [
+            client.first_name,
+            client.last_name,
+            client.client_id_number,
+            client.email,
+            client.sale_reference
+          ].join(' ').toLowerCase();
+          
+          if (!searchableText.includes(searchTerm)) return false;
+        }
+        
+        return true;
+      });
+
+      displayClients();
+    }
+
+    // Client action handlers
+    function viewClient(clientId) {
+      const client = allClients.find(c => c.id === clientId);
+      if (!client) return;
+
+      const fullName = [client.first_name, client.last_name].filter(Boolean).join(' ');
+      const paymentsMade = parseInt(client.total_no_payments_made || 0);
+      const missedPayments = parseInt(client.total_no_missed_payments || 0);
+      const totalPlan = parseInt(client.payment_plan_months || 0);
+      const remaining = Math.max(0, totalPlan - paymentsMade);
+      const monthlyPayment = parseFloat(client.monthly_payment || 0);
+      const outstanding = Math.max(0, remaining * monthlyPayment);
+      
+      alert(`Client Details:
+
+Name: ${fullName}
+ID Number: ${client.client_id_number || 'N/A'}
+Email: ${client.email || 'N/A'}
+Phone: ${client.phone || 'N/A'}
+Reference: ${client.sale_reference || 'N/A'}
+
+Service: ${client.service_type || 'N/A'}
+Status: ${client.status || 'N/A'}
+Branch: ${client.branch_name || 'N/A'}
+Agent: ${client.agent_name || 'N/A'}
+
+Payment Information:
+- Plan: ${totalPlan} months
+- Made: ${paymentsMade} payments
+- Missed: ${missedPayments} payments
+- Remaining: ${remaining} payments
+- Monthly: ${monthlyPayment ? `R${monthlyPayment.toLocaleString()}` : 'N/A'}
+- Outstanding: ${monthlyPayment ? `R${outstanding.toLocaleString()}` : 'N/A'}
+
+Banking:
+- Bank: ${client.bank || 'N/A'}
+- Account Type: ${client.account_type || 'N/A'}
+- Salary Date: ${client.salary_date || 'N/A'}
+
+Created: ${new Date(client.created_at).toLocaleString()}`);
+    }
+
+    function trackClient(reference) {
+      if (reference) {
+        window.open(`track-portfolio.html?ref=${encodeURIComponent(reference)}`, '_blank');
+      } else {
+        alert('No reference number available for this client');
+      }
+    }
+
+    // Event listeners for filters
+    document.getElementById('statusFilter').addEventListener('change', filterClients);
+    document.getElementById('serviceFilter').addEventListener('change', filterClients);
+    document.getElementById('branchFilter').addEventListener('change', filterClients);
+    document.getElementById('searchInput').addEventListener('input', filterClients);
+
+    // Load clients on page load
+    document.addEventListener('DOMContentLoaded', loadClients);
+
+    // Session management
+    (function(){
+      try {
+        const sess = JSON.parse(localStorage.getItem('edsa_staff_session') || 'null');
+        if (!sess) { 
+          window.location.href = 'staff-login.html'; 
+          return; 
+        }
+      } catch(e) {
+        console.error(e);
+        window.location.href = 'staff-login.html';
+      }
+    })();
+  </script>
+</body>
+</html>
