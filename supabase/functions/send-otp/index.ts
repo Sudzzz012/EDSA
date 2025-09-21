@@ -7,7 +7,7 @@ const corsHeaders = {
 }
 
 // Configuration
-const SENDGRID_API_KEY = Deno.env.get('SENDGRID_API_KEY')
+const SENDGRID_API_KEY = Deno.env.get('SENDGRIDFINAL')
 const FROM_EMAIL = Deno.env.get('FROM_EMAIL') || 'noreply@erasedebtsa.co.za'
 const EDSA_FUNCTION_TOKEN = Deno.env.get('EDSA_FUNCTION_TOKEN')
 const OTP_TTL_MINUTES = parseInt(Deno.env.get('EDSA_OTP_TTL_MINUTES') || '10')

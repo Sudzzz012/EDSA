@@ -8,7 +8,7 @@ const corsHeaders = {
 }
 
 // SendGrid configuration
-const SENDGRID_API_KEY = Deno.env.get('SENDGRID_API_KEY')
+const SENDGRID_API_KEY = Deno.env.get('SENDGRIDFINAL')
 const FROM_EMAIL = Deno.env.get('FROM_EMAIL') || 'noreply@erasedebtsa.co.za'
 const SENDGRID_URL = 'https://api.sendgrid.com/v3/mail/send'
 
