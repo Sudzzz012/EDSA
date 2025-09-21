@@ -6,43 +6,29 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <link rel="icon" href="erase-debt-logo.png"/>
   <style>
-    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(135deg,#003865,#005c97);color:#fff;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center}
-    .wrap{max-width:520px;margin:20px;padding:32px;background:#fff;border-radius:20px;box-shadow:0 15px 50px rgba(0,0,0,.3);color:#333}
-    .logo{display:block;margin:0 auto 20px;width:100px;border-radius:12px}
-    h1{margin:0 0 12px;font-size:28px;text-align:center;color:#2970ba;font-weight:800}
-    p.sub{margin:0 0 24px;color:#64748b;text-align:center;line-height:1.5}
-    label{display:block;margin:16px 0 8px;color:#374151;font-weight:600}
-    input{width:100%;padding:14px 16px;border-radius:12px;border:2px solid #e5e7eb;background:#fff;color:#333;outline:none;font-size:16px;transition:border-color .2s}
-    input:focus{border-color:#2970ba;box-shadow:0 0 0 3px rgba(41,112,186,.1)}
-    input::placeholder{color:#9ca3af}
-    button{margin-top:20px;width:100%;padding:14px 16px;border:0;border-radius:12px;background:#2970ba;color:#fff;font-weight:700;cursor:pointer;font-size:16px;transition:background .2s}
-    button:hover{background:#1e40af}
-    button:disabled{opacity:.6;cursor:not-allowed;background:#9ca3af}
-    .notice{margin-top:16px;padding:12px 16px;border-radius:10px;background:#f0f9ff;color:#1e40af;display:none;border-left:4px solid #2970ba}
-    .error{background:#fef2f2;color:#dc2626;border-left-color:#dc2626}
-    .success{background:#f0fdf4;color:#16a34a;border-left-color:#16a34a}
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#0c1f3b;color:#fff;margin:0}
+    .wrap{max-width:520px;margin:40px auto;padding:24px;background:#122a52;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+    .logo{display:block;margin:0 auto 20px;width:80px}
+    h1{margin:0 0 12px;font-size:24px;text-align:center;color:#fff}
+    p.sub{margin:0 0 24px;color:#c9d7ff;text-align:center}
+    label{display:block;margin:12px 0 6px;color:#fff}
+    input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid #2e4b87;background:#0f2142;color:#fff;outline:none}
+    input::placeholder{color:#a8b4d7}
+    button{margin-top:16px;width:100%;padding:12px 16px;border:0;border-radius:12px;background:#3b82f6;color:#fff;font-weight:700;cursor:pointer}
+    button:disabled{opacity:.6;cursor:not-allowed}
+    .notice{margin-top:12px;padding:10px;border-radius:10px;background:#0b1a33;color:#cfe0ff;display:none}
+    .error{background:#331016;color:#ffd3d8}
     .hidden{display:none}
-    .back{display:inline-block;margin-top:24px;color:#2970ba;text-decoration:none;text-align:center;width:100%;font-weight:600}
-    .back:hover{text-decoration:underline}
-    .step-indicator{display:flex;justify-content:center;margin-bottom:24px;gap:8px}
-    .step-dot{width:10px;height:10px;border-radius:50%;background:#e5e7eb}
-    .step-dot.active{background:#2970ba}
-    .step-dot.completed{background:#16a34a}
+    .back{display:inline-block;margin-top:16px;color:#c9d7ff;text-decoration:none;text-align:center}
   </style>
 </head>
 <body>
   <div class="wrap">
     <img src="erase-debt-logo.png" alt="Erase Debt SA" class="logo"/>
     <h1>Track Your Application</h1>
-    
-    <div class="step-indicator">
-      <div class="step-dot active" id="dot1"></div>
-      <div class="step-dot" id="dot2"></div>
-    </div>
+    <p class="sub">Enter your ID & email. We'll find your reference and send a one-time password (OTP) to your email.</p>
 
     <div id="step1">
-      <p class="sub">Enter your ID & email. We'll find your reference and send a one-time password (OTP) to your email.</p>
-      
       <label>South African ID Number</label>
       <input id="idn" placeholder="e.g. 8804015196086" inputmode="numeric" autocomplete="off"/>
 
@@ -54,18 +40,14 @@
     </div>
 
     <div id="step2" class="hidden">
-      <p class="sub">We've sent a 6-digit verification code to your email address. Please enter it below.</p>
-      
       <label>Enter OTP</label>
-      <input id="otp" placeholder="6-digit code" inputmode="numeric" autocomplete="one-time-code" maxlength="6"/>
+      <input id="otp" placeholder="6-digit code" inputmode="numeric" autocomplete="one-time-code"/>
       <button id="verifyBtn">Verify & Continue</button>
       <div id="msg2" class="notice"></div>
-      
-      <button id="backBtn" style="background:#6b7280;margin-top:12px;">← Go Back</button>
     </div>
 
     <div style="text-align:center;">
-      <a class="back" href="index.html">← Back to Homepage</a>
+      <a class="back" href="index.html">← Back</a>
     </div>
   </div>
 
@@ -78,44 +60,19 @@ let REF_NUMBER = null;
 
 const sendBtn = document.getElementById("sendBtn");
 const verifyBtn = document.getElementById("verifyBtn");
-const backBtn = document.getElementById("backBtn");
 const msg1 = document.getElementById("msg1");
 const msg2 = document.getElementById("msg2");
 const step1 = document.getElementById("step1");
 const step2 = document.getElementById("step2");
-const dot1 = document.getElementById("dot1");
-const dot2 = document.getElementById("dot2");
 
-function show(el, text, isError = false) {
+function show(el, text, isError=false){
   el.style.display = "block";
-  el.className = "notice" + (isError ? " error" : " success");
+  el.className = "notice" + (isError ? " error" : "");
   el.textContent = text;
 }
+function hide(el){ el.style.display = "none"; el.textContent = ""; }
 
-function hide(el) { 
-  el.style.display = "none"; 
-  el.textContent = ""; 
-}
-
-function goToStep2() {
-  step1.classList.add("hidden");
-  step2.classList.remove("hidden");
-  dot1.classList.remove("active");
-  dot1.classList.add("completed");
-  dot2.classList.add("active");
-}
-
-function goToStep1() {
-  step2.classList.add("hidden");
-  step1.classList.remove("hidden");
-  dot1.classList.add("active");
-  dot1.classList.remove("completed");
-  dot2.classList.remove("active");
-  hide(msg1);
-  hide(msg2);
-}
-
-async function lookupRef(idn, email) {
+async function lookupRef(idn, email){
   const resp = await fetch(`${PROJECT_URL}/functions/v1/lookup-ref`, {
     method: "POST",
     headers: {
@@ -125,9 +82,8 @@ async function lookupRef(idn, email) {
     },
     body: JSON.stringify({ id_number: idn, email })
   });
-  
   const data = await resp.json();
-  if (!resp.ok || !data?.ok || !data?.ref_number) {
+  if(!resp.ok || !data?.ok || !data?.ref_number){
     throw new Error(data?.error || `Lookup failed (HTTP ${resp.status})`);
   }
   return data.ref_number;
@@ -138,22 +94,12 @@ sendBtn.addEventListener("click", async () => {
   const idn = document.getElementById("idn").value.trim();
   const email = document.getElementById("email").value.trim();
 
-  if (!idn || !email) {
+  if(!idn || !email) {
     return show(msg1, "Please fill in both ID and Email.", true);
   }
 
-  // Basic ID validation
-  if (!/^\d{13}$/.test(idn)) {
-    return show(msg1, "Please enter a valid 13-digit South African ID number.", true);
-  }
-
-  // Basic email validation
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return show(msg1, "Please enter a valid email address.", true);
-  }
-
   sendBtn.disabled = true;
-  sendBtn.textContent = "Searching...";
+  sendBtn.textContent = "Finding...";
   
   try {
     // 1) Find the client's ref number securely
@@ -169,19 +115,15 @@ sendBtn.addEventListener("click", async () => {
       },
       body: JSON.stringify({ ref_number: REF_NUMBER, id_number: idn, email })
     });
-    
     const data = await resp.json();
     if (!resp.ok || !data.ok) {
       show(msg1, data?.error || `Failed to send OTP (HTTP ${resp.status}).`, true);
       return;
     }
-    
     show(msg1, `OTP sent for Ref ${REF_NUMBER}. Please check your email (valid for ${data.expires_in_minutes || 10} minutes).`);
-    setTimeout(() => {
-      goToStep2();
-    }, 2000);
-    
-  } catch(e) {
+    step1.classList.add("hidden");
+    step2.classList.remove("hidden");
+  } catch(e){
     show(msg1, e?.message || "Lookup failed. Please check your details.", true);
   } finally {
     sendBtn.disabled = false;
@@ -195,15 +137,11 @@ verifyBtn.addEventListener("click", async () => {
   const email = document.getElementById("email").value.trim();
   const otp = document.getElementById("otp").value.trim();
 
-  if (!otp) {
+  if(!otp) {
     return show(msg2, "Enter the OTP from your email.", true);
   }
 
-  if (!/^\d{6}$/.test(otp)) {
-    return show(msg2, "Please enter a valid 6-digit OTP.", true);
-  }
-
-  if (!REF_NUMBER) {
+  if(!REF_NUMBER){
     return show(msg2, "Reference not found. Please go back and try again.", true);
   }
 
@@ -220,37 +158,19 @@ verifyBtn.addEventListener("click", async () => {
       },
       body: JSON.stringify({ ref_number: REF_NUMBER, id_number: idn, email, otp })
     });
-    
     const data = await resp.json();
     if (!resp.ok || !data.ok) {
       show(msg2, data?.error || `Could not verify OTP (HTTP ${resp.status}).`, true);
       return;
     }
-    
     // Redirect to portfolio with the looked-up ref
     window.location.href = `track-portfolio.html?ref=${encodeURIComponent(REF_NUMBER)}`;
-    
-  } catch(e) {
+  } catch(e){
     show(msg2, e?.message || "Network error.", true);
   } finally {
     verifyBtn.disabled = false;
     verifyBtn.textContent = "Verify & Continue";
   }
-});
-
-backBtn.addEventListener("click", () => {
-  goToStep1();
-  document.getElementById("otp").value = "";
-});
-
-// Auto-format ID number input
-document.getElementById("idn").addEventListener("input", (e) => {
-  e.target.value = e.target.value.replace(/\D/g, '').slice(0, 13);
-});
-
-// Auto-format OTP input
-document.getElementById("otp").addEventListener("input", (e) => {
-  e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6);
 });
 </script>
 </body>
