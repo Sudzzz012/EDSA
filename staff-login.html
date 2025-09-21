@@ -358,6 +358,18 @@
     
     const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    // Role Selection Variables
+    let selectedRole = null;
+    
+    // DOM elements
+    const roleSelection = document.getElementById('roleSelection');
+    const loginFormDiv = document.getElementById('loginForm');
+    const roleCards = document.querySelectorAll('.role-card');
+    const continueBtn = document.getElementById('continueBtn');
+    const backToRolesBtn = document.getElementById('backToRoles');
+    const selectedRoleTitle = document.getElementById('selectedRoleTitle');
+    const selectedRoleDesc = document.getElementById('selectedRoleDesc');
+    
     // DOM elements
     const loginForm = document.getElementById('loginForm');
     const usernameInput = document.getElementById('username');
@@ -368,6 +380,83 @@
     const errorMessage = document.getElementById('errorMessage');
     const successMessage = document.getElementById('successMessage');
 
+    // Role Information
+    const roleInfo = {
+      'agent': { title: 'Agent Login', desc: 'Client management & lead capture' },
+      'admin': { title: 'Admin Login', desc: 'System administration' },
+      'admin_manager': { title: 'Admin Manager Login', desc: 'Advanced management tools' },
+      'super': { title: 'Super User Login', desc: 'Full system access' }
+    };
+
+    // Role card click handlers
+    roleCards.forEach(card => {
+      card.addEventListener('click', function() {
+        console.log('Role card clicked:', this.dataset.role);
+        
+        // Remove selected class from all cards
+        roleCards.forEach(c => c.classList.remove('selected'));
+        
+        // Add selected class to clicked card
+        this.classList.add('selected');
+        
+        // Store selected role
+        selectedRole = this.dataset.role;
+        
+        // Enable continue button
+        continueBtn.disabled = false;
+        continueBtn.textContent = `Continue as ${this.querySelector('h3').textContent}`;
+        
+        console.log('Selected role:', selectedRole);
+      });
+    });
+    
+    // Continue to login form
+    continueBtn.addEventListener('click', function() {
+      console.log('Continue button clicked, selected role:', selectedRole);
+      
+      if (!selectedRole) {
+        alert('Please select a role first');
+        return;
+      }
+      
+      // Update role info in login form
+      const info = roleInfo[selectedRole] || { title: 'Staff Login', desc: 'System access' };
+      selectedRoleTitle.textContent = info.title;
+      selectedRoleDesc.textContent = info.desc;
+      
+      // Show login form, hide role selection
+      roleSelection.classList.add('hidden');
+      loginFormDiv.classList.remove('hidden');
+      
+      console.log('Transitioned to login form');
+      
+      // Focus on username input
+      setTimeout(() => {
+        usernameInput.focus();
+      }, 100);
+    });
+    
+    // Back to role selection
+    backToRolesBtn.addEventListener('click', function() {
+      console.log('Back to roles clicked');
+      
+      // Show role selection, hide login form
+      roleSelection.classList.remove('hidden');
+      loginFormDiv.classList.add('hidden');
+      
+      // Clear form
+      usernameInput.value = '';
+      passwordInput.value = '';
+      hideMessages();
+      
+      // Reset role selection
+      roleCards.forEach(c => c.classList.remove('selected'));
+      selectedRole = null;
+      continueBtn.disabled = true;
+      continueBtn.textContent = 'Continue to Login';
+      
+      console.log('Returned to role selection');
+    });
     // Show/hide messages
     function showError(message) {
       errorMessage.textContent = message;
@@ -402,7 +491,7 @@
     // Redirect to appropriate dashboard
     function redirectToDashboard(role) {
       const dashboardMap = {
-        'agent': 'agent_dashboard.html',
+        'agent': 'agent-dashboard.html',
         'admin': 'admin_dashboard.html',
         'admin_manager': 'admin_manager_dashboard.html',
         'super': 'super_dashboard.html'
@@ -460,7 +549,7 @@
     }
 
     // Handle form submission
-    loginForm.addEventListener('submit', async function(e) {
+    document.getElementById('credentialsForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       hideMessages();
 
