@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Communication Logs - Erase Debt SA</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #003865, #005c97);
+      color: #fff;
+    }
+    .header {
+      background-color: #002f5f;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header img {
+      height: 60px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+    .back-button {
+      background: #2970ba;
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    .container {
+      padding: 30px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .filters {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+    }
+    .filter-group label {
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .filter-group select,
+    .filter-group input {
+      padding: 8px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .logs-table {
+      background: #fff;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th {
+      background: #2970ba;
+      color: white;
+      padding: 15px 12px;
+      text-align: left;
+      font-weight: bold;
+    }
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #333;
+    }
+    tr:nth-child(even) {
+      background: #f8fafc;
+    }
+    tr:hover {
+      background: #e6f3ff;
+    }
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    .status-sent {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .status-failed {
+      background: #fecaca;
+      color: #991b1b;
+    }
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #333;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+<body>
+  <div class="header">
+    <img src="erase-debt-logo.png" alt="Erase Debt SA Logo" />
+    <h1>Communication Logs</h1>
+    <a href="javascript:history.back()" class="back-button">
+      <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+    </a>
+  </div>
+
+  <div class="container">
+    <!-- Filters -->
+    <div class="filters">
+      <div class="filter-group">
+        <label>Communication Type</label>
+        <select id="typeFilter">
+          <option value="">All Types</option>
+          <option value="EMAIL">Email</option>
+          <option value="SMS">SMS</option>
+          <option value="CALL">Phone Call</option>
+          <option value="WHATSAPP">WhatsApp</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Status</label>
+        <select id="statusFilter">
+          <option value="">All Statuses</option>
+          <option value="SENT">Sent</option>
+          <option value="PENDING">Pending</option>
+          <option value="FAILED">Failed</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Search</label>
+        <input type="text" id="searchInput" placeholder="Search by client name or email..." />
+      </div>
+      <div class="filter-group">
+        <label>Date Range</label>
+        <input type="date" id="dateFrom" />
+        <input type="date" id="dateTo" style="margin-top: 5px;" />
+      </div>
+    </div>
+
+    <!-- Communication Logs Table -->
+    <div class="logs-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Date/Time</th>
+            <th>Client</th>
+            <th>Type</th>
+            <th>Message/Subject</th>
+            <th>Status</th>
+            <th>Agent</th>
+          </tr>
+        </thead>
+        <tbody id="logsTableBody">
+          <tr>
+            <td colspan="6" class="loading">
+              <i class="fa-solid fa-spinner fa-spin"></i> Loading communication logs...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const { createClient } = supabase;
+    const supabaseClient = createClient(
+      'https://xzjunkpxvfdpuogoflzh.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ'
+    );
+
+    // Sample data for demonstration
+    const sampleLogs = [
+      {
+        id: 1,
+        date: new Date().toISOString(),
+        client_name: 'John Doe',
+        client_email: 'john@example.com',
+        type: 'EMAIL',
+        message: 'Welcome email sent',
+        status: 'SENT',
+        agent: 'System'
+      },
+      {
+        id: 2,
+        date: new Date(Date.now() - 86400000).toISOString(),
+        client_name: 'Jane Smith',
+        client_email: 'jane@example.com',
+        type: 'SMS',
+        message: 'Payment reminder',
+        status: 'SENT',
+        agent: 'Admin'
+      }
+    ];
+
+    let allLogs = [...sampleLogs];
+    let filteredLogs = [...allLogs];
+
+    // Load communication logs
+    async function loadLogs() {
+      try {
+        // In a real implementation, you'd load from database
+        // For now, using sample data
+        displayLogs();
+      } catch (error) {
+        console.error('Error loading logs:', error);
+        document.getElementById('logsTableBody').innerHTML = `
+          <tr><td colspan="6" style="color: red; text-align: center;">
+            Error loading logs: ${error.message}
+          </td></tr>
+        `;
+      }
+    }
+
+    // Display logs in table
+    function displayLogs() {
+      const tbody = document.getElementById('logsTableBody');
+      
+      if (filteredLogs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #666;">No communication logs found</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filteredLogs.map(log => {
+        const statusClass = `status-${log.status.toLowerCase()}`;
+        
+        return `
+          <tr>
+            <td>${new Date(log.date).toLocaleString()}</td>
+            <td>
+              ${log.client_name}<br>
+              <small>${log.client_email}</small>
+            </td>
+            <td>${log.type}</td>
+            <td>${log.message}</td>
+            <td><span class="status-badge ${statusClass}">${log.status}</span></td>
+            <td>${log.agent}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Filter logs
+    function filterLogs() {
+      const typeFilter = document.getElementById('typeFilter').value;
+      const statusFilter = document.getElementById('statusFilter').value;
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const dateFrom = document.getElementById('dateFrom').value;
+      const dateTo = document.getElementById('dateTo').value;
+
+      filteredLogs = allLogs.filter(log => {
+        if (typeFilter && log.type !== typeFilter) return false;
+        if (statusFilter && log.status !== statusFilter) return false;
+        
+        if (searchTerm) {
+          const searchableText = [
+            log.client_name,
+            log.client_email,
+            log.message
+          ].join(' ').toLowerCase();
+          
+          if (!searchableText.includes(searchTerm)) return false;
+        }
+        
+        if (dateFrom && new Date(log.date) < new Date(dateFrom)) return false;
+        if (dateTo && new Date(log.date) > new Date(dateTo + 'T23:59:59')) return false;
+        
+        return true;
+      });
+
+      displayLogs();
+    }
+
+    // Event listeners for filters
+    document.getElementById('typeFilter').addEventListener('change', filterLogs);
+    document.getElementById('statusFilter').addEventListener('change', filterLogs);
+    document.getElementById('searchInput').addEventListener('input', filterLogs);
+    document.getElementById('dateFrom').addEventListener('change', filterLogs);
+    document.getElementById('dateTo').addEventListener('change', filterLogs);
+
+    // Load logs on page load
+    document.addEventListener('DOMContentLoaded', loadLogs);
+
+    // Session management
+    (function(){
+      try {
+        const sess = JSON.parse(localStorage.getItem('edsa_staff_session') || 'null');
+        if (!sess) { 
+          window.location.href = 'staff-login.html'; 
+          return; 
+        }
+      } catch(e) {
+        console.error(e);
+        window.location.href = 'staff-login.html';
+      }
+    })();
+  </script>
+</body>
+</html>
