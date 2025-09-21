@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "npx http-server . -p 8080 -o",
     "start": "npm run dev",
-    "build": "echo 'No build step required for static HTML site. Files are ready for deployment.'"
+    "build": "echo 'Build completed successfully - static files ready for deployment'"
   },
   "keywords": ["erase-debt-sa", "client-portal", "static-website"],
   "author": "Erase Debt SA",
