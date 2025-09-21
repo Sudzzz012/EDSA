@@ -833,6 +833,9 @@
         console.log('Found query by ID + email:', queryData);
         currentQuery = queryData;
         
+        // Debug: Log the found query data
+        console.log('Query found - Reference:', queryData.reference_number, 'Name:', queryData.first_name, queryData.last_name);
+        
         // Generate and store OTP
         storedOTP = generateOTP();
         otpEmail = queryData.email;
@@ -860,7 +863,7 @@
 
       } catch (error) {
         console.error('OTP search error:', error);
-        showMessage('otpMsg', `Search error: ${error.message}. Try the reference number if available.`, true);
+        showMessage('otpMsg', `Search error: ${error.message}. Please check your details and try again.`, true);
       } finally {
         otpBtn.disabled = false;
         otpBtn.textContent = 'Send OTP & Search';
@@ -917,6 +920,9 @@
       if (value.length > 13) value = value.substring(0, 13);
       e.target.value = value;
       
+      // Debug: Log the formatted value
+      console.log('ID input formatted to:', value);
+      
       // Clear reference field when typing ID
       if (value) {
         document.getElementById('refInput').value = '';
@@ -948,6 +954,9 @@
     document.getElementById('emailInput').addEventListener('input', function(e) {
       if (e.target.value.trim()) {
         document.getElementById('refInput').value = '';
+        
+        // Debug: Log email input
+        console.log('Email input:', e.target.value.trim());
         clearMessage('refMsg');
       }
     });
