@@ -1,0 +1,19 @@
+{
+  "name": "edsa-client-portal",
+  "version": "1.0.0",
+  "description": "Erase Debt SA Client Portal Website",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo 'Static site - no build required' && exit 0",
+    "dev": "python -m http.server 3000 2>/dev/null || python3 -m http.server 3000 2>/dev/null || echo 'Python not available for dev server'",
+    "start": "npm run dev"
+  },
+  "keywords": ["erase-debt-sa", "client-portal", "static-website"],
+  "author": "Erase Debt SA",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/erase-debt-sa/client-portal"
+  },
+  "homepage": "https://www.erasedebtsa.co.za"
+}
