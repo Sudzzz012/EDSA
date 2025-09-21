@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent Dashboard - Erase Debt SA</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #006633, #009944);
+      color: #fff;
+    }
+    header {
+      background-color: #004d26;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+    }
+    header img {
+      height: 60px;
+      margin-bottom: 10px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .logout-button {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      background: #cc3300;
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+    .logout-button:hover {
+      background: #ff4400;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      background-color: #00592d;
+      padding: 10px;
+    }
+    nav a {
+      color: #fff;
+      background: #00734d;
+      margin: 10px;
+      padding: 14px 22px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: bold;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease-in-out;
+    }
+    nav a:hover {
+      background: #00a366;
+      transform: scale(1.05);
+    }
+    .dashboard-section {
+      padding: 40px;
+      text-align: center;
+    }
+    .dashboard-section h2 {
+      margin-bottom: 30px;
+      font-size: 24px;
+    }
+    .dashboard-cards {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .card {
+      background: #fff;
+      color: #006633;
+      border-radius: 12px;
+      padding: 30px;
+      width: 280px;
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+      transition: transform 0.3s;
+      cursor: pointer;
+    }
+    .card:hover {
+      transform: scale(1.05);
+    }
+    .card i {
+      font-size: 40px;
+      color: #00a366;
+      margin-bottom: 15px;
+    }
+    .card h3 {
+      margin: 10px 0;
+      font-size: 18px;
+    }
+    .card p {
+      font-size: 14px;
+      color: #555;
+      line-height: 1.4;
+    }
+    .back-button {
+      display: inline-block;
+      margin-top: 30px;
+      background: #00734d;
+      padding: 12px 24px;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    .back-button:hover {
+      background: #00a366;
+    }
+    .welcome-message {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    .stats-row {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin: 30px 0;
+      flex-wrap: wrap;
+    }
+    .stat-item {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 15px 25px;
+      border-radius: 10px;
+      text-align: center;
+      min-width: 120px;
+    }
+    .stat-number {
+      font-size: 24px;
+      font-weight: bold;
+      color: #ffffff;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: #ccffdd;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="erase-debt-logo.png" alt="Erase Debt SA Logo" />
+    <h1>Welcome Agent</h1>
+    <button class="logout-button" onclick="logout()">Log Out</button>
+  </header>
+
+  <nav>
+    <a href="capture-form.html"><i class="fas fa-user-plus"></i> Capture Client</a>
+    <a href="clients.html"><i class="fas fa-users"></i> My Clients</a>
+    <a href="queries.html"><i class="fas fa-question-circle"></i> Client Queries</a>
+    <a href="track-application.html"><i class="fas fa-search"></i> Track Applications</a>
+  </nav>
+
+  <div class="dashboard-section">
+    <div class="welcome-message">
+      <h2>Agent Dashboard</h2>
+      <p>Manage your clients, capture new leads, and handle client queries efficiently.</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-number" id="totalClients">-</div>
+        <div class="stat-label">Total Clients</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" id="activeClients">-</div>
+        <div class="stat-label">Active</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" id="pendingQueries">-</div>
+        <div class="stat-label">Pending Queries</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" id="thisMonth">-</div>
+        <div class="stat-label">This Month</div>
+      </div>
+    </div>
+
+    <div class="dashboard-cards">
+      <div class="card" onclick="location.href='capture-form.html'">
+        <i class="fas fa-user-plus"></i>
+        <h3>Capture New Client</h3>
+        <p>Add new clients to the system with all required details and documentation.</p>
+      </div>
+      
+      <div class="card" onclick="location.href='clients.html'">
+        <i class="fas fa-users"></i>
+        <h3>My Clients</h3>
+        <p>View and manage your captured clients, track their progress and status.</p>
+      </div>
+      
+      <div class="card" onclick="location.href='queries.html'">
+        <i class="fas fa-question-circle"></i>
+        <h3>Client Queries</h3>
+        <p>Respond to client questions and manage their support requests.</p>
+      </div>
+      
+      <div class="card" onclick="location.href='track-application.html'">
+        <i class="fas fa-search"></i>
+        <h3>Track Applications</h3>
+        <p>Monitor application status and help clients track their progress.</p>
+      </div>
+      
+      <div class="card" onclick="location.href='communication-logs.html'">
+        <i class="fas fa-envelope"></i>
+        <h3>Communication Log</h3>
+        <p>View communication history and follow up with clients effectively.</p>
+      </div>
+      
+      <div class="card" onclick="location.href='reporting.html'">
+        <i class="fas fa-chart-bar"></i>
+        <h3>My Performance</h3>
+        <p>View your performance metrics, client statistics, and achievements.</p>
+      </div>
+    </div>
+
+    <a class="back-button" href="index.html">← Back to Homepage</a>
+  </div>
+
+  <script>
+    // Session management and user authentication
+    (function(){
+      try {
+        const sess = JSON.parse(localStorage.getItem('edsa_staff_session') || 'null');
+        if (!sess) { 
+          window.location.href = 'staff-login.html'; 
+          return; 
+        }
+        
+        // Update welcome message with user name
+        const h1 = document.querySelector('h1');
+        if (h1) {
+          h1.textContent = 'Welcome ' + (sess.name || 'Agent');
+        }
+        
+        // Load basic statistics (placeholder - replace with actual data loading)
+        loadStats();
+        
+        // Expose logout function
+        window.logout = function(){
+          localStorage.removeItem('edsa_staff_session');
+          window.location.href = 'staff-login.html';
+        };
+        
+      } catch(e) {
+        console.error(e);
+        window.location.href = 'staff-login.html';
+      }
+    })();
+
+    // Load statistics (placeholder function)
+    function loadStats() {
+      // In a real application, these would be loaded from the database
+      // For now, showing placeholder values
+      document.getElementById('totalClients').textContent = '-';
+      document.getElementById('activeClients').textContent = '-';
+      document.getElementById('pendingQueries').textContent = '-';
+      document.getElementById('thisMonth').textContent = '-';
+      
+      // You can integrate with Supabase here to load actual statistics
+      // Example:
+      // loadClientStats();
+    }
+
+    // Example function to load real stats from database
+    /*
+    async function loadClientStats() {
+      try {
+        const sess = JSON.parse(localStorage.getItem('edsa_staff_session'));
+        const agentName = sess.name;
+        
+        // Load stats from Supabase
+        const { data, error } = await supabaseClient
+          .from('edsa_client_database')
+          .select('status, created_at')
+          .eq('agent_name', agentName);
+        
+        if (data) {
+          document.getElementById('totalClients').textContent = data.length;
+          document.getElementById('activeClients').textContent = 
+            data.filter(c => c.status === 'Active').length;
+          // Add more stat calculations...
+        }
+      } catch (error) {
+        console.error('Error loading stats:', error);
+      }
+    }
+    */
+  </script>
+</body>
+</html>
