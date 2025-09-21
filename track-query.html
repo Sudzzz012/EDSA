@@ -2,172 +2,247 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Follow Up on Your Query | Erase Debt SA</title>
+  <title>Track Your Query & Application | Erase Debt SA</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="icon" href="erase-debt-logo.png"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <style>
+    :root{
+      --bg1:#004080; --bg2:#0073e6; --panel:#ffffff; --text:#003f7f; --brand:#005cbf;
+      --brand-2:#3385ff; --muted:#c9d7ff; --chip:#e6f0ff; --ok:#16a34a; --warn:#f59e0b; --bad:#ef4444;
+    }
+    * { box-sizing: border-box; }
     body { 
       background: linear-gradient(135deg,#003865 0,#005c97 80%); 
       font-family: Arial,sans-serif; 
-      color:#223; 
-      min-height:100vh; 
-      margin:0; 
+      color: #fff; 
+      min-height: 100vh; 
+      margin: 0; 
     }
-    .container { 
-      max-width: 430px; 
+    
+    /* Login Form Styles */
+    .login-container { 
+      max-width: 440px; 
       background: #fff; 
       border-radius: 22px; 
       box-shadow: 0 10px 44px #2970ba44; 
       margin: 48px auto 0 auto; 
       padding: 34px 30px 20px 30px;
+      color: #223;
     }
-    .logo { 
-      display:block; 
-      margin:0 auto 13px auto; 
-      width:80px;
-    }
-    h2 { 
-      color: #2970ba; 
-      text-align:center; 
-      margin-bottom:10px; 
-    }
+    .logo { display: block; margin: 0 auto 13px auto; width: 80px; }
+    h2 { color: #2970ba; text-align: center; margin-bottom: 10px; }
     .instructions { 
-      font-size: 0.95rem; 
-      color: #444; 
-      margin-bottom: 20px; 
-      line-height: 1.5; 
-      text-align: center; 
+      font-size: 0.95rem; color: #444; margin-bottom: 20px; 
+      line-height: 1.5; text-align: center; 
     }
-    label { 
-      font-weight:bold; 
-      display:block; 
-      margin:11px 0 6px 0;
-    }
+    label { font-weight: bold; display: block; margin: 11px 0 6px 0; }
     input { 
-      width:100%; 
-      padding:13px; 
-      border-radius:8px; 
-      border:1px solid #c7d8ef; 
-      font-size:1rem; 
-      margin-bottom:10px;
+      width: 100%; padding: 13px; border-radius: 8px; border: 1px solid #c7d8ef; 
+      font-size: 1rem; margin-bottom: 10px;
     }
     button { 
-      background:#2970ba;
-      color:#fff;
-      border:none;
-      border-radius:9px;
-      width:100%;
-      font-size:1.12rem;
-      padding:13px;
-      font-weight:bold;
-      cursor:pointer; 
-      margin-top:6px;
+      background: #2970ba; color: #fff; border: none; border-radius: 9px; 
+      width: 100%; font-size: 1.12rem; padding: 13px; font-weight: bold; 
+      cursor: pointer; margin-top: 6px;
     }
-    button:hover { 
-      background:#003865; 
+    button:hover { background: #003865; }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+    .msg { margin: 17px 0 0 0; text-align: center; font-weight: bold; }
+    .error { color: #d32f2f; }
+    .success { color: #256029; }
+    .hidden { display: none; }
+    .step { display: block; }
+
+    /* Dashboard Styles */
+    .dashboard { padding: 24px; max-width: 1400px; margin: 0 auto; }
+    .header { 
+      background-color: #002f5f; padding: 18px 20px; display: flex; 
+      gap: 16px; align-items: center; justify-content: center; flex-wrap: wrap;
     }
-    button:disabled {
-      background:#ccc;
-      cursor:not-allowed;
+    .header img { height: 58px; border-radius: 12px; }
+    .header h1 { margin: 0; font-size: 26px; letter-spacing: .3px; }
+    .header .ref {
+      margin-left: auto; margin-right: auto; background: rgba(255,255,255,.1);
+      padding: 8px 12px; border-radius: 10px; color: #dfe9ff; font-size: 14px;
     }
-    .msg { 
-      margin:17px 0 0 0; 
-      text-align:center; 
-      font-weight:bold;
+    
+    .grid { 
+      display: grid; 
+      grid-template-columns: 1fr 1fr; 
+      gap: 20px; 
+      margin-top: 20px;
     }
-    .error {
-      color: #d32f2f;
+    @media (max-width: 900px) { 
+      .grid { grid-template-columns: 1fr; } 
     }
-    .success {
-      color: #256029;
+    
+    .section {
+      background: var(--panel); color: var(--text); border-radius: 14px; 
+      padding: 20px; box-shadow: 0 6px 22px rgba(0,0,0,.15);
     }
-    .hidden {
-      display: none;
+    .section h3 { 
+      margin: 0 0 16px; display: flex; align-items: center; gap: 10px; 
+      color: var(--brand); font-size: 18px;
     }
-    .step {
-      display: block;
+    
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px 8px; border-bottom: 1px solid #e9eef7; text-align: left; font-size: 14px; }
+    th { background-color: var(--chip); font-weight: bold; }
+    
+    .chip { 
+      display: inline-block; padding: 4px 8px; border-radius: 999px; 
+      font-size: 12px; background: var(--chip); color: var(--text); 
     }
-    .result-table { 
-      width:100%; 
-      margin-top:18px; 
-      border-collapse:collapse; 
-      background:#f7faff; 
-      border-radius:10px; 
-      overflow:hidden;
+    .status-dot { width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
+    .dot-ok { background: var(--ok); } 
+    .dot-warn { background: var(--warn); } 
+    .dot-bad { background: var(--bad); }
+    
+    .feedback-section { margin-top: 20px; }
+    textarea, input[type="file"] {
+      width: 100%; padding: 10px; margin-top: 10px; border-radius: 10px; 
+      border: 1px solid #cfd9ee; font-size: 15px;
     }
-    .result-table th, .result-table td { 
-      padding:10px 8px; 
-      border-bottom:1px solid #dde3ef; 
-      text-align:left; 
+    .row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px; margin-top: 10px;
+      padding: 12px 16px; background: var(--brand); color: #fff; 
+      text-decoration: none; border-radius: 10px; font-weight: 600; 
+      border: 0; cursor: pointer; transition: .25s;
     }
-    .result-table th { 
-      background:#e1f0ff; 
-      color:#2560a3;
+    .btn:hover { background: var(--brand-2); }
+    
+    .notice { 
+      margin-top: 12px; padding: 10px 12px; border-radius: 10px; 
+      background: #0b1a33; color: #cfe0ff; display: none; 
     }
-    .result-table tr:last-child td { 
-      border-bottom:none;
-    }
-    @media (max-width:600px) { 
-      .container { 
-        max-width:97vw;
-        padding:18px 2vw 12px 2vw;
-      } 
-      .logo { 
-        width: 56px;
-      } 
-    }
+    .notice.err { background: #331016; color: #ffd3d8; }
+    .notice.success { background: #0d4a1f; color: #c3f0ca; }
+    
+    .muted { color: #5b78a5; font-size: 13px; }
+    .back-link { text-align: center; margin-top: 20px; }
+    .back-link a { color: #2970ba; font-weight: bold; text-decoration: underline; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body>
-  <div class="container">
-    <img src="erase-debt-logo.png" alt="Erase Debt SA Logo" class="logo" />
-    
-    <!-- Step 1: Enter ID and Email -->
-    <div id="step1" class="step">
-      <h2>Follow Up on Your Query</h2>
-      <div class="instructions">
-        Enter your <strong>reference number</strong><br> <em>OR</em><br> your <strong>ID number</strong> and <strong>email address</strong>.<br><br>
-        If your ID and email match a query, you'll receive a <strong>verification code via email</strong> to verify your identity and view your update.
+  <!-- Login Steps -->
+  <div id="loginFlow">
+    <div class="login-container">
+      <img src="erase-debt-logo.png" alt="Erase Debt SA Logo" class="logo" />
+      
+      <!-- Step 1: Enter Query Details -->
+      <div id="step1" class="step">
+        <h2>Track Your Query</h2>
+        <div class="instructions">
+          Enter your <strong>reference number</strong><br><em>OR</em><br>your <strong>ID number</strong> and <strong>email address</strong>.<br><br>
+          We'll send you a <strong>verification code via email</strong> to access your query details and application status.
+        </div>
+        <form id="lookupForm">
+          <label>Reference Number (if known)</label>
+          <input name="ref" type="text" placeholder="EDSA20250720-1234">
+          <div style="text-align:center;margin-bottom:9px;font-size:0.97em;color:#888">OR</div>
+          <label>ID Number</label>
+          <input name="id_number" type="text" required>
+          <label>Email Address</label>
+          <input name="email" type="email" required>
+          <button type="submit" id="lookupBtn">Search Query</button>
+          <div class="msg" id="lookupMsg"></div>
+        </form>
       </div>
-      <form id="lookupForm">
-        <label>Reference Number (if known)</label>
-        <input name="ref" type="text" placeholder="EDSA20250720-1234">
-        <div style="text-align:center;margin-bottom:9px;font-size:0.97em;color:#888">OR</div>
-        <label>ID Number</label>
-        <input name="id_number" type="text" required>
-        <label>Email Address</label>
-        <input name="email" type="email" required>
-        <button type="submit" id="lookupBtn">Search Query</button>
-        <div class="msg" id="lookupMsg"></div>
-      </form>
-    </div>
 
-    <!-- Step 2: Enter OTP -->
-    <div id="step2" class="step hidden">
-      <h2>Enter Verification Code</h2>
-      <div class="instructions">
-        We've sent a verification code to your email address. Please enter it below to view your query.
+      <!-- Step 2: Enter OTP -->
+      <div id="step2" class="step hidden">
+        <h2>Enter Verification Code</h2>
+        <div class="instructions">
+          We've sent a verification code to your email address. Please enter it below to view your query and application details.
+        </div>
+        <form id="otpForm">
+          <label>Enter 6-digit OTP</label>
+          <input name="otp" type="text" maxlength="6" required placeholder="000000">
+          <button type="submit" id="otpBtn">Verify Code</button>
+          <div class="msg" id="otpMsg"></div>
+        </form>
+        <button onclick="goBackToStep1()" style="background:#666; margin-top:10px;">← Go Back</button>
       </div>
-      <form id="otpForm">
-        <label>Enter 6-digit OTP</label>
-        <input name="otp" type="text" maxlength="6" required placeholder="000000">
-        <button type="submit" id="otpBtn">Verify Code</button>
-        <div class="msg" id="otpMsg"></div>
-      </form>
-      <button onclick="goBackToStep1()" style="background:#666; margin-top:10px;">← Go Back</button>
-    </div>
 
-    <!-- Step 3: Show Query Results -->
-    <div id="step3" class="step hidden">
-      <h2>Your Query Details</h2>
-      <div id="resultSection"></div>
-      <button onclick="goBackToStep1()" style="background:#666; margin-top:15px;">← Search Another Query</button>
+      <div class="back-link">
+        <a href="index.html">← Back to Homepage</a>
+      </div>
     </div>
+  </div>
 
-    <div style="text-align:center;margin-top:22px;">
-      <a href="index.html" style="color:#2970ba;font-weight:bold;text-decoration:underline;">&larr; Back to Homepage</a>
+  <!-- Dashboard View -->
+  <div id="dashboardView" class="hidden">
+    <header class="header">
+      <img src="erase-debt-logo.png" alt="Erase Debt SA">
+      <h1>Your Query & Application Status</h1>
+      <div id="refChip" class="ref">Ref: —</div>
+    </header>
+
+    <div class="dashboard">
+      <div class="grid">
+        <!-- Query Details Section -->
+        <div class="section">
+          <h3><i class="fa-regular fa-comments"></i> Query Details & Communication</h3>
+          <div id="primaryQueryInfo"></div>
+          
+          <h4 style="margin-top: 20px; color: var(--brand);">Communication History</h4>
+          <table>
+            <thead>
+              <tr><th>Date</th><th>Message</th><th>Admin Reply</th><th>Status</th></tr>
+            </thead>
+            <tbody id="queryHistory">
+              <tr><td colspan="4" class="muted">Loading...</td></tr>
+            </tbody>
+          </table>
+
+          <div class="feedback-section">
+            <h4>Add Follow-up Message</h4>
+            <textarea id="followupText" rows="3" placeholder="Type your follow-up message..."></textarea>
+            <button id="submitFollowup" class="btn">
+              <i class="fa-solid fa-paper-plane"></i> Send Follow-up
+            </button>
+            <div id="followupMsg" class="notice"></div>
+          </div>
+        </div>
+
+        <!-- Application Status Section -->
+        <div class="section">
+          <h3><i class="fa-solid fa-file-contract"></i> Application Status <span id="statusChip" class="chip"></span></h3>
+          <table>
+            <tbody id="appTable">
+              <tr><th>Client Name</th><td id="clientName">—</td></tr>
+              <tr><th>Service Type</th><td id="serviceType">—</td></tr>
+              <tr><th>Status</th><td id="appStatus">—</td></tr>
+              <tr><th>Branch</th><td id="branch">—</td></tr>
+              <tr><th>Payments Made</th><td id="paymentsMade">—</td></tr>
+              <tr><th>Missed Payments</th><td id="missedPayments">—</td></tr>
+              <tr><th>Monthly Payment</th><td id="monthlyPayment">—</td></tr>
+              <tr><th>Outstanding Balance</th><td id="outstanding">—</td></tr>
+              <tr><th>Next Payment Date</th><td id="nextPayment">—</td></tr>
+            </tbody>
+          </table>
+          
+          <div class="feedback-section">
+            <h4>Submit Document / Update</h4>
+            <textarea id="appFeedbackText" rows="3" placeholder="Type your update or message..."></textarea>
+            <div class="row">
+              <input id="fileInput" type="file" />
+              <button id="submitAppFeedback" class="btn">
+                <i class="fa-solid fa-upload"></i> Submit
+              </button>
+            </div>
+            <div id="appMsg" class="notice"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="back-link">
+        <a href="index.html">← Back to Homepage</a> | 
+        <a href="#" onclick="logout()">Start Over</a>
+      </div>
     </div>
   </div>
 
@@ -179,13 +254,28 @@
     );
 
     let currentQuery = null;
+    let currentClient = null;
     let currentOtpToken = null;
 
     function showStep(stepNum) {
       document.getElementById('step1').classList.add('hidden');
       document.getElementById('step2').classList.add('hidden');
-      document.getElementById('step3').classList.add('hidden');
-      document.getElementById('step' + stepNum).classList.remove('hidden');
+      document.getElementById('step1').classList.remove('hidden');
+      if (stepNum === 2) {
+        document.getElementById('step1').classList.add('hidden');
+        document.getElementById('step2').classList.remove('hidden');
+      }
+    }
+
+    function showDashboard() {
+      document.getElementById('loginFlow').classList.add('hidden');
+      document.getElementById('dashboardView').classList.remove('hidden');
+    }
+
+    function logout() {
+      document.getElementById('loginFlow').classList.remove('hidden');
+      document.getElementById('dashboardView').classList.add('hidden');
+      goBackToStep1();
     }
 
     function showMessage(elementId, message, isError = false) {
@@ -205,7 +295,27 @@
       document.getElementById('lookupForm').reset();
       document.getElementById('otpForm').reset();
       currentQuery = null;
+      currentClient = null;
       currentOtpToken = null;
+    }
+
+    function show(el, text, type = 'info') {
+      el.style.display = "block";
+      el.className = "notice " + type;
+      el.textContent = text;
+    }
+
+    function hide(el) {
+      el.style.display = "none";
+      el.textContent = "";
+    }
+
+    function fmtDate(d) {
+      try { return new Date(d).toLocaleString(); } catch { return d || "—"; }
+    }
+
+    function na(x) { 
+      return (x === null || x === undefined || x === "") ? "—" : x; 
     }
 
     // Generate a random OTP
@@ -213,8 +323,8 @@
       return Math.floor(100000 + Math.random() * 900000).toString();
     }
 
-    // Send OTP via email (simulate for now)
-    async function sendOTP(email, otp, queryRef) {
+    // Send OTP via email
+    async function sendOTP(email, otp, queryRef, firstName) {
       try {
         const response = await fetch(`${supabaseClient.supabaseUrl}/functions/v1/send-otp-email`, {
           method: 'POST',
@@ -225,24 +335,216 @@
           body: JSON.stringify({
             email: email,
             otp: otp,
-            reference: queryRef,
-            firstName: currentQuery?.first_name || ''
+            reference: queryRef || 'N/A',
+            firstName: firstName || ''
           })
         });
         
         const result = await response.json();
-        
-        if (!response.ok || !result.success) {
-          throw new Error('Failed to send OTP email');
-        }
-        
-        return true;
+        return response.ok && result.success;
       } catch (error) {
         console.error('Error sending OTP:', error);
         return false;
       }
     }
 
+    // Load application data
+    async function loadApplicationData(idNumber, email) {
+      const { data, error } = await supabaseClient
+        .from('edsa_client_database')
+        .select('*')
+        .eq('client_id_number', idNumber)
+        .eq('email', email)
+        .maybeSingle();
+
+      if (error || !data) return null;
+      return data;
+    }
+
+    // Load all queries for this client
+    async function loadAllQueries(idNumber, email) {
+      const { data, error } = await supabaseClient
+        .from('QUERIES')
+        .select('*')
+        .eq('id_number', idNumber)
+        .eq('email', email)
+        .order('created_at', { ascending: false });
+
+      return error ? [] : (data || []);
+    }
+
+    // Display application data
+    function displayApplicationData(appData) {
+      if (!appData) {
+        document.getElementById('appTable').innerHTML = '<tr><td colspan="2" class="muted">No application found</td></tr>';
+        return;
+      }
+
+      const fullName = [appData.first_name, appData.last_name].filter(Boolean).join(' ');
+      const made = parseInt(appData.total_no_payments_made || 0, 10);
+      const missed = parseInt(appData.total_no_missed_payments || 0, 10);
+      const totalPlan = parseInt(appData.payment_plan_months || 0, 10);
+      const remaining = Math.max(0, totalPlan - made);
+      const monthly = parseFloat(appData.monthly_payment || 0);
+      const outstanding = Math.max(0, Math.round((remaining * monthly + Number.EPSILON) * 100) / 100);
+
+      document.getElementById('clientName').textContent = na(fullName);
+      document.getElementById('serviceType').textContent = na(appData.service_type);
+      document.getElementById('appStatus').textContent = na(appData.status);
+      document.getElementById('branch').textContent = na(appData.branch_name);
+      document.getElementById('paymentsMade').textContent = made;
+      document.getElementById('missedPayments').textContent = missed;
+      document.getElementById('monthlyPayment').textContent = monthly ? `R${monthly.toLocaleString()}` : "—";
+      document.getElementById('outstanding').textContent = monthly ? `R${outstanding.toLocaleString()}` : "—";
+      document.getElementById('nextPayment').textContent = na(appData.salary_date || appData.tracking_date);
+
+      const chip = document.getElementById('statusChip');
+      chip.textContent = na(appData.status || 'PENDING').toUpperCase();
+    }
+
+    // Display query data
+    function displayQueryData(queries) {
+      const primaryQuery = queries[0]; // Most recent
+      const historyBody = document.getElementById('queryHistory');
+      
+      if (!primaryQuery) {
+        document.getElementById('primaryQueryInfo').innerHTML = '<p class="muted">No queries found</p>';
+        historyBody.innerHTML = '<tr><td colspan="4" class="muted">No communication history</td></tr>';
+        return;
+      }
+
+      // Show primary query details
+      document.getElementById('primaryQueryInfo').innerHTML = `
+        <table>
+          <tr><th>Reference</th><td>${primaryQuery.reference_number || '—'}</td></tr>
+          <tr><th>Query Type</th><td>${primaryQuery.query_type || '—'}</td></tr>
+          <tr><th>Date Submitted</th><td>${fmtDate(primaryQuery.created_at)}</td></tr>
+          <tr><th>Current Status</th><td><strong>${primaryQuery.status || 'PENDING'}</strong></td></tr>
+        </table>
+      `;
+
+      // Show all query history
+      if (queries.length === 0) {
+        historyBody.innerHTML = '<tr><td colspan="4" class="muted">No messages yet</td></tr>';
+        return;
+      }
+
+      const rows = queries.map(q => {
+        const status = (q.status || 'PENDING').toUpperCase();
+        const dotClass = status.includes('RESOLVED') ? 'dot-ok' : 
+                        status.includes('PENDING') ? 'dot-warn' : 'dot-bad';
+        return `<tr>
+          <td>${fmtDate(q.created_at)}</td>
+          <td>${q.query_text || q.client_message || '—'}</td>
+          <td>${q.response_text || q.admin_reply || 'Pending response'}</td>
+          <td><span class="status-dot ${dotClass}"></span> ${status}</td>
+        </tr>`;
+      }).join('');
+      historyBody.innerHTML = rows;
+
+      // Set reference number
+      document.getElementById('refChip').textContent = `Ref: ${primaryQuery.reference_number || 'N/A'}`;
+    }
+
+    // Submit follow-up
+    async function submitFollowup() {
+      const msgEl = document.getElementById('followupMsg');
+      hide(msgEl);
+      const text = document.getElementById('followupText').value.trim();
+
+      if (!text) {
+        return show(msgEl, 'Please enter a message.', 'err');
+      }
+
+      if (!currentQuery) {
+        return show(msgEl, 'No active query found.', 'err');
+      }
+
+      // Insert follow-up into QUERIES table
+      const payload = {
+        reference_number: currentQuery.reference_number,
+        id_number: currentQuery.id_number,
+        email: currentQuery.email,
+        first_name: currentQuery.first_name,
+        last_name: currentQuery.last_name,
+        query_type: 'FOLLOW_UP',
+        query_text: text,
+        status: 'PENDING'
+      };
+
+      const { error } = await supabaseClient.from('QUERIES').insert(payload);
+      if (error) {
+        console.error(error);
+        return show(msgEl, 'Could not submit follow-up. Please try again.', 'err');
+      }
+
+      show(msgEl, 'Follow-up submitted successfully!', 'success');
+      document.getElementById('followupText').value = '';
+      
+      // Refresh query history
+      const queries = await loadAllQueries(currentQuery.id_number, currentQuery.email);
+      displayQueryData(queries);
+    }
+
+    // Submit application feedback
+    async function submitAppFeedback() {
+      const msgEl = document.getElementById('appMsg');
+      hide(msgEl);
+      const text = document.getElementById('appFeedbackText').value.trim();
+      const file = document.getElementById('fileInput').files[0];
+
+      if (!text && !file) {
+        return show(msgEl, 'Please enter a message or attach a file.', 'err');
+      }
+
+      if (!currentClient) {
+        return show(msgEl, 'No application found.', 'err');
+      }
+
+      let fileUrl = null;
+      if (file) {
+        const path = `${currentClient.sale_reference}/${Date.now()}_${file.name}`;
+        const { data: up, error: upErr } = await supabaseClient.storage
+          .from('edsa-queries').upload(path, file, { upsert: false });
+        
+        if (upErr) {
+          console.error(upErr);
+          return show(msgEl, 'Upload failed. Please try again.', 'err');
+        }
+        
+        const { data: pub } = supabaseClient.storage.from('edsa-queries').getPublicUrl(path);
+        fileUrl = pub?.publicUrl || null;
+      }
+
+      // Insert as new query
+      const payload = {
+        reference_number: currentClient.sale_reference,
+        id_number: currentClient.client_id_number,
+        email: currentClient.email,
+        first_name: currentClient.first_name,
+        last_name: currentClient.last_name,
+        query_type: 'APPLICATION_UPDATE',
+        query_text: text,
+        attachment_url: fileUrl,
+        status: 'PENDING'
+      };
+
+      const { error } = await supabaseClient.from('QUERIES').insert(payload);
+      if (error) {
+        console.error(error);
+        return show(msgEl, 'Could not submit. Please try again.', 'err');
+      }
+
+      show(msgEl, 'Submitted successfully!', 'success');
+      document.getElementById('appFeedbackText').value = '';
+      document.getElementById('fileInput').value = '';
+      
+      // Refresh query history
+      const queries = await loadAllQueries(currentClient.client_id_number, currentClient.email);
+      displayQueryData(queries);
+    }
+
+    // Event listeners
     document.getElementById('lookupForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       const form = e.target;
@@ -256,58 +558,57 @@
       lookupBtn.textContent = 'Searching...';
 
       try {
-        // If reference number is provided, look up directly
+        // Search by reference number OR by ID + email
+        let queryData = null;
+        
         if (refNumber) {
           const { data, error } = await supabaseClient
             .from("QUERIES")
             .select("*")
             .eq("reference_number", refNumber)
-            .single();
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
 
-          if (error || !data) {
-            showMessage('lookupMsg', 'No query found with this reference number.', true);
-            return;
+          if (!error && data) {
+            queryData = data;
           }
+        } else if (idNumber && email) {
+          const { data, error } = await supabaseClient
+            .from("QUERIES")
+            .select("*")
+            .eq("id_number", idNumber)
+            .eq("email", email)
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
 
-          currentQuery = data;
-          showQueryResult(data);
-          showStep(3);
+          if (!error && data) {
+            queryData = data;
+          }
+        }
+
+        if (!queryData) {
+          showMessage('lookupMsg', 'No query found with the provided information.', true);
           return;
         }
 
-        // Otherwise, look up by ID and email
-        if (!idNumber || !email) {
-          showMessage('lookupMsg', 'Please provide either a reference number OR both ID and email.', true);
-          return;
-        }
-
-        const { data, error } = await supabaseClient
-          .from("QUERIES")
-          .select("*")
-          .eq("id_number", idNumber)
-          .eq("email", email)
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .single();
-
-        if (error || !data) {
-          showMessage('lookupMsg', 'No query found matching this ID and email combination.', true);
-          return;
-        }
-
-        currentQuery = data;
+        currentQuery = queryData;
         
-        // Generate OTP and send to email
+        // Generate OTP and send email
         const otp = generateOTP();
         currentOtpToken = otp;
         
-        const emailSent = await sendOTP(email, otp, data.reference_number);
+        const emailSent = await sendOTP(
+          queryData.email, 
+          otp, 
+          queryData.reference_number,
+          queryData.first_name
+        );
         
         if (emailSent) {
-          showMessage('lookupMsg', `Verification code sent to ${email}`, false);
-          setTimeout(() => {
-            showStep(2);
-          }, 1500);
+          showMessage('lookupMsg', `Verification code sent to ${queryData.email}`, false);
+          setTimeout(() => showStep(2), 1500);
         } else {
           showMessage('lookupMsg', 'Failed to send verification code. Please try again.', true);
         }
@@ -333,10 +634,16 @@
 
       try {
         if (enteredOtp === currentOtpToken) {
-          showMessage('otpMsg', 'Code verified! Loading your query...', false);
+          showMessage('otpMsg', 'Code verified! Loading your information...', false);
+          
+          // Load both application and query data
+          currentClient = await loadApplicationData(currentQuery.id_number, currentQuery.email);
+          const allQueries = await loadAllQueries(currentQuery.id_number, currentQuery.email);
+          
           setTimeout(() => {
-            showQueryResult(currentQuery);
-            showStep(3);
+            displayApplicationData(currentClient);
+            displayQueryData(allQueries);
+            showDashboard();
           }, 1000);
         } else {
           showMessage('otpMsg', 'Invalid verification code. Please try again.', true);
@@ -350,24 +657,26 @@
       }
     });
 
-    function showQueryResult(query) {
-      const resultSection = document.getElementById('resultSection');
-      resultSection.innerHTML = `
-        <table class="result-table">
-          <tr><th>Reference</th><td>${query.reference_number || '—'}</td></tr>
-          <tr><th>Name</th><td>${(query.first_name || '') + ' ' + (query.last_name || '')}</td></tr>
-          <tr><th>ID Number</th><td>${query.id_number || '—'}</td></tr>
-          <tr><th>Email</th><td>${query.email || '—'}</td></tr>
-          <tr><th>Query Type</th><td>${query.query_type || '—'}</td></tr>
-          <tr><th>Query Details</th><td>${query.query_text || '—'}</td></tr>
-          <tr><th>Status</th><td><strong>${query.status || 'PENDING'}</strong></td></tr>
-          <tr><th>Responded By</th><td>${query.responded_by || 'Pending response'}</td></tr>
-          <tr><th>Admin Response</th><td>${query.response_text || 'No response yet'}</td></tr>
-          <tr><th>Date Submitted</th><td>${query.created_at ? new Date(query.created_at).toLocaleString() : '—'}</td></tr>
-          <tr><th>Last Updated</th><td>${query.updated_at ? new Date(query.updated_at).toLocaleString() : '—'}</td></tr>
-        </table>
-      `;
-    }
+    document.getElementById('submitFollowup').addEventListener('click', submitFollowup);
+    document.getElementById('submitAppFeedback').addEventListener('click', submitAppFeedback);
+
+    // Auto-format ID input
+    document.querySelector('input[name="id_number"]').addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length > 13) value = value.substring(0, 13);
+      e.target.value = value;
+    });
+
+    // Auto-format and submit OTP
+    document.querySelector('input[name="otp"]').addEventListener('input', function(e) {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length > 6) value = value.substring(0, 6);
+      e.target.value = value;
+      
+      if (value.length === 6) {
+        setTimeout(() => document.getElementById('otpForm').dispatchEvent(new Event('submit')), 100);
+      }
+    });
   </script>
 </body>
 </html>
