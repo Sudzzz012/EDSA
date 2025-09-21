@@ -2,322 +2,173 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Submit a Query | Erase Debt SA</title>
-  <link rel="icon" href="erase-debt-logo.png"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" href="erase-debt-logo.png" />
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"></script>
   <style>
     body {
-      margin: 0;
+      background: #f8fafc;
       font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #003865, #005c97);
-      color: #fff;
+      margin: 0;
       min-height: 100vh;
     }
     .container {
-      max-width: 800px;
-      margin: 40px auto;
+      max-width: 430px;
       background: #fff;
-      color: #333;
-      border-radius: 20px;
-      padding: 40px;
-      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+      border-radius: 18px;
+      box-shadow: 0 8px 38px #2970ba22;
+      margin: 48px auto 0 auto;
+      padding: 38px 28px 20px 28px;
     }
     .logo {
-      display: block;
-      margin: 0 auto 20px auto;
-      width: 100px;
-      border-radius: 15px;
+      display:block;
+      margin: 0 auto 15px auto;
+      width: 92px;
     }
-    h1 {
-      text-align: center;
+    h2 {
       color: #2970ba;
-      margin-bottom: 30px;
-      font-size: 2.5rem;
-    }
-    .form-group {
-      margin-bottom: 25px;
+      text-align: center;
+      margin-bottom: 18px;
     }
     label {
-      display: block;
-      margin-bottom: 8px;
       font-weight: bold;
-      color: #003865;
+      display: block;
+      margin: 10px 0 5px 0;
     }
     input, select, textarea {
       width: 100%;
       padding: 12px;
-      border: 2px solid #e1e8f0;
-      border-radius: 10px;
-      font-size: 16px;
-      transition: border-color 0.3s;
-      box-sizing: border-box;
+      border-radius: 8px;
+      border: 1px solid #c7d8ef;
+      margin-bottom: 8px;
+      font-size: 1rem;
     }
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: #2970ba;
-      box-shadow: 0 0 0 3px rgba(41, 112, 186, 0.1);
-    }
-    textarea {
-      resize: vertical;
-      min-height: 120px;
-    }
-    .file-upload {
-      border: 2px dashed #2970ba;
-      border-radius: 10px;
-      padding: 20px;
-      text-align: center;
-      background: #f8fafc;
-      transition: background-color 0.3s;
-    }
-    .file-upload:hover {
-      background: #f1f5f9;
-    }
-    .submit-btn {
-      width: 100%;
-      padding: 15px;
-      background: linear-gradient(135deg, #2970ba, #005c97);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 18px;
+    button {
+      background: #2970ba;
+      color: #fff;
+      border:none;
+      border-radius: 9px;
+      width:100%;
+      font-size:1.15rem;
+      padding: 13px;
       font-weight: bold;
       cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-      margin-top: 20px;
+      margin-top: 8px;
     }
-    .submit-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(41, 112, 186, 0.3);
-    }
-    .submit-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-    .message {
-      margin-top: 20px;
-      padding: 15px;
-      border-radius: 10px;
+    button:hover { background: #003865; }
+    .msg {
+      margin: 18px 0 0 0;
+      text-align: center;
       font-weight: bold;
-      display: none;
-    }
-    .success {
-      background: #e8f5e8;
-      color: #2e7d32;
-      border-left: 4px solid #4caf50;
-    }
-    .error {
-      background: #ffebee;
-      color: #c62828;
-      border-left: 4px solid #f44336;
     }
     .back-link {
+      display: block;
+      margin-bottom: 20px;
       text-align: center;
-      margin-top: 30px;
     }
     .back-link a {
-      color: #2970ba;
       text-decoration: none;
+      color: #2970ba;
       font-weight: bold;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .back-link a:hover {
-      color: #005c97;
     }
   </style>
 </head>
 <body>
   <div class="container">
+    <div class="back-link"><a href="index.html">← Back to Home</a></div>
     <img src="erase-debt-logo.png" alt="Erase Debt SA Logo" class="logo" />
-    <h1>Submit a Query</h1>
-    
+    <h2>Submit a Query</h2>
     <form id="queryForm">
-      <div class="form-group">
-        <label>First Name *</label>
-        <input type="text" id="firstName" required />
-      </div>
-      
-      <div class="form-group">
-        <label>Last Name *</label>
-        <input type="text" id="lastName" required />
-      </div>
-      
-      <div class="form-group">
-        <label>ID Number *</label>
-        <input type="text" id="idNumber" maxlength="13" required />
-      </div>
-      
-      <div class="form-group">
-        <label>Email Address *</label>
-        <input type="email" id="email" required />
-      </div>
-      
-      <div class="form-group">
-        <label>Phone Number</label>
-        <input type="tel" id="phone" />
-      </div>
-      
-      <div class="form-group">
-        <label>Reference Number (if you have one)</label>
-        <input type="text" id="reference" placeholder="e.g., EDSA-2025-001234" />
-      </div>
-      
-      <div class="form-group">
-        <label>Query Type *</label>
-        <select id="queryType" required>
-          <option value="">Select Query Type</option>
-          <option value="GENERAL">General Inquiry</option>
-          <option value="APPLICATION_STATUS">Application Status</option>
-          <option value="PAYMENT">Payment Related</option>
-          <option value="DOCUMENT">Document Submission</option>
-          <option value="COMPLAINT">Complaint</option>
-          <option value="TECHNICAL">Technical Support</option>
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label>Your Message *</label>
-        <textarea id="queryText" required placeholder="Please describe your query in detail..."></textarea>
-      </div>
-      
-      <div class="form-group">
-        <label>Attach File (optional)</label>
-        <div class="file-upload">
-          <input type="file" id="attachment" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" />
-          <p style="margin: 10px 0 0 0; color: #666;">
-            <i class="fa-solid fa-upload"></i>
-            Upload documents, screenshots, or other relevant files
-          </p>
-        </div>
-      </div>
-      
-      <button type="submit" class="submit-btn" id="submitBtn">
-        <i class="fa-solid fa-paper-plane"></i>
-        Submit Query
-      </button>
-      
-      <div id="message" class="message"></div>
+      <label>First Name</label>
+      <input name="first_name" type="text" required>
+      <label>Last Name</label>
+      <input name="last_name" type="text" required>
+      <label>ID Number</label>
+      <input name="id_number" type="text" required>
+      <label>Phone Number</label>
+      <input name="phone" type="text" required>
+      <label>Email Address</label>
+      <input name="email" type="email" required>
+      <label>Query Type</label>
+      <select name="query_type" required>
+        <option value="">-- Select Query --</option>
+        <option>I Need a Callback</option>
+        <option>I Have a Complaint</option>
+        <option>I Have Fully Paid My Fees</option>
+        <option>I Have Submitted Documents And Am Awaiting a Reply</option>
+        <option>I Want to Pay My Outstanding Funds</option>
+        <option>I Want To Settle My Arrears</option>
+        <option>I Need A Follow Up On My Process</option>
+        <option>I Did Not Get a Welcome Email</option>
+      </select>
+      <label>Additional Information</label>
+      <textarea name="query_text" required rows="3"></textarea>
+      <label>Attach Supporting Document (optional)</label>
+      <input name="attachment" type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+      <button type="submit">Submit Query</button>
+      <div class="msg" id="queryFormMsg"></div>
     </form>
-    
-    <div class="back-link">
-      <a href="index.html">
-        <i class="fa-solid fa-arrow-left"></i>
-        Back to Homepage
-      </a>
-    </div>
   </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  <script>
-    const { createClient } = supabase;
-    const supabaseClient = createClient(
-      'https://xzjunkpxvfdpuogoflzh.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ'
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+    const supabase = createClient(
+      "https://xzjunkpxvfdpuogoflzh.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ"
     );
 
-    // Generate reference number
-    function generateReference() {
-      const now = new Date();
-      const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '');
-      const timeStr = now.getTime().toString().slice(-4);
-      return `EDSA${dateStr}-${timeStr}`;
-    }
-
-    // Show message
-    function showMessage(text, type = 'success') {
-      const messageEl = document.getElementById('message');
-      messageEl.textContent = text;
-      messageEl.className = `message ${type}`;
-      messageEl.style.display = 'block';
-      messageEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
-    // Auto-format ID number
-    document.getElementById('idNumber').addEventListener('input', function(e) {
-      let value = e.target.value.replace(/\D/g, '');
-      if (value.length > 13) value = value.substring(0, 13);
-      e.target.value = value;
-    });
-
-    // Handle form submission
-    document.getElementById('queryForm').addEventListener('submit', async function(e) {
+    document.getElementById("queryForm").onsubmit = async function (e) {
       e.preventDefault();
-      
-      const submitBtn = document.getElementById('submitBtn');
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+      const form = e.target;
+      const msg = document.getElementById("queryFormMsg");
+      msg.textContent = "";
 
-      try {
-        // Get form data
-        const formData = {
-          reference_number: document.getElementById('reference').value || generateReference(),
-          first_name: document.getElementById('firstName').value,
-          last_name: document.getElementById('lastName').value,
-          id_number: document.getElementById('idNumber').value,
-          email: document.getElementById('email').value.toLowerCase(),
-          phone: document.getElementById('phone').value,
-          query_type: document.getElementById('queryType').value,
-          query_text: document.getElementById('queryText').value,
-          status: 'PENDING'
-        };
+      const today = new Date();
+      const ref = `EDSA${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}-${Math.floor(1000 + Math.random() * 9000)}`;
 
-        // Handle file upload
-        const fileInput = document.getElementById('attachment');
-        let attachmentUrl = null;
-        
-        if (fileInput.files.length > 0) {
-          const file = fileInput.files[0];
-          const fileName = `${formData.reference_number}_${file.name}`;
-          
-          const { data: uploadData, error: uploadError } = await supabaseClient.storage
-            .from('edsa-queries')
-            .upload(fileName, file);
-
-          if (uploadError) {
-            console.error('Upload error:', uploadError);
-            throw new Error('File upload failed');
-          }
-
-          const { data: urlData } = supabaseClient.storage
-            .from('edsa-queries')
-            .getPublicUrl(fileName);
-          
-          attachmentUrl = urlData.publicUrl;
-        }
-
-        if (attachmentUrl) {
-          formData.attachment_url = attachmentUrl;
-        }
-
-        // Submit to database
-        const { data, error } = await supabaseClient
-          .from('QUERIES')
-          .insert([formData]);
-
+      let attachment_url = null;
+      const file = form.attachment.files[0];
+      if (file) {
+        const { data, error } = await supabase.storage
+          .from("attachments")
+          .upload(`${ref}_${file.name}`, file, { upsert: true });
         if (error) {
-          console.error('Database error:', error);
-          throw new Error('Failed to submit query');
+          msg.style.color = "#d32f2f";
+          msg.textContent = "File upload failed: " + error.message;
+          return;
         }
-
-        showMessage(
-          `✅ Query submitted successfully! Your reference number is: ${formData.reference_number}. We'll respond within 24 hours.`,
-          'success'
-        );
-
-        // Reset form
-        document.getElementById('queryForm').reset();
-        
-      } catch (error) {
-        console.error('Submission error:', error);
-        showMessage('❌ Failed to submit query. Please try again.', 'error');
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Query';
+        attachment_url = data.path;
       }
-    });
+
+      const payload = {
+        reference_number: ref,
+        id_number: form.id_number.value,
+        first_name: form.first_name.value,
+        last_name: form.last_name.value,
+        email: form.email.value,
+        phone: form.phone.value,
+        query_type: form.query_type.value,
+        query_text: form.query_text.value,
+        attachment_url: attachment_url,
+        status: "new",
+        responded_by: "",
+        response_text: "",
+        branch_name: "",
+        audit_log: [],
+      };
+
+      const { error } = await supabase.from("QUERIES").insert([payload]);
+      if (error) {
+        msg.style.color = "#d32f2f";
+        msg.textContent = "Submission failed: " + error.message;
+        return;
+      }
+
+      msg.style.color = "#256029";
+      msg.innerHTML = `Your query was submitted!<br>Your reference number is <b>${ref}</b>.`;
+
+      form.reset();
+    };
   </script>
 </body>
 </html>
