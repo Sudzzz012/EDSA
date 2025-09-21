@@ -129,7 +129,7 @@
       <h2>Follow Up on Your Query</h2>
       <div class="instructions">
         Enter your <strong>reference number</strong><br> <em>OR</em><br> your <strong>ID number</strong> and <strong>email address</strong>.<br><br>
-        If your ID and email match a query, you'll receive a <strong>6-digit OTP via email</strong> to verify your identity and view your update.
+        If your ID and email match a query, you'll receive a <strong>verification code via email</strong> to verify your identity and view your update.
       </div>
       <form id="lookupForm">
         <label>Reference Number (if known)</label>
@@ -148,7 +148,7 @@
     <div id="step2" class="step hidden">
       <h2>Enter Verification Code</h2>
       <div class="instructions">
-        We've sent a 6-digit verification code to your email address. Please enter it below to view your query.
+        We've sent a verification code to your email address. Please enter it below to view your query.
       </div>
       <form id="otpForm">
         <label>Enter 6-digit OTP</label>
@@ -220,8 +220,7 @@
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${supabaseClient.supabaseKey}`,
-            'apikey': supabaseClient.supabaseKey
+            'Authorization': `Bearer ${supabaseClient.supabaseKey}`
           },
           body: JSON.stringify({
             email: email,
