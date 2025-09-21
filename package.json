@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "npx http-server . -p 8080 -o",
     "start": "npm run dev",
-    "build": "mkdir -p public && cp *.html public/ && cp *.png public/ && cp *.jpg public/ && cp *.jpeg public/ && cp -r supabase public/ 2>/dev/null || true"
+    "build": "node build.js"
   },
   "keywords": ["erase-debt-sa", "client-portal", "static-website"],
   "author": "Erase Debt SA",
