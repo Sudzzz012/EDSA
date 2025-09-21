@@ -216,29 +216,26 @@
     // Send OTP via email (simulate for now)
     async function sendOTP(email, otp, queryRef) {
       try {
-        // In a real implementation, this would call an edge function to send email
-        // For now, we'll simulate it
-        console.log(`OTP for testing: ${otp}`);
-        
-        // You can uncomment this to actually send emails via an edge function
-        /*
-        const response = await fetch('/functions/v1/send-otp-email', {
+        const response = await fetch(`${supabaseClient.supabaseUrl}/functions/v1/send-otp-email`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${supabaseClient.supabaseKey}`
+            'Authorization': `Bearer ${supabaseClient.supabaseKey}`,
+            'apikey': supabaseClient.supabaseKey
           },
           body: JSON.stringify({
             email: email,
             otp: otp,
-            reference: queryRef
+            reference: queryRef,
+            firstName: currentQuery?.first_name || ''
           })
         });
         
-        if (!response.ok) {
+        const result = await response.json();
+        
+        if (!response.ok || !result.success) {
           throw new Error('Failed to send OTP email');
         }
-        */
         
         return true;
       } catch (error) {
