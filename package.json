@@ -1,0 +1,19 @@
+{
+  "name": "edsa-client-portal",
+  "version": "1.0.0",
+  "description": "Erase Debt SA Client Portal Website",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx http-server . -p 8080 -o",
+    "start": "npm run dev",
+    "build": "node build.js"
+  },
+  "keywords": ["erase-debt-sa", "client-portal", "static-website"],
+  "author": "Erase Debt SA",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/erase-debt-sa/client-portal"
+  },
+  "homepage": "https://www.erasedebtsa.co.za"
+}
