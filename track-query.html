@@ -102,6 +102,47 @@
       padding: 8px 12px; border-radius: 10px; color: #dfe9ff; font-size: 14px;
     }
     
+    /* Client Details Section */
+    .client-details {
+      background: var(--panel); 
+      color: var(--text); 
+      border-radius: 14px; 
+      padding: 20px; 
+      box-shadow: 0 6px 22px rgba(0,0,0,.15);
+      margin-bottom: 20px;
+    }
+    .client-details h3 {
+      margin: 0 0 16px; 
+      display: flex; 
+      align-items: center; 
+      gap: 10px; 
+      color: var(--brand); 
+      font-size: 18px;
+    }
+    .client-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+    }
+    .client-item {
+      background: #f8fafc;
+      padding: 12px;
+      border-radius: 8px;
+      border-left: 4px solid var(--brand);
+    }
+    .client-item strong {
+      display: block;
+      color: var(--brand);
+      font-size: 12px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .client-item span {
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
     .grid { 
       display: grid; 
       grid-template-columns: 1fr 1fr; 
@@ -227,6 +268,37 @@
     </header>
 
     <div class="dashboard">
+      <!-- Client Details Section -->
+      <div class="client-details">
+        <h3><i class="fa-solid fa-user"></i> Client Information</h3>
+        <div class="client-grid">
+          <div class="client-item">
+            <strong>Full Name</strong>
+            <span id="fullClientName">—</span>
+          </div>
+          <div class="client-item">
+            <strong>ID Number</strong>
+            <span id="clientIdNumber">—</span>
+          </div>
+          <div class="client-item">
+            <strong>Email Address</strong>
+            <span id="clientEmail">—</span>
+          </div>
+          <div class="client-item">
+            <strong>Phone Number</strong>
+            <span id="clientPhone">—</span>
+          </div>
+          <div class="client-item">
+            <strong>Reference Number</strong>
+            <span id="clientReference">—</span>
+          </div>
+          <div class="client-item">
+            <strong>Branch</strong>
+            <span id="clientBranch">—</span>
+          </div>
+        </div>
+      </div>
+
       <div class="grid">
         <!-- Query Details Section (PRIMARY) -->
         <div class="section">
@@ -473,6 +545,37 @@
       return error ? [] : (data || []);
     }
 
+    // Display client details in the top section
+    function displayClientDetails(queryData, appData = null) {
+      console.log('Displaying client details - Query:', queryData, 'App:', appData);
+      
+      // Use application data if available, otherwise use query data
+      const sourceData = appData || queryData;
+      
+      if (!sourceData) {
+        console.log('No client data available');
+        return;
+      }
+
+      const fullName = appData ? 
+        [appData.first_name, appData.last_name].filter(Boolean).join(' ') :
+        [queryData.first_name, queryData.last_name].filter(Boolean).join(' ');
+
+      document.getElementById('fullClientName').textContent = na(fullName);
+      document.getElementById('clientIdNumber').textContent = na(sourceData.client_id_number || sourceData.id_number);
+      document.getElementById('clientEmail').textContent = na(sourceData.email);
+      document.getElementById('clientPhone').textContent = na(sourceData.phone || 'Not provided');
+      document.getElementById('clientReference').textContent = na(sourceData.sale_reference || sourceData.reference_number);
+      document.getElementById('clientBranch').textContent = na(sourceData.branch_name || 'Not specified');
+
+      console.log('Client details updated:', {
+        name: fullName,
+        id: sourceData.client_id_number || sourceData.id_number,
+        email: sourceData.email,
+        ref: sourceData.sale_reference || sourceData.reference_number
+      });
+    }
+
     // Display query data (PRIMARY FOCUS)
     function displayQueryData(queries, primaryQuery) {
       console.log('Displaying query data. Primary:', primaryQuery, 'All queries:', queries);
@@ -492,7 +595,6 @@
       primaryInfo.innerHTML = `
         <table>
           <tr><th>Reference</th><td><strong>${primaryQuery.reference_number || '—'}</strong></td></tr>
-          <tr><th>Client Name</th><td><strong>${clientName}</strong></td></tr>
           <tr><th>Query Type</th><td>${primaryQuery.query_type || 'GENERAL'}</td></tr>
           <tr><th>Date Submitted</th><td>${fmtDate(primaryQuery.created_at)}</td></tr>
           <tr><th>Current Status</th><td><strong>${primaryQuery.status || 'PENDING'}</strong></td></tr>
@@ -543,13 +645,6 @@
       const monthly = parseFloat(appData.monthly_payment || 0);
       const outstanding = Math.max(0, Math.round((remaining * monthly + Number.EPSILON) * 100) / 100);
 
-      // Also update client details section with application data
-      if (fullName) document.getElementById('fullClientName').textContent = fullName;
-      if (appData.client_id_number) document.getElementById('clientIdNumber').textContent = appData.client_id_number;
-      if (appData.email) document.getElementById('clientEmail').textContent = appData.email;
-      if (appData.phone) document.getElementById('clientPhone').textContent = appData.phone;
-      if (appData.sale_reference) document.getElementById('clientReference').textContent = appData.sale_reference;
-      if (appData.branch_name) document.getElementById('clientBranch').textContent = appData.branch_name;
       document.getElementById('clientName').textContent = na(fullName);
       document.getElementById('serviceType').textContent = na(appData.service_type);
       document.getElementById('appStatus').textContent = na(appData.status);
@@ -694,6 +789,7 @@
         showMessage('refMsg', '✅ Query found! Loading your information...', false);
         
         setTimeout(() => {
+          displayClientDetails(currentQuery, currentClient);
           displayQueryData(allQueries, currentQuery);
           displayApplicationData(currentClient);
           showDashboard();
@@ -794,6 +890,7 @@
           console.log('Loading complete. All queries:', allQueries, 'Client data:', currentClient);
           
           setTimeout(() => {
+            displayClientDetails(currentQuery, currentClient);
             displayQueryData(allQueries, currentQuery);
             displayApplicationData(currentClient);
             showDashboard();
