@@ -1,31 +1,141 @@
-@@ .. @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Follow Up on Your Query | Erase Debt SA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" href="erase-debt-logo.png"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    body { background: linear-gradient(135deg,#003865 0,#005c97 80%); font-family: Arial,sans-serif; color:#223; min-height:100vh; margin:0; }
+    .container { max-width: 430px; background: #fff; border-radius: 22px; box-shadow: 0 10px 44px #2970ba44; margin: 48px auto 0 auto; padding: 34px 30px 20px 30px;}
+    .logo { display:block; margin:0 auto 13px auto; width:80px;}
+    h2 { color: #2970ba; text-align:center; margin-bottom:10px; }
+    .instructions { font-size: 0.95rem; color: #444; margin-bottom: 20px; line-height: 1.5; text-align: center; }
+    label { font-weight:bold; display:block; margin:11px 0 6px 0;}
+    input { width:100%; padding:13px; border-radius:8px; border:1px solid #c7d8ef; font-size:1rem; margin-bottom:10px;}
+    button { background:#2970ba;color:#fff;border:none;border-radius:9px;width:100%;font-size:1.12rem;padding:13px;font-weight:bold;cursor:pointer; margin-top:6px;}
+    button:hover { background:#003865; }
+    .msg { margin:17px 0 0 0; text-align:center; font-weight:bold;}
+    .otp-section { display: none; }
+    .result-table { width:100%; margin-top:18px; border-collapse:collapse; background:#f7faff; border-radius:10px; overflow:hidden;}
+    .result-table th, .result-table td { padding:10px 8px; border-bottom:1px solid #dde3ef; text-align:left; }
+    .result-table th { background:#e1f0ff; color:#2560a3;}
+    .result-table tr:last-child td { border-bottom:none;}
+    @media (max-width:600px) { .container { max-width:97vw;padding:18px 2vw 12px 2vw;} .logo { width: 56px;} }
+  </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body>
-@@ .. @@
+  <div class="container">
+    <img src="erase-debt-logo.png" alt="Erase Debt SA Logo" class="logo" />
+    <h2>Follow Up on Your Query</h2>
+    <div class="instructions">
+      Enter your <strong>reference number</strong><br> <em>OR</em><br> your <strong>ID number</strong> and <strong>email address</strong>.<br><br>
+      If your ID and email match a query, you’ll receive a <strong>6-digit OTP via email</strong> to verify your identity and view your update.
+    </div>
+    <form id="lookupForm">
+      <label>Reference Number (if known)</label>
+      <input name="ref" type="text" placeholder="EDSA20250720-1234">
+      <div style="text-align:center;margin-bottom:9px;font-size:0.97em;color:#888">OR</div>
+      <label>ID Number</label>
+      <input name="id_number" type="text">
+      <label>Email Address</label>
+      <input name="email" type="email">
+      <button type="submit">Search Query</button>
+      <div class="msg" id="lookupMsg"></div>
+    </form>
+    <form id="otpSection" class="otp-section">
+      <label>Enter 6-digit OTP (sent to your email)</label>
+      <input name="otp" maxlength="6" required>
+      <button type="submit">Verify OTP</button>
+      <div class="msg" id="otpMsg"></div>
+    </form>
+    <div id="resultSection" style="display:none;"></div>
+    <div style="text-align:center;margin-top:22px;">
+      <a href="index.html" style="color:#2970ba;font-weight:bold;text-decoration:underline;">&larr; Back to Homepage</a>
+    </div>
   </div>
   <script>
-    const { createClient } = supabase;
-    const supabaseClient = createClient(
+    const supabase = supabase.createClient(
       'https://xzjunkpxvfdpuogoflzh.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ'
     );
-@@ .. @@
-    if(f.ref.value.trim()){
-      let { data } = await supabaseClient.from("QUERIES").select("*").eq("reference_number", f.ref.value.trim());
-      if(data && data[0]){
-@@ .. @@
-    if(f.id_number.value.trim() && f.email.value.trim()){
-      let { data } = await supabaseClient.from("QUERIES").select("*").eq("id_number", f.id_number.value.trim()).eq("email", f.email.value.trim());
-      if(data && data[0]){
-        tempQuery = data[0];
-        tempOTP = Math.floor(100000 + Math.random()*900000)+"";
+    let tempOTP = null, tempQuery = null;
 
-        // Simulate sending OTP (you can replace this with actual email service)
-        console.log(`OTP sent to ${data[0].email}: ${tempOTP}`);
-        
-        // For demo purposes, show the OTP in the message (remove this in production)
-        msg.innerHTML = `A 6-digit code has been sent to your email.<br><small style="color:#666;">Demo OTP: ${tempOTP}</small>`;
+    document.getElementById('lookupForm').onsubmit = async function(e){
+      e.preventDefault();
+      const f = e.target, msg = document.getElementById("lookupMsg");
+      msg.textContent = ""; document.getElementById('otpSection').style.display = "none";
+      document.getElementById('resultSection').style.display = "none";
 
-        document.getElementById('otpSection').style.display = "block";
+      if(f.ref.value.trim()){
+        let { data } = await supabase.from("QUERIES").select("*").eq("reference_number", f.ref.value.trim());
+        if(data && data[0]){
+          showQueryResult(data[0]);
+        } else {
+          msg.style.color="#d32f2f"; msg.textContent="No matching query found for that reference number.";
+        }
+        return;
+      }
+
+      if(f.id_number.value.trim() && f.email.value.trim()){
+        let { data } = await supabase.from("QUERIES").select("*").eq("id_number", f.id_number.value.trim()).eq("email", f.email.value.trim());
+        if(data && data[0]){
+          tempQuery = data[0];
+          tempOTP = Math.floor(100000 + Math.random()*900000)+"";
+
+          // Call SendGrid OTP function here (your function must exist in Supabase)
+          await fetch("https://xzjunkpxvfdpuogoflzh.functions.supabase.co/sendOtpForQuery", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              to: data[0].email,
+              subject: "Your OTP to access your query",
+              body: `Your OTP is: ${tempOTP}`,
+              ref: data[0].reference_number
+            })
+          });
+
+          msg.style.color="#256029";
+          msg.textContent="A 6-digit code has been sent to your email.";
+          document.getElementById('otpSection').style.display = "block";
+        } else {
+          msg.style.color="#d32f2f"; msg.textContent="No matching query found for this ID and email.";
+        }
       } else {
+        msg.style.color="#d32f2f"; msg.textContent="Please provide Reference Number OR both ID and Email.";
+      }
+    };
+
+    document.getElementById('otpSection').onsubmit = async function(e){
+      e.preventDefault();
+      const f = e.target, msg = document.getElementById("otpMsg");
+      if(f.otp.value.trim()!==tempOTP){
+        msg.style.color="#d32f2f"; msg.textContent="Invalid OTP, try again."; return;
+      }
+      showQueryResult(tempQuery);
+    };
+
+    function showQueryResult(q){
+      document.getElementById('resultSection').style.display = "block";
+      document.getElementById('resultSection').innerHTML = `
+        <table class="result-table">
+          <tr><th>Reference</th><td>${q.reference_number}</td></tr>
+          <tr><th>Name</th><td>${q.first_name || ''} ${q.last_name || ''}</td></tr>
+          <tr><th>ID Number</th><td>${q.id_number}</td></tr>
+          <tr><th>Email</th><td>${q.email}</td></tr>
+          <tr><th>Query Type</th><td>${q.query_type}</td></tr>
+          <tr><th>Query Details</th><td>${q.query_text}</td></tr>
+          <tr><th>Status</th><td>${q.status}</td></tr>
+          <tr><th>Responded By</th><td>${q.responded_by || '(pending)'}</td></tr>
+          <tr><th>Latest Update</th><td>${q.response_text || "(pending)"}</td></tr>
+          <tr><th>Date Created</th><td>${q.created_at ? new Date(q.created_at).toLocaleString() : '-'}</td></tr>
+        </table>
+      `;
+      document.getElementById('otpSection').style.display = "none";
+      document.getElementById('lookupMsg').textContent = "";
+    }
+  </script>
+</body>
+</html>
