@@ -139,6 +139,24 @@
   </style>
 </head>
 <body>
+  <script>
+    // SUPER USER ONLY ACCESS
+    (function(){
+      try {
+        const sess = JSON.parse(localStorage.getItem('edsa_staff_session') || 'null');
+        if (!sess || sess.role !== 'super') { 
+          alert('❌ ACCESS DENIED\n\nDeployment Status is restricted to Super Users only.\n\nPlease login as Super User to access this feature.');
+          window.location.href = 'staff-login.html'; 
+          return; 
+        }
+      } catch(e) {
+        console.error(e);
+        alert('❌ Authentication required. Please login first.');
+        window.location.href = 'staff-login.html';
+      }
+    })();
+  </script>
+
   <div class="container">
     <img src="erase-debt-logo.png" alt="Erase Debt SA" class="logo"/>
     <h1>🚀 Deployment Status Checker</h1>

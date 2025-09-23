@@ -41,20 +41,30 @@
     .desc { 
       color:#445; 
       text-align:center; 
-      margin:6px 0 18px; 
+      margin:6px 0 18px;
+      background: #e7f3ff;
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid #2970ba;
     }
     label { 
       display:block; 
       font-weight:700; 
       margin:10px 0 6px; 
+      color: #2970ba;
     }
     input, select { 
       width:100%; 
       padding:12px; 
       border-radius:10px; 
-      border:1px solid #c7d8ef; 
+      border:2px solid #c7d8ef; 
       font-size:1rem; 
       box-sizing: border-box;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #2970ba;
+      box-shadow: 0 0 0 3px rgba(41, 112, 186, 0.1);
     }
     .row { 
       display:grid; 
@@ -77,6 +87,7 @@
       font-weight:800; 
       cursor:pointer; 
       transition: background 0.3s;
+      font-size: 1.1rem;
     }
     button:hover { 
       background:#003865; 
@@ -85,6 +96,15 @@
       opacity: 0.6;
       cursor: not-allowed;
     }
+    .success {
+      color: #16a34a;
+    }
+    .error {
+      color: #dc2626;
+    }
+    .strength-weak { color: #dc2626; }
+    .strength-medium { color: #f59e0b; }
+    .strength-strong { color: #16a34a; }
     .msg { 
       margin-top:14px; 
       font-weight:700; 
@@ -127,7 +147,8 @@
 
     <div class="card">
       <div class="desc">
-        Create a new staff user account. The ID Number will be used as the username for login.
+        <strong>🆕 Create New Staff User Account</strong><br>
+        Enter all details below. The ID Number will be used as the username for login.
       </div>
 
       <form id="registerForm" autocomplete="off">
@@ -197,19 +218,19 @@
         <div class="row">
           <div>
             <label>Password *</label>
-            <input id="password" type="password" required placeholder="Enter secure password (min 6 chars)" />
+            <input id="password" type="password" required placeholder="Enter secure password (min 6 chars)" autocomplete="new-password" />
           </div>
           <div>
             <label>Confirm Password *</label>
-            <input id="confirm_password" type="password" required placeholder="Confirm password" />
+            <input id="confirm_password" type="password" required placeholder="Confirm password" autocomplete="new-password" />
           </div>
         </div>
         
-        <div id="passwordStrengthNew" class="small" style="color: #666;"></div>
+        <div id="passwordStrengthNew" class="small" style="color: #666;">Enter password to see strength indicator</div>
 
         <button type="submit" id="submitBtn">Create User</button>
         <div id="msg" class="msg"></div>
-        <div class="small">User will be able to login immediately with their ID number and password.</div>
+        <div class="small">✅ User will be able to login immediately with their ID number and password.</div>
       </form>
 
       <a class="back" href="super_dashboard.html">← Back to Super Dashboard</a>
