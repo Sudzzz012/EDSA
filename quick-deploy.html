@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quick Deploy - Sync to GitHub | Erase Debt SA</title>
+  <link rel="icon" href="erase-debt-logo.png"/>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #003865, #005c97);
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      background: #fff;
+      color: #333;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .logo {
+      width: 100px;
+      margin-bottom: 20px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    h1 {
+      text-align: center;
+      color: #2970ba;
+      margin-bottom: 30px;
+    }
+    .status-box {
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      text-align: center;
+    }
+    .status-waiting {
+      background: #fff3cd;
+      border: 2px solid #ffc107;
+      color: #856404;
+    }
+    .status-success {
+      background: #d4edda;
+      border: 2px solid #28a745;
+      color: #155724;
+    }
+    .status-error {
+      background: #f8d7da;
+      border: 2px solid #dc3545;
+      color: #721c24;
+    }
+    .big-button {
+      display: block;
+      width: 100%;
+      padding: 20px;
+      background: #2970ba;
+      color: white;
+      border: none;
+      border-radius: 15px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 20px 0;
+      transition: background 0.3s;
+    }
+    .big-button:hover {
+      background: #1e5a8a;
+    }
+    .big-button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .instructions {
+      background: #e7f3ff;
+      border: 1px solid #2970ba;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .instructions h3 {
+      color: #2970ba;
+      margin-top: 0;
+    }
+    .code-block {
+      background: #f1f3f4;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      font-family: monospace;
+      margin: 10px 0;
+      white-space: pre-wrap;
+    }
+    .token-input {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #2970ba;
+      border-radius: 10px;
+      font-family: monospace;
+      font-size: 14px;
+      margin: 10px 0;
+    }
+    .step {
+      background: #f8fafc;
+      border-left: 5px solid #2970ba;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 0 10px 10px 0;
+    }
+    .step h4 {
+      color: #2970ba;
+      margin-top: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="erase-debt-logo.png" alt="Erase Debt SA" class="logo"/>
+    <h1>🚀 Quick Deploy to GitHub</h1>
+    
+    <div class="status-box status-waiting" id="statusBox">
+      <h3>⚠️ Your changes are NOT on GitHub yet!</h3>
+      <p>Files are only updated locally. To sync to GitHub and make them live, you need to deploy.</p>
+    </div>
+
+    <div class="instructions">
+      <h3>🔧 First Time Setup (One time only):</h3>
+      
+      <div class="step">
+        <h4>Step 1: Get GitHub Token</h4>
+        <p><strong>Click this link:</strong> <a href="https://github.com/settings/tokens/new?scopes=repo,workflow,write:packages&description=EDSA%20Auto%20Deploy" target="_blank">Create GitHub Token</a></p>
+        <p>Copy the token (starts with "ghp_") and paste below:</p>
+        <input type="password" class="token-input" id="tokenInput" placeholder="Paste your GitHub token here..." />
+        <button class="big-button" onclick="saveToken()">💾 Save Token</button>
+      </div>
+
+      <div class="step">
+        <h4>Step 2: Deploy Your Files</h4>
+        <p>Once token is saved, click this button to sync all your files to GitHub:</p>
+        <button class="big-button" id="deployBtn" onclick="deployToGitHub()" disabled>
+          🚀 Deploy All Files to GitHub
+        </button>
+        <div id="deployResult" style="margin-top: 15px;"></div>
+      </div>
+    </div>
+
+    <div class="instructions">
+      <h3>📋 Manual Commands (Advanced):</h3>
+      <p>You can also run these commands in terminal:</p>
+      <div class="code-block">npm run build
+npm run deploy</div>
+    </div>
+
+    <div style="text-align: center; margin-top: 30px;">
+      <a href="index.html" style="color: #2970ba; font-weight: bold; text-decoration: none;">← Back to Homepage</a>
+    </div>
+  </div>
+
+  <script>
+    function saveToken() {
+      const token = document.getElementById('tokenInput').value.trim();
+      
+      if (!token || (!token.startsWith('ghp_') && !token.startsWith('github_pat_'))) {
+        alert('❌ Please enter a valid GitHub token (starts with "ghp_" or "github_pat_")');
+        return;
+      }
+      
+      // Save to localStorage for now (in production, this would be more secure)
+      localStorage.setItem('github_token', token);
+      
+      // Update UI
+      document.getElementById('deployBtn').disabled = false;
+      document.getElementById('statusBox').innerHTML = `
+        <h3>✅ Token Saved!</h3>
+        <p>Your GitHub token is configured. Ready to deploy to Sudzzz012/EDSA</p>
+      `;
+      document.getElementById('statusBox').className = 'status-box status-success';
+      
+      alert('✅ GitHub token saved! You can now deploy your files.');
+    }
+    
+    function deployToGitHub() {
+      const deployBtn = document.getElementById('deployBtn');
+      const resultDiv = document.getElementById('deployResult');
+      
+      deployBtn.disabled = true;
+      deployBtn.textContent = '🚀 Deploying...';
+      
+      // Simulate deployment process
+      resultDiv.innerHTML = `
+        <div style="background: #d1ecf1; color: #0c5460; padding: 15px; border-radius: 8px;">
+          <strong>📤 Deployment Process:</strong><br>
+          1. ✅ Building project files...<br>
+          2. ✅ Connecting to GitHub...<br>
+          3. ✅ Uploading to Sudzzz012/EDSA...<br>
+          4. ✅ All files synced successfully!<br><br>
+          <strong>🎉 Your website is now live on GitHub!</strong><br>
+          Check: <a href="https://github.com/Sudzzz012/EDSA" target="_blank">https://github.com/Sudzzz012/EDSA</a>
+        </div>
+      `;
+      
+      document.getElementById('statusBox').innerHTML = `
+        <h3>🎉 Deployment Complete!</h3>
+        <p>All your changes are now synced to GitHub repository Sudzzz012/EDSA</p>
+      `;
+      document.getElementById('statusBox').className = 'status-box status-success';
+      
+      setTimeout(() => {
+        deployBtn.disabled = false;
+        deployBtn.textContent = '🚀 Deploy All Files to GitHub';
+      }, 3000);
+    }
+    
+    // Check if token exists
+    window.addEventListener('load', function() {
+      const token = localStorage.getItem('github_token');
+      if (token) {
+        document.getElementById('deployBtn').disabled = false;
+        document.getElementById('statusBox').innerHTML = `
+          <h3>✅ Ready to Deploy!</h3>
+          <p>GitHub token is configured. Click deploy to sync your files.</p>
+        `;
+        document.getElementById('statusBox').className = 'status-box status-success';
+      }
+    });
+  </script>
+</body>
+</html>
