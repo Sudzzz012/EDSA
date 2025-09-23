@@ -500,6 +500,13 @@ Enter your response:`);
           window.location.href = 'staff-login.html'; 
           return; 
         }
+
+        // Update page title based on user role
+        const h1 = document.querySelector('.header h1');
+        if (h1 && sess.name) {
+          h1.textContent = `Query Management - ${sess.name}`;
+        }
+        
       } catch(e) {
         console.error(e);
         window.location.href = 'staff-login.html';
