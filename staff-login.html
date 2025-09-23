@@ -291,15 +291,18 @@
     }
 
     // Simple password verification for demo (in production, use proper bcrypt comparison)
-    function verifyPassword(inputPassword, storedHash) {
+    async function verifyPassword(inputPassword, storedHash) {
       // For demo purposes, we'll accept "test123" for all test accounts
-      // In production, you'd compare against the actual hashed password
       if (inputPassword === 'test123') {
         return true;
       }
       
-      // Also check if the hash matches our simple hash format
-      const expectedHash = btoa(inputPassword + 'salt_edsa_2025');
+      // Check against new secure hash format
+      const encoder = new TextEncoder();
+      const data = encoder.encode(inputPassword + 'EDSA_SECURE_2025_' + new Date().getFullYear());
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const expectedHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
       return expectedHash === storedHash;
     }
 
@@ -352,7 +355,7 @@
         }
 
         // Verify password
-        if (!verifyPassword(password, data.password_hash)) {
+        if (!(await verifyPassword(password, data.password_hash))) {
           console.log('❌ Password verification failed');
           return { 
             success: false, 

@@ -291,8 +291,12 @@
 
     // Simple password hashing (for demo - in production use proper bcrypt)
     async function hashPassword(password) {
-      // Simple hash for demo - in production you'd use proper bcrypt server-side
-      return btoa(password + 'salt_edsa_2025');
+      // Create a more secure hash
+      const encoder = new TextEncoder();
+      const data = encoder.encode(password + 'EDSA_SECURE_2025_' + new Date().getFullYear());
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
     form.addEventListener('submit', async (e) => {
