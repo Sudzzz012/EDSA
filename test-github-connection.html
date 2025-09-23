@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GitHub Connection Test - Erase Debt SA</title>
+  <link rel="icon" href="erase-debt-logo.png"/>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #003865, #005c97);
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      background: #fff;
+      color: #333;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .logo {
+      width: 80px;
+      margin-bottom: 20px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    h1 {
+      text-align: center;
+      color: #2970ba;
+      margin-bottom: 30px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #2970ba;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e1e8f0;
+      border-radius: 8px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    input:focus {
+      outline: none;
+      border-color: #2970ba;
+      box-shadow: 0 0 0 3px rgba(41, 112, 186, 0.1);
+    }
+    button {
+      width: 100%;
+      padding: 15px;
+      background: #2970ba;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #1e5a8a;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      display: none;
+    }
+    .result.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .result.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .result.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    .help-box {
+      background: #e7f3ff;
+      border: 1px solid #2970ba;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    .help-box h3 {
+      color: #2970ba;
+      margin-top: 0;
+    }
+    .back-btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #6c757d;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    .quick-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+    .quick-link {
+      display: block;
+      padding: 15px;
+      background: #2970ba;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: bold;
+    }
+    .quick-link:hover {
+      background: #1e5a8a;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="erase-debt-logo.png" alt="Erase Debt SA" class="logo"/>
+    <h1>🧪 GitHub Connection Test</h1>
+    
+    <div class="help-box">
+      <h3>🎯 What This Does:</h3>
+      <p>Tests if your GitHub repository and access token are working correctly before setting up automatic deployment.</p>
+    </div>
+
+    <form id="testForm">
+      <div class="form-group">
+        <label>GitHub Repository</label>
+        <input type="text" id="repoInput" placeholder="your-username/repo-name" />
+        <small style="color: #666;">Example: erasedebtsa/edsa-client-portal</small>
+      </div>
+
+      <div class="form-group">
+        <label>GitHub Personal Access Token</label>
+        <input type="password" id="tokenInput" placeholder="ghp_..." />
+        <small style="color: #666;">Starts with "ghp_" - from GitHub settings</small>
+      </div>
+
+      <button type="submit" id="testBtn">🧪 Test Connection</button>
+    </form>
+
+    <div id="result" class="result"></div>
+
+    <div class="help-box">
+      <h3>🔗 Quick Links:</h3>
+      <div class="quick-links">
+        <a href="https://github.com/new" target="_blank" class="quick-link">
+          📁 Create Repository
+        </a>
+        <a href="https://github.com/settings/tokens/new" target="_blank" class="quick-link">
+          🔐 Get Access Token
+        </a>
+        <a href="github-help.html" class="quick-link">
+          📚 Full Setup Guide
+        </a>
+      </div>
+    </div>
+
+    <div class="help-box">
+      <h3>🆘 Common Issues:</h3>
+      <ul>
+        <li><strong>❌ "Repository not found"</strong> → Check repository name format</li>
+        <li><strong>❌ "Bad credentials"</strong> → Check your access token</li>
+        <li><strong>❌ "Permission denied"</strong> → Token needs "repo" permission</li>
+        <li><strong>❌ "Rate limit"</strong> → Wait a few minutes and try again</li>
+      </ul>
+    </div>
+
+    <a href="deployment-status.html" class="back-btn">← Back to Status Checker</a>
+  </div>
+
+  <script>
+    document.getElementById('testForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const resultDiv = document.getElementById('result');
+      const testBtn = document.getElementById('testBtn');
+      const repo = document.getElementById('repoInput').value.trim();
+      const token = document.getElementById('tokenInput').value.trim();
+      
+      // Hide previous results
+      resultDiv.style.display = 'none';
+      
+      // Validation
+      if (!repo || !token) {
+        showResult('Please fill in both repository and token fields.', 'error');
+        return;
+      }
+      
+      if (!repo.includes('/')) {
+        showResult('Repository format should be: username/repo-name', 'error');
+        return;
+      }
+      
+      if (!token.startsWith('ghp_') && !token.startsWith('github_pat_')) {
+        showResult('Token should start with "ghp_" or "github_pat_"', 'error');
+        return;
+      }
+      
+      // Start testing
+      testBtn.disabled = true;
+      testBtn.textContent = '🧪 Testing Connection...';
+      showResult('Testing GitHub repository access...', 'info');
+      
+      try {
+        // Test GitHub API connection
+        const apiUrl = `https://api.github.com/repos/${repo}`;
+        const response = await fetch(apiUrl, {
+          headers: {
+            'Authorization': `token ${token}`,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        });
+        
+        if (response.ok) {
+          const repoData = await response.json();
+          showResult(`✅ SUCCESS! Connected to repository "${repoData.full_name}"\n\n🎉 Repository Details:\n• Name: ${repoData.name}\n• Owner: ${repoData.owner.login}\n• Private: ${repoData.private ? 'Yes' : 'No'}\n• Created: ${new Date(repoData.created_at).toLocaleDateString()}\n\n✅ Your GitHub setup is ready!\n\nNext step: Run "npm run setup-github" in your terminal`, 'success');
+          
+          // Store for setup wizard
+          localStorage.setItem('github_test_repo', repo);
+          localStorage.setItem('github_test_token', token);
+          
+        } else if (response.status === 404) {
+          showResult(`❌ Repository "${repo}" not found.\n\nPossible issues:\n• Check the repository name spelling\n• Repository might be private and token lacks access\n• Repository might not exist yet\n\nTry creating the repository first at: https://github.com/new`, 'error');
+        } else if (response.status === 401) {
+          showResult(`❌ Authentication failed.\n\nPossible issues:\n• Invalid or expired access token\n• Token lacks required permissions\n• Check that token has "repo" permission\n\nCreate a new token at: https://github.com/settings/tokens/new`, 'error');
+        } else {
+          const errorData = await response.json().catch(() => ({}));
+          showResult(`❌ GitHub API Error: ${response.status}\n\nDetails: ${errorData.message || 'Unknown error'}\n\nTry again in a few minutes.`, 'error');
+        }
+        
+      } catch (error) {
+        showResult(`❌ Connection Error: ${error.message}\n\nPossible issues:\n• No internet connection\n• GitHub might be temporarily down\n• Browser blocking the request\n\nTry again in a few minutes.`, 'error');
+      }
+      
+      testBtn.disabled = false;
+      testBtn.textContent = '🧪 Test Connection';
+    });
+    
+    function showResult(message, type) {
+      const resultDiv = document.getElementById('result');
+      resultDiv.textContent = message;
+      resultDiv.className = `result ${type}`;
+      resultDiv.style.display = 'block';
+    }
+    
+    // Auto-fill from previous test
+    window.addEventListener('load', function() {
+      const savedRepo = localStorage.getItem('github_test_repo');
+      const savedToken = localStorage.getItem('github_test_token');
+      
+      if (savedRepo) {
+        document.getElementById('repoInput').value = savedRepo;
+      }
+      if (savedToken) {
+        document.getElementById('tokenInput').value = savedToken;
+      }
+    });
+  </script>
+</body>
+</html>

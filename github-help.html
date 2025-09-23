@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GitHub Setup Help - Erase Debt SA</title>
+  <link rel="icon" href="erase-debt-logo.png"/>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #003865, #005c97);
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fff;
+      color: #333;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .logo {
+      width: 100px;
+      margin-bottom: 20px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    h1 {
+      text-align: center;
+      color: #2970ba;
+      margin-bottom: 30px;
+    }
+    .step {
+      background: #f8fafc;
+      border-left: 5px solid #2970ba;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 0 10px 10px 0;
+    }
+    .step h3 {
+      color: #2970ba;
+      margin-top: 0;
+    }
+    .step-number {
+      background: #2970ba;
+      color: white;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+    .code-block {
+      background: #f1f3f4;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 10px;
+      font-family: monospace;
+      margin: 10px 0;
+      overflow-x: auto;
+    }
+    .highlight {
+      background: #fff3cd;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #ffc107;
+      margin: 15px 0;
+    }
+    .highlight strong {
+      color: #856404;
+    }
+    .back-btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 24px;
+      background: #2970ba;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    .video-placeholder {
+      background: #e9ecef;
+      border: 2px dashed #6c757d;
+      border-radius: 10px;
+      padding: 40px;
+      text-align: center;
+      margin: 20px 0;
+      color: #6c757d;
+    }
+    .screenshot {
+      width: 100%;
+      max-width: 600px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      margin: 15px 0;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="erase-debt-logo.png" alt="Erase Debt SA" class="logo"/>
+    <h1>🆘 GitHub Setup Help Guide</h1>
+    
+    <div class="highlight">
+      <strong>🎯 Goal:</strong> Automatically sync your EDSA website files to GitHub so you never have to manually copy files again!
+    </div>
+
+    <!-- Step 1: Create GitHub Account -->
+    <div class="step">
+      <h3><span class="step-number">1</span>Create GitHub Account (Free)</h3>
+      <p><strong>If you don't have a GitHub account:</strong></p>
+      <ol>
+        <li>Go to: <a href="https://github.com/join" target="_blank">https://github.com/join</a></li>
+        <li>Enter your email and create password</li>
+        <li>Choose username (e.g., "erasedebtsa" or "edsa-admin")</li>
+        <li>Verify your email</li>
+      </ol>
+      <p><strong>✅ Result:</strong> You now have a GitHub account</p>
+    </div>
+
+    <!-- Step 2: Create Repository -->
+    <div class="step">
+      <h3><span class="step-number">2</span>Create Your Repository</h3>
+      <p><strong>Create a place to store your website files:</strong></p>
+      <ol>
+        <li>Go to: <a href="https://github.com/new" target="_blank">https://github.com/new</a></li>
+        <li><strong>Repository name:</strong> <code>edsa-client-portal</code></li>
+        <li><strong>Description:</strong> <code>Erase Debt SA Client Portal Website</code></li>
+        <li><strong>Make it:</strong> Public (so it's free)</li>
+        <li>✅ Check "Add a README file"</li>
+        <li>Click <strong>"Create repository"</strong></li>
+      </ol>
+      
+      <div class="highlight">
+        <strong>📝 Copy this information:</strong><br>
+        Repository URL: <code>https://github.com/YOUR-USERNAME/edsa-client-portal</code><br>
+        Example: <code>https://github.com/erasedebtsa/edsa-client-portal</code>
+      </div>
+    </div>
+
+    <!-- Step 3: Get Access Token -->
+    <div class="step">
+      <h3><span class="step-number">3</span>Get Personal Access Token</h3>
+      <p><strong>This allows the system to upload files automatically:</strong></p>
+      <ol>
+        <li>Go to: <a href="https://github.com/settings/tokens/new" target="_blank">https://github.com/settings/tokens/new</a></li>
+        <li><strong>Note:</strong> <code>EDSA Auto Deploy</code></li>
+        <li><strong>Expiration:</strong> No expiration (or 90 days)</li>
+        <li><strong>Select these permissions:</strong>
+          <ul>
+            <li>✅ <strong>repo</strong> (Full control of repositories)</li>
+            <li>✅ <strong>workflow</strong> (Update GitHub Actions)</li>
+            <li>✅ <strong>write:packages</strong> (Write packages)</li>
+          </ul>
+        </li>
+        <li>Click <strong>"Generate token"</strong></li>
+        <li><strong>⚠️ COPY THE TOKEN IMMEDIATELY!</strong> Starts with <code>ghp_</code></li>
+      </ol>
+      
+      <div class="highlight">
+        <strong>🔐 Save this token safely!</strong><br>
+        Example: <code>ghp_1234567890abcdefghijklmnopqrstuvwxyz</code><br>
+        <strong>You won't be able to see it again!</strong>
+      </div>
+    </div>
+
+    <!-- Step 4: Run Setup -->
+    <div class="step">
+      <h3><span class="step-number">4</span>Configure Automatic Deployment</h3>
+      <p><strong>Run the setup wizard in your terminal:</strong></p>
+      <div class="code-block">npm run setup-github</div>
+      
+      <p><strong>When prompted, enter:</strong></p>
+      <ul>
+        <li><strong>GitHub repository:</strong> <code>your-username/edsa-client-portal</code></li>
+        <li><strong>GitHub token:</strong> Paste the token from Step 3</li>
+        <li><strong>Webhook secret:</strong> Press Enter for default</li>
+      </ul>
+      
+      <div class="highlight">
+        <strong>✅ Success looks like:</strong><br>
+        <code>✅ Created .env file with your configuration</code><br>
+        <code>✅ GitHub connection successful</code>
+      </div>
+    </div>
+
+    <!-- Step 5: Test Deployment -->
+    <div class="step">
+      <h3><span class="step-number">5</span>Test Your First Deployment</h3>
+      <p><strong>Deploy your EDSA website to GitHub:</strong></p>
+      <div class="code-block">npm run deploy</div>
+      
+      <p><strong>✅ Success looks like:</strong></p>
+      <div class="code-block">🎉 DEPLOYMENT SUCCESSFUL!
+📍 Repository: https://github.com/your-username/edsa-client-portal
+📁 Deployed 50+ files
+   📄 index.html (15KB)
+   📄 query.html (8KB)
+   📄 clients.html (12KB)
+   ... etc</div>
+      
+      <p><strong>🔍 Verify it worked:</strong></p>
+      <ol>
+        <li>Go to your GitHub repository</li>
+        <li>You should see all your HTML files</li>
+        <li>Click on any file to view it</li>
+        <li>Recent commits should show deployment messages</li>
+      </ol>
+    </div>
+
+    <!-- Future Updates -->
+    <div class="step">
+      <h3><span class="step-number">6</span>Automatic Updates Forever</h3>
+      <p><strong>From now on, updating your website is just one command:</strong></p>
+      <div class="code-block">npm run deploy</div>
+      
+      <p><strong>🔄 For automatic updates, run:</strong></p>
+      <div class="code-block">npm run webhook</div>
+      <p>This starts a server that auto-deploys when files change.</p>
+      
+      <div class="highlight">
+        <strong>🎉 You're Done!</strong><br>
+        Your website files will automatically sync to GitHub every time you make changes!
+      </div>
+    </div>
+
+    <div class="video-placeholder">
+      <strong>📹 Video Tutorial Coming Soon</strong><br>
+      Step-by-step visual guide for GitHub setup
+    </div>
+
+    <div style="text-align: center;">
+      <a href="deployment-status.html" class="back-btn">← Back to Status Checker</a>
+      <a href="index.html" class="back-btn">🏠 Back to Home</a>
+    </div>
+  </div>
+</body>
+</html>

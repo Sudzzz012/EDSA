@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "npx http-server . -p 8080 -o",
     "start": "npm run dev",
-    "build": "node build.js"
+    "build": "node build.js",
+    "deploy": "npm run build && node deploy-to-github.js",
+    "webhook": "node webhook-deploy.js",
+    "setup-github": "node setup-github.js",
+    "test-github": "node test-github-connection.js"
   },
   "keywords": ["erase-debt-sa", "client-portal", "static-website"],
   "author": "Erase Debt SA",
