@@ -97,6 +97,9 @@
     .error {
       color: #dc2626;
     }
+    .strength-weak { color: #dc2626; }
+    .strength-medium { color: #f59e0b; }
+    .strength-strong { color: #16a34a; }
     .back { 
       display:inline-block; 
       margin-top:14px; 
@@ -194,13 +197,15 @@
         <div class="row">
           <div>
             <label>Password *</label>
-            <input id="password" type="password" required placeholder="Enter secure password" />
+            <input id="password" type="password" required placeholder="Enter secure password (min 6 chars)" />
           </div>
           <div>
             <label>Confirm Password *</label>
             <input id="confirm_password" type="password" required placeholder="Confirm password" />
           </div>
         </div>
+        
+        <div id="passwordStrengthNew" class="small" style="color: #666;"></div>
 
         <button type="submit" id="submitBtn">Create User</button>
         <div id="msg" class="msg"></div>
@@ -237,6 +242,30 @@
       let value = e.target.value.replace(/\D/g, '');
       if (value.length > 13) value = value.substring(0, 13);
       e.target.value = value;
+    });
+
+    // Check password strength for new user creation
+    function checkPasswordStrengthNew(password) {
+      const strengthEl = document.getElementById('passwordStrengthNew');
+      
+      if (password.length < 6) {
+        strengthEl.textContent = '❌ Too short (minimum 6 characters)';
+        strengthEl.className = 'small strength-weak';
+        return false;
+      } else if (password.length < 8) {
+        strengthEl.textContent = '⚠️ Medium strength (consider longer password)';
+        strengthEl.className = 'small strength-medium';
+        return true;
+      } else {
+        strengthEl.textContent = '✅ Strong password';
+        strengthEl.className = 'small strength-strong';
+        return true;
+      }
+    }
+
+    // Real-time password strength checking
+    document.getElementById('password').addEventListener('input', function(e) {
+      checkPasswordStrengthNew(e.target.value);
     });
 
     // Simple password hashing (for demo - in production use proper bcrypt)

@@ -193,6 +193,84 @@
       background: #16a34a;
       color: white;
     }
+    .btn-password {
+      background: #7c3aed;
+      color: white;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+    .modal-content {
+      background-color: #fff;
+      margin: 15% auto;
+      padding: 30px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    .modal h2 {
+      color: #2970ba;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #333;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e1e8f0;
+      border-radius: 8px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: #2970ba;
+      box-shadow: 0 0 0 3px rgba(41, 112, 186, 0.1);
+    }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 25px;
+    }
+    .btn-modal {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .btn-save {
+      background: #2970ba;
+      color: white;
+    }
+    .btn-cancel {
+      background: #6c757d;
+      color: white;
+    }
+    .password-strength {
+      margin-top: 5px;
+      font-size: 12px;
+    }
+    .strength-weak { color: #dc2626; }
+    .strength-medium { color: #f59e0b; }
+    .strength-strong { color: #16a34a; }
     .loading {
       text-align: center;
       padding: 40px;
@@ -296,6 +374,36 @@
     </div>
   </div>
 
+  <!-- Password Change Modal -->
+  <div id="passwordModal" class="modal">
+    <div class="modal-content">
+      <h2>🔐 Change User Password</h2>
+      <form id="passwordForm">
+        <div class="form-group">
+          <label>User:</label>
+          <input type="text" id="modalUserName" readonly style="background: #f8fafc;" />
+        </div>
+        <div class="form-group">
+          <label>New Password:</label>
+          <input type="password" id="newPassword" placeholder="Enter new password" required />
+          <div id="passwordStrength" class="password-strength"></div>
+        </div>
+        <div class="form-group">
+          <label>Confirm Password:</label>
+          <input type="password" id="confirmPassword" placeholder="Confirm new password" required />
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="btn-modal btn-save" id="savePasswordBtn">
+            <i class="fa-solid fa-save"></i> Update Password
+          </button>
+          <button type="button" class="btn-modal btn-cancel" onclick="closePasswordModal()">
+            <i class="fa-solid fa-times"></i> Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
     const { createClient } = supabase;
     const supabaseClient = createClient(
@@ -305,6 +413,7 @@
 
     let allUsers = [];
     let filteredUsers = [];
+    let currentEditingUser = null;
 
     // Load all users
     async function loadUsers() {
@@ -390,6 +499,9 @@
                 </button>
                 <button class="btn btn-edit" onclick="editUser('${user.id}')">
                   <i class="fa-solid fa-edit"></i> Edit
+                </button>
+                <button class="btn btn-password" onclick="changePassword('${user.id}')">
+                  <i class="fa-solid fa-key"></i> Password
                 </button>
                 ${user.status === 'active' ? 
                   `<button class="btn btn-disable" onclick="toggleUserStatus('${user.id}', 'disabled')">
@@ -498,6 +610,114 @@ Last Updated: ${user.updated_at ? new Date(user.updated_at).toLocaleString() : '
         alert('Failed to update user. Please try again.');
       }
     }
+
+    // Password management functions
+    function changePassword(userId) {
+      const user = allUsers.find(u => u.id === userId);
+      if (!user) return;
+
+      currentEditingUser = user;
+      document.getElementById('modalUserName').value = `${user.full_name} (${user.email})`;
+      document.getElementById('newPassword').value = '';
+      document.getElementById('confirmPassword').value = '';
+      document.getElementById('passwordStrength').textContent = '';
+      document.getElementById('passwordModal').style.display = 'block';
+    }
+
+    function closePasswordModal() {
+      document.getElementById('passwordModal').style.display = 'none';
+      currentEditingUser = null;
+    }
+
+    // Simple password hashing (for demo - in production use proper bcrypt)
+    async function hashPassword(password) {
+      return btoa(password + 'salt_edsa_2025');
+    }
+
+    // Check password strength
+    function checkPasswordStrength(password) {
+      const strengthEl = document.getElementById('passwordStrength');
+      
+      if (password.length < 6) {
+        strengthEl.textContent = 'Too short (minimum 6 characters)';
+        strengthEl.className = 'password-strength strength-weak';
+        return false;
+      } else if (password.length < 8) {
+        strengthEl.textContent = 'Medium strength';
+        strengthEl.className = 'password-strength strength-medium';
+        return true;
+      } else {
+        strengthEl.textContent = 'Strong password';
+        strengthEl.className = 'password-strength strength-strong';
+        return true;
+      }
+    }
+
+    // Handle password form submission
+    document.getElementById('passwordForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const saveBtn = document.getElementById('savePasswordBtn');
+      
+      // Validation
+      if (!checkPasswordStrength(newPassword)) {
+        alert('❌ Password is too weak. Please choose a stronger password.');
+        return;
+      }
+      
+      if (newPassword !== confirmPassword) {
+        alert('❌ Passwords do not match. Please try again.');
+        return;
+      }
+      
+      if (!currentEditingUser) {
+        alert('❌ No user selected for password change.');
+        return;
+      }
+      
+      // Update password
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Updating...';
+      
+      try {
+        const passwordHash = await hashPassword(newPassword);
+        
+        const { error } = await supabaseClient
+          .from('edsa_users')
+          .update({ 
+            password_hash: passwordHash,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', currentEditingUser.id);
+
+        if (error) throw error;
+
+        alert(`✅ Password updated successfully for ${currentEditingUser.full_name}!`);
+        closePasswordModal();
+        loadUsers(); // Reload to show updated timestamp
+        
+      } catch (error) {
+        console.error('Error updating password:', error);
+        alert('❌ Failed to update password. Please try again.');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="fa-solid fa-save"></i> Update Password';
+      }
+    });
+
+    // Real-time password strength checking
+    document.getElementById('newPassword').addEventListener('input', function(e) {
+      checkPasswordStrength(e.target.value);
+    });
+
+    // Close modal when clicking outside
+    document.getElementById('passwordModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closePasswordModal();
+      }
+    });
 
     // Event listeners for filters
     document.getElementById('statusFilter').addEventListener('change', filterUsers);
