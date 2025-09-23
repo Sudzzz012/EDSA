@@ -163,6 +163,30 @@
       padding: 40px;
       color: #333;
     }
+    .hidden-sensitive {
+      color: #999;
+      font-style: italic;
+    }
+    .export-section {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    .export-btn {
+      background: #16a34a;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      margin: 0 10px;
+      cursor: pointer;
+    }
+    .export-btn:hover {
+      background: #15803d;
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
@@ -176,6 +200,17 @@
   </div>
 
   <div class="container">
+    <!-- Export Section (Super User Only) -->
+    <div id="exportSection" class="export-section" style="display: none;">
+      <h3><i class="fa-solid fa-download"></i> Export Data</h3>
+      <button class="export-btn" onclick="exportToCSV()">
+        <i class="fa-solid fa-file-csv"></i> Export as CSV
+      </button>
+      <button class="export-btn" onclick="exportToExcel()">
+        <i class="fa-solid fa-file-excel"></i> Export as Excel
+      </button>
+    </div>
+
     <!-- Statistics Cards -->
     <div class="stats">
       <div class="stat-card">
@@ -313,6 +348,8 @@
     // Display clients in table
     function displayClients() {
       const tbody = document.getElementById('clientsTableBody');
+      const userRole = getUserRole();
+      const isSuperUser = userRole === 'super';
       
       if (filteredClients.length === 0) {
         tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #666;">No clients found</td></tr>';
@@ -326,16 +363,23 @@
         const missedPayments = parseInt(client.total_no_missed_payments || 0);
         const monthlyPayment = parseFloat(client.monthly_payment || 0);
         
+        // Hide sensitive data for non-super users
+        const clientId = isSuperUser ? (client.client_id_number || 'N/A') : 'Hidden';
+        const phoneNumber = isSuperUser ? (client.phone || 'No phone') : 'Hidden';
+        const accountInfo = isSuperUser ? 
+          `Monthly: ${monthlyPayment ? `R${monthlyPayment.toLocaleString()}` : 'N/A'}` : 
+          'Payment info hidden';
+        
         return `
           <tr>
             <td>
               <strong>${fullName}</strong><br>
-              <small>ID: ${client.client_id_number || 'N/A'}</small><br>
+              <small>ID: ${clientId}</small><br>
               <small>Ref: ${client.sale_reference || 'N/A'}</small>
             </td>
             <td>
               ${client.email || 'N/A'}<br>
-              <small>${client.phone || 'No phone'}</small>
+              <small>${phoneNumber}</small>
             </td>
             <td>
               <div style="max-width: 180px; font-size: 12px;">
@@ -345,7 +389,7 @@
             <td>
               <small>
                 Paid: ${paymentsMade} | Missed: ${missedPayments}<br>
-                Monthly: ${monthlyPayment ? `R${monthlyPayment.toLocaleString()}` : 'N/A'}
+                ${accountInfo}
               </small>
             </td>
             <td><span class="status-badge ${statusClass}">${client.status || 'PENDING'}</span></td>
@@ -403,10 +447,97 @@
       displayClients();
     }
 
+    // Get current user role
+    function getUserRole() {
+      try {
+        const sess = JSON.parse(localStorage.getItem('edsa_staff_session') || '{}');
+        return sess.role || 'agent';
+      } catch (e) {
+        return 'agent';
+      }
+    }
+
+    // Export functions (Super User only)
+    function exportToCSV() {
+      if (getUserRole() !== 'super') {
+        alert('Access denied. Only Super Users can export data.');
+        return;
+      }
+      
+      const headers = ['Name', 'ID Number', 'Email', 'Phone', 'Service', 'Status', 'Branch', 'Agent', 'Payments Made', 'Monthly Payment'];
+      const csvData = [headers.join(',')];
+      
+      allClients.forEach(client => {
+        const fullName = [client.first_name, client.last_name].filter(Boolean).join(' ') || 'Unknown';
+        const row = [
+          `"${fullName}"`,
+          `"${client.client_id_number || 'N/A'}"`,
+          `"${client.email || 'N/A'}"`,
+          `"${client.phone || 'N/A'}"`,
+          `"${client.service_type || 'N/A'}"`,
+          `"${client.status || 'N/A'}"`,
+          `"${client.branch_name || 'N/A'}"`,
+          `"${client.agent_name || 'N/A'}"`,
+          `"${client.total_no_payments_made || 0}"`,
+          `"${client.monthly_payment || 0}"`
+        ];
+        csvData.push(row.join(','));
+      });
+      
+      downloadFile(csvData.join('\n'), 'clients-export.csv', 'text/csv');
+    }
+
+    function exportToExcel() {
+      if (getUserRole() !== 'super') {
+        alert('Access denied. Only Super Users can export data.');
+        return;
+      }
+      
+      // Create a simple HTML table for Excel
+      let htmlTable = '<table border="1"><tr>';
+      const headers = ['Name', 'ID Number', 'Email', 'Phone', 'Service', 'Status', 'Branch', 'Agent', 'Payments Made', 'Monthly Payment'];
+      headers.forEach(header => htmlTable += `<th>${header}</th>`);
+      htmlTable += '</tr>';
+      
+      allClients.forEach(client => {
+        const fullName = [client.first_name, client.last_name].filter(Boolean).join(' ') || 'Unknown';
+        htmlTable += '<tr>';
+        htmlTable += `<td>${fullName}</td>`;
+        htmlTable += `<td>${client.client_id_number || 'N/A'}</td>`;
+        htmlTable += `<td>${client.email || 'N/A'}</td>`;
+        htmlTable += `<td>${client.phone || 'N/A'}</td>`;
+        htmlTable += `<td>${client.service_type || 'N/A'}</td>`;
+        htmlTable += `<td>${client.status || 'N/A'}</td>`;
+        htmlTable += `<td>${client.branch_name || 'N/A'}</td>`;
+        htmlTable += `<td>${client.agent_name || 'N/A'}</td>`;
+        htmlTable += `<td>${client.total_no_payments_made || 0}</td>`;
+        htmlTable += `<td>${client.monthly_payment || 0}</td>`;
+        htmlTable += '</tr>';
+      });
+      htmlTable += '</table>';
+      
+      downloadFile(htmlTable, 'clients-export.xls', 'application/vnd.ms-excel');
+    }
+
+    function downloadFile(content, filename, mimeType) {
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
     // Client action handlers
     function viewClient(clientId) {
       const client = allClients.find(c => c.id === clientId);
       if (!client) return;
+      
+      const userRole = getUserRole();
+      const isSuperUser = userRole === 'super';
 
       const fullName = [client.first_name, client.last_name].filter(Boolean).join(' ');
       const paymentsMade = parseInt(client.total_no_payments_made || 0);
@@ -416,7 +547,7 @@
       const monthlyPayment = parseFloat(client.monthly_payment || 0);
       const outstanding = Math.max(0, remaining * monthlyPayment);
       
-      alert(`Client Details:
+      const clientDetails = isSuperUser ? `Client Details:
 
 Name: ${fullName}
 ID Number: ${client.client_id_number || 'N/A'}
@@ -442,7 +573,26 @@ Banking:
 - Account Type: ${client.account_type || 'N/A'}
 - Salary Date: ${client.salary_date || 'N/A'}
 
-Created: ${new Date(client.created_at).toLocaleString()}`);
+Created: ${new Date(client.created_at).toLocaleString()}` : `Client Summary:
+
+Name: ${fullName}
+Email: ${client.email || 'N/A'}
+Reference: ${client.sale_reference || 'N/A'}
+Service: ${client.service_type || 'N/A'}
+Status: ${client.status || 'N/A'}
+Branch: ${client.branch_name || 'N/A'}
+Agent: ${client.agent_name || 'N/A'}
+
+Payment Summary:
+- Payments Made: ${paymentsMade}
+- Missed Payments: ${missedPayments}
+- Remaining: ${remaining} payments
+
+Created: ${new Date(client.created_at).toLocaleString()}
+
+Note: Detailed financial information is restricted to Super Users only.`;
+      
+      alert(clientDetails);
     }
 
     function trackClient(reference) {
@@ -461,6 +611,14 @@ Created: ${new Date(client.created_at).toLocaleString()}`);
 
     // Load clients on page load
     document.addEventListener('DOMContentLoaded', loadClients);
+
+    // Show export section for super users only
+    document.addEventListener('DOMContentLoaded', function() {
+      const userRole = getUserRole();
+      if (userRole === 'super') {
+        document.getElementById('exportSection').style.display = 'block';
+      }
+    });
 
     // Session management
     (function(){

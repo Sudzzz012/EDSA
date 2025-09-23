@@ -163,6 +163,31 @@
       padding: 40px;
       color: #333;
     }
+    .hidden-sensitive {
+      color: #999;
+      font-style: italic;
+    }
+    .export-section {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      text-align: center;
+      display: none;
+    }
+    .export-btn {
+      background: #16a34a;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      margin: 0 10px;
+      cursor: pointer;
+    }
+    .export-btn:hover {
+      background: #15803d;
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
@@ -176,6 +201,17 @@
   </div>
 
   <div class="container">
+    <!-- Export Section (Super User Only) -->
+    <div id="exportSection" class="export-section">
+      <h3><i class="fa-solid fa-download"></i> Export Query Data</h3>
+      <button class="export-btn" onclick="exportQueriesToCSV()">
+        <i class="fa-solid fa-file-csv"></i> Export as CSV
+      </button>
+      <button class="export-btn" onclick="exportQueriesToExcel()">
+        <i class="fa-solid fa-file-excel"></i> Export as Excel
+      </button>
+    </div>
+
     <!-- Statistics Cards -->
     <div class="stats">
       <div class="stat-card">
@@ -308,6 +344,8 @@
     // Display queries in table
     function displayQueries() {
       const tbody = document.getElementById('queriesTableBody');
+      const userRole = getUserRole();
+      const isSuperUser = userRole === 'super';
       
       if (filteredQueries.length === 0) {
         tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #666;">No queries found</td></tr>';
@@ -318,16 +356,20 @@
         const statusClass = `status-${query.status?.toLowerCase().replace('_', '-') || 'pending'}`;
         const clientName = [query.first_name, query.last_name].filter(Boolean).join(' ') || 'Unknown';
         
+        // Hide sensitive data for non-super users
+        const clientId = isSuperUser ? (query.id_number || 'N/A') : 'Hidden';
+        const phoneNumber = isSuperUser ? (query.phone || 'No phone') : 'Hidden';
+        
         return `
           <tr>
             <td><strong>${query.reference_number || 'N/A'}</strong></td>
             <td>
               ${clientName}<br>
-              <small>ID: ${query.id_number || 'N/A'}</small>
+              <small>ID: ${clientId}</small>
             </td>
             <td>
               ${query.email || 'N/A'}<br>
-              <small>${query.phone || 'No phone'}</small>
+              <small>${phoneNumber}</small>
             </td>
             <td>${query.query_type || 'GENERAL'}</td>
             <td>
@@ -397,14 +439,99 @@
       displayQueries();
     }
 
+    // Get current user role
+    function getUserRole() {
+      try {
+        const sess = JSON.parse(localStorage.getItem('edsa_staff_session') || '{}');
+        return sess.role || 'agent';
+      } catch (e) {
+        return 'agent';
+      }
+    }
+
+    // Export functions (Super User only)
+    function exportQueriesToCSV() {
+      if (getUserRole() !== 'super') {
+        alert('Access denied. Only Super Users can export data.');
+        return;
+      }
+      
+      const headers = ['Reference', 'Client Name', 'ID Number', 'Email', 'Phone', 'Query Type', 'Message', 'Status', 'Date'];
+      const csvData = [headers.join(',')];
+      
+      allQueries.forEach(query => {
+        const clientName = [query.first_name, query.last_name].filter(Boolean).join(' ') || 'Unknown';
+        const row = [
+          `"${query.reference_number || 'N/A'}"`,
+          `"${clientName}"`,
+          `"${query.id_number || 'N/A'}"`,
+          `"${query.email || 'N/A'}"`,
+          `"${query.phone || 'N/A'}"`,
+          `"${query.query_type || 'GENERAL'}"`,
+          `"${(query.query_text || 'No message').replace(/"/g, '""')}"`,
+          `"${query.status || 'PENDING'}"`,
+          `"${new Date(query.created_at).toLocaleString()}"`
+        ];
+        csvData.push(row.join(','));
+      });
+      
+      downloadFile(csvData.join('\n'), 'queries-export.csv', 'text/csv');
+    }
+
+    function exportQueriesToExcel() {
+      if (getUserRole() !== 'super') {
+        alert('Access denied. Only Super Users can export data.');
+        return;
+      }
+      
+      // Create a simple HTML table for Excel
+      let htmlTable = '<table border="1"><tr>';
+      const headers = ['Reference', 'Client Name', 'ID Number', 'Email', 'Phone', 'Query Type', 'Message', 'Status', 'Date'];
+      headers.forEach(header => htmlTable += `<th>${header}</th>`);
+      htmlTable += '</tr>';
+      
+      allQueries.forEach(query => {
+        const clientName = [query.first_name, query.last_name].filter(Boolean).join(' ') || 'Unknown';
+        htmlTable += '<tr>';
+        htmlTable += `<td>${query.reference_number || 'N/A'}</td>`;
+        htmlTable += `<td>${clientName}</td>`;
+        htmlTable += `<td>${query.id_number || 'N/A'}</td>`;
+        htmlTable += `<td>${query.email || 'N/A'}</td>`;
+        htmlTable += `<td>${query.phone || 'N/A'}</td>`;
+        htmlTable += `<td>${query.query_type || 'GENERAL'}</td>`;
+        htmlTable += `<td>${query.query_text || 'No message'}</td>`;
+        htmlTable += `<td>${query.status || 'PENDING'}</td>`;
+        htmlTable += `<td>${new Date(query.created_at).toLocaleString()}</td>`;
+        htmlTable += '</tr>';
+      });
+      htmlTable += '</table>';
+      
+      downloadFile(htmlTable, 'queries-export.xls', 'application/vnd.ms-excel');
+    }
+
+    function downloadFile(content, filename, mimeType) {
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
     // Query action handlers
     function viewQuery(queryId) {
       const query = allQueries.find(q => q.id === queryId);
       if (!query) return;
+      
+      const userRole = getUserRole();
+      const isSuperUser = userRole === 'super';
 
       const clientName = [query.first_name, query.last_name].filter(Boolean).join(' ');
       
-      alert(`Query Details:
+      const queryDetails = isSuperUser ? `Query Details:
 
 Reference: ${query.reference_number || 'N/A'}
 Client: ${clientName}
@@ -420,7 +547,23 @@ ${query.query_text || query.client_message || 'No message'}
 
 ${query.response_text ? `Admin Response:\n${query.response_text}` : 'No response yet'}
 
-${query.attachment_url ? `\nAttachment: ${query.attachment_url}` : ''}`);
+${query.attachment_url ? `\nAttachment: ${query.attachment_url}` : ''}` : `Query Summary:
+
+Reference: ${query.reference_number || 'N/A'}
+Client: ${clientName}
+Email: ${query.email || 'N/A'}
+Type: ${query.query_type || 'GENERAL'}
+Status: ${query.status || 'PENDING'}
+Date: ${new Date(query.created_at).toLocaleString()}
+
+Message:
+${query.query_text || query.client_message || 'No message'}
+
+${query.response_text ? `Admin Response:\n${query.response_text}` : 'No response yet'}
+
+Note: Personal details are restricted to Super Users only.`;
+      
+      alert(queryDetails);
     }
 
     function replyToQuery(queryId) {
@@ -491,6 +634,14 @@ Enter your response:`);
 
     // Load queries on page load
     document.addEventListener('DOMContentLoaded', loadQueries);
+
+    // Show export section for super users only
+    document.addEventListener('DOMContentLoaded', function() {
+      const userRole = getUserRole();
+      if (userRole === 'super') {
+        document.getElementById('exportSection').style.display = 'block';
+      }
+    });
 
     // Session management
     (function(){
