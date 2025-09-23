@@ -24,7 +24,7 @@
       border-radius: 20px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
       width: 100%;
-      max-width: 700px;
+      max-width: 500px;
       color: #003865;
       text-align: center;
     }
@@ -49,143 +49,6 @@
       font-size: 16px;
     }
     
-    /* Step visibility */
-    .step {
-      display: block;
-    }
-    .step.hidden {
-      display: none;
-    }
-    
-    /* Role Selection Styles */
-    .role-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-      margin: 30px 0;
-    }
-    
-    @media (max-width: 600px) {
-      .role-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-      }
-    }
-    
-    .role-card {
-      padding: 25px 20px;
-      border-radius: 15px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      border: 3px solid transparent;
-      text-align: center;
-      min-height: 140px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    
-    .role-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    }
-    
-    .role-card.selected {
-      border-color: #2970ba;
-      box-shadow: 0 8px 25px rgba(41, 112, 186, 0.3);
-      transform: translateY(-3px);
-    }
-    
-    .role-card i {
-      font-size: 2.5rem;
-      margin-bottom: 15px;
-      display: block;
-    }
-    
-    .role-card h3 {
-      margin: 0 0 8px 0;
-      font-size: 1.2rem;
-      font-weight: bold;
-    }
-    
-    .role-card p {
-      margin: 0;
-      font-size: 0.9rem;
-      opacity: 0.8;
-    }
-    
-    /* Role-specific colors */
-    .role-agent {
-      background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
-      color: #2e7d32;
-    }
-    .role-agent i { color: #4caf50; }
-    
-    .role-admin {
-      background: linear-gradient(135deg, #ffebee, #ffcdd2);
-      color: #c62828;
-    }
-    .role-admin i { color: #f44336; }
-    
-    .role-admin-manager {
-      background: linear-gradient(135deg, #fce4ec, #f8bbd9);
-      color: #880e4f;
-    }
-    .role-admin-manager i { color: #e91e63; }
-    
-    .role-super {
-      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-      color: #1565c0;
-    }
-    .role-super i { color: #2196f3; }
-    
-    .continue-btn {
-      width: 100%;
-      padding: 15px;
-      background: linear-gradient(135deg, #2970ba, #005c97);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-      margin-top: 20px;
-    }
-    
-    .continue-btn:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(41, 112, 186, 0.3);
-    }
-    
-    .continue-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-      background: #cccccc;
-    }
-    
-    /* Login Form Styles */
-    .selected-role-info {
-      background: rgba(41, 112, 186, 0.1);
-      padding: 15px;
-      border-radius: 10px;
-      margin-bottom: 25px;
-      border-left: 4px solid #2970ba;
-    }
-    
-    .selected-role-info h3 {
-      margin: 0 0 5px 0;
-      color: #2970ba;
-      font-size: 1.1rem;
-    }
-    
-    .selected-role-info p {
-      margin: 0;
-      font-size: 0.9rem;
-      color: #5a7ba8;
-    }
-    
     .form-group {
       margin-bottom: 20px;
       text-align: left;
@@ -198,7 +61,7 @@
       color: #003865;
     }
     
-    input[type="text"], input[type="password"] {
+    input, select {
       width: 100%;
       padding: 15px;
       border: 2px solid #e1e8f0;
@@ -208,7 +71,7 @@
       box-sizing: border-box;
     }
     
-    input[type="text"]:focus, input[type="password"]:focus {
+    input:focus, select:focus {
       outline: none;
       border-color: #2970ba;
       box-shadow: 0 0 0 3px rgba(41, 112, 186, 0.1);
@@ -239,19 +102,6 @@
       transform: none;
     }
     
-    .back-to-roles {
-      background: #6c757d;
-      margin-bottom: 10px;
-      font-size: 14px;
-      padding: 10px 20px;
-      width: auto;
-    }
-    
-    .back-to-roles:hover {
-      background: #5a6268;
-      transform: none;
-    }
-    
     .error-message {
       background: #ffebee;
       color: #c62828;
@@ -260,6 +110,7 @@
       margin-top: 15px;
       border-left: 4px solid #f44336;
       display: none;
+      text-align: left;
     }
     
     .success-message {
@@ -270,6 +121,7 @@
       margin-top: 15px;
       border-left: 4px solid #4caf50;
       display: none;
+      text-align: left;
     }
     
     .back-link {
@@ -288,6 +140,28 @@
     
     .back-link a:hover {
       color: #005c97;
+    }
+    
+    .test-accounts {
+      background: #f0f9ff;
+      border: 2px solid #0ea5e9;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 20px 0;
+      text-align: left;
+    }
+    
+    .test-accounts h4 {
+      color: #0ea5e9;
+      margin: 0 0 10px 0;
+      font-size: 14px;
+    }
+    
+    .test-accounts ul {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 13px;
+      color: #0369a1;
     }
     
     .loading {
@@ -310,73 +184,47 @@
   <div class="container">
     <img src="erase-debt-logo.png" alt="Erase Debt SA Logo" class="logo" />
     <h1>Staff Login</h1>
-    <p class="subtitle">Secure access to your dashboard</p>
+    <p class="subtitle">Enter your credentials to access your dashboard</p>
 
-    <!-- Step 1: Role Selection -->
-    <div id="step1" class="step">
-      <h2 style="color: #003865; margin-bottom: 20px;">Select Your Role</h2>
-      
-      <div class="role-grid">
-        <div class="role-card role-agent" onclick="selectRole('agent', 'Agent', 'Client management & lead capture')">
-          <i class="fas fa-user-tie"></i>
-          <h3>Agent</h3>
-          <p>Client management & capture</p>
-        </div>
-        
-        <div class="role-card role-admin" onclick="selectRole('admin', 'Admin', 'System administration')">
-          <i class="fas fa-cog"></i>
-          <h3>Admin</h3>
-          <p>System administration</p>
-        </div>
-        
-        <div class="role-card role-admin-manager" onclick="selectRole('admin_manager', 'Admin Manager', 'Advanced management')">
-          <i class="fas fa-users-cog"></i>
-          <h3>Admin Manager</h3>
-          <p>Advanced management</p>
-        </div>
-        
-        <div class="role-card role-super" onclick="selectRole('super', 'Super User', 'Full system access')">
-          <i class="fas fa-crown"></i>
-          <h3>Super User</h3>
-          <p>Full system access</p>
-        </div>
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="role">Select Your Role</label>
+        <select id="role" name="role" required>
+          <option value="">-- Select Your Role --</option>
+          <option value="agent">Agent</option>
+          <option value="admin">Admin</option>
+          <option value="admin_manager">Admin Manager</option>
+          <option value="super">Super User</option>
+        </select>
       </div>
-      
-      <button type="button" class="continue-btn" id="continueBtn" onclick="goToLoginForm()" disabled>
-        Continue to Login
-      </button>
-    </div>
 
-    <!-- Step 2: Login Form -->
-    <div id="step2" class="step hidden">
-      <div class="selected-role-info">
-        <h3 id="selectedRoleTitle">Selected Role</h3>
-        <p id="selectedRoleDesc">Role description</p>
+      <div class="form-group">
+        <label for="username">Username (ID Number)</label>
+        <input type="text" id="username" name="username" required placeholder="Enter your 13-digit ID number" maxlength="13" />
       </div>
-      
-      <button type="button" class="login-btn back-to-roles" onclick="goBackToRoles()">
-        <i class="fas fa-arrow-left"></i> Change Role
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required placeholder="Enter your password" />
+      </div>
+
+      <button type="submit" class="login-btn" id="loginBtn">
+        <span id="loginBtnText">Login</span>
+        <span id="loginSpinner" class="loading" style="display: none;"></span>
       </button>
-      
-      <form id="loginForm" onsubmit="handleLogin(event)">
-        <div class="form-group">
-          <label for="username">Username (ID Number)</label>
-          <input type="text" id="username" name="username" required placeholder="Enter your ID number" />
-        </div>
 
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" name="password" required placeholder="Enter your password" />
-        </div>
+      <div id="errorMessage" class="error-message"></div>
+      <div id="successMessage" class="success-message"></div>
+    </form>
 
-        <button type="submit" class="login-btn" id="loginBtn">
-          <span id="loginBtnText">Login</span>
-          <span id="loginSpinner" class="loading" style="display: none;"></span>
-        </button>
-
-        <div id="errorMessage" class="error-message"></div>
-        <div id="successMessage" class="success-message"></div>
-      </form>
+    <div class="test-accounts">
+      <h4>🧪 Test Accounts Available:</h4>
+      <ul>
+        <li><strong>Agent:</strong> ID: 9876543210987 / Password: test123</li>
+        <li><strong>Admin:</strong> ID: 1111111111111 / Password: test123</li>
+        <li><strong>Admin Manager:</strong> ID: 2222222222222 / Password: test123</li>
+        <li><strong>Super User:</strong> ID: 1234567890123 / Password: test123</li>
+      </ul>
     </div>
     
     <div class="back-link">
@@ -394,106 +242,30 @@
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ";
     const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Global variables
-    let selectedRole = null;
-    let selectedRoleName = '';
-    let selectedRoleDesc = '';
+    console.log('🔐 Staff Login page loaded - NO AUTO-LOGIN');
 
-    console.log('🔐 Staff Login page loaded');
-
-    // Role selection function
-    function selectRole(role, name, description) {
-      console.log('Role selected:', role, name, description);
-      
-      // Remove selected class from all cards
-      document.querySelectorAll('.role-card').forEach(card => {
-        card.classList.remove('selected');
-      });
-      
-      // Add selected class to clicked card
-      event.target.closest('.role-card').classList.add('selected');
-      
-      // Store selected role
-      selectedRole = role;
-      selectedRoleName = name;
-      selectedRoleDesc = description;
-      
-      // Enable continue button
-      const continueBtn = document.getElementById('continueBtn');
-      continueBtn.disabled = false;
-      continueBtn.textContent = `Continue as ${name}`;
-      
-      console.log('Role selection complete:', selectedRole);
-    }
-
-    // Go to login form
-    function goToLoginForm() {
-      console.log('Going to login form for role:', selectedRole);
-      
-      if (!selectedRole) {
-        alert('Please select a role first');
-        return;
-      }
-      
-      // Update role info in login form
-      document.getElementById('selectedRoleTitle').textContent = selectedRoleName + ' Login';
-      document.getElementById('selectedRoleDesc').textContent = selectedRoleDesc;
-      
-      // Hide step 1, show step 2
-      document.getElementById('step1').classList.add('hidden');
-      document.getElementById('step2').classList.remove('hidden');
-      
-      // Focus on username
-      setTimeout(() => {
-        document.getElementById('username').focus();
-      }, 100);
-      
-      console.log('Login form displayed');
-    }
-
-    // Go back to role selection
-    function goBackToRoles() {
-      console.log('Going back to role selection');
-      
-      // Show step 1, hide step 2
-      document.getElementById('step1').classList.remove('hidden');
-      document.getElementById('step2').classList.add('hidden');
-      
-      // Clear form
-      document.getElementById('username').value = '';
-      document.getElementById('password').value = '';
-      hideMessages();
-      
-      // Reset role selection
-      document.querySelectorAll('.role-card').forEach(card => {
-        card.classList.remove('selected');
-      });
-      
-      selectedRole = null;
-      selectedRoleName = '';
-      selectedRoleDesc = '';
-      
-      document.getElementById('continueBtn').disabled = true;
-      document.getElementById('continueBtn').textContent = 'Continue to Login';
-      
-      console.log('Returned to role selection');
-    }
+    // CRITICAL: Clear any existing sessions on page load
+    localStorage.removeItem('edsa_staff_session');
+    sessionStorage.clear();
+    console.log('✅ All sessions cleared - fresh login required');
 
     // Message functions
     function showError(message) {
       const errorEl = document.getElementById('errorMessage');
       const successEl = document.getElementById('successMessage');
-      errorEl.textContent = message;
+      errorEl.innerHTML = message;
       errorEl.style.display = 'block';
       successEl.style.display = 'none';
+      console.log('❌ Error shown:', message);
     }
 
     function showSuccess(message) {
       const errorEl = document.getElementById('errorMessage');
       const successEl = document.getElementById('successMessage');
-      successEl.textContent = message;
+      successEl.innerHTML = message;
       successEl.style.display = 'block';
       errorEl.style.display = 'none';
+      console.log('✅ Success shown:', message);
     }
 
     function hideMessages() {
@@ -518,37 +290,77 @@
       }
     }
 
+    // Simple password verification for demo (in production, use proper bcrypt comparison)
+    function verifyPassword(inputPassword, storedHash) {
+      // For demo purposes, we'll accept "test123" for all test accounts
+      // In production, you'd compare against the actual hashed password
+      if (inputPassword === 'test123') {
+        return true;
+      }
+      
+      // Also check if the hash matches our simple hash format
+      const expectedHash = btoa(inputPassword + 'salt_edsa_2025');
+      return expectedHash === storedHash;
+    }
+
     // Verify credentials against database
-    async function verifyCredentials(username, password) {
+    async function verifyCredentials(username, password, expectedRole) {
       try {
-        console.log('Verifying credentials for:', username);
+        console.log('🔍 Verifying credentials for:', username, 'role:', expectedRole);
         
         // Query the edsa_users table
         const { data, error } = await client
           .from('edsa_users')
           .select('*')
           .eq('id_number', username)
-          .eq('is_active', true)
           .single();
 
         if (error) {
-          console.error('Database query error:', error);
-          return { success: false, message: 'Login failed. Please check your credentials.' };
+          console.error('❌ Database query error:', error);
+          return { 
+            success: false, 
+            message: 'Login failed. User not found or database error.' 
+          };
         }
 
         if (!data) {
-          return { success: false, message: 'Invalid username or password.' };
+          console.log('❌ No user found for ID:', username);
+          return { 
+            success: false, 
+            message: 'Invalid username. Please check your ID number.' 
+          };
         }
+
+        console.log('👤 User found:', data.full_name, 'Role:', data.role, 'Status:', data.status);
 
         // Check if user is active
-        if (data.status !== 'active') {
-          return { success: false, message: 'Your account has been deactivated. Contact your administrator.' };
+        if (data.status !== 'active' || !data.is_active) {
+          console.log('❌ User account inactive');
+          return { 
+            success: false, 
+            message: 'Your account has been deactivated. Contact your administrator.' 
+          };
         }
 
-        // For testing purposes, we'll skip password verification temporarily
-        // In production, you'd verify the hashed password here
-        
-        console.log('User found:', data.full_name, 'Role:', data.role);
+        // Check role match
+        if (data.role !== expectedRole) {
+          console.log('❌ Role mismatch. Expected:', expectedRole, 'Actual:', data.role);
+          return { 
+            success: false, 
+            message: `Role mismatch. Your account is registered as '${data.role.replace('_', ' ').toUpperCase()}', not '${expectedRole.replace('_', ' ').toUpperCase()}'. Please select the correct role.` 
+          };
+        }
+
+        // Verify password
+        if (!verifyPassword(password, data.password_hash)) {
+          console.log('❌ Password verification failed');
+          return { 
+            success: false, 
+            message: 'Invalid password. Please try again.' 
+          };
+        }
+
+        console.log('✅ Login successful for:', data.full_name);
         
         return {
           success: true,
@@ -563,8 +375,11 @@
           }
         };
       } catch (error) {
-        console.error('Verification error:', error);
-        return { success: false, message: 'System error. Please try again later.' };
+        console.error('❌ Verification error:', error);
+        return { 
+          success: false, 
+          message: 'System error. Please try again later.' 
+        };
       }
     }
 
@@ -572,13 +387,13 @@
     function redirectToDashboard(role) {
       const dashboardMap = {
         'agent': 'agent_dashboard.html',
-        'admin': 'admin_dashboard.html',
+        'admin': 'admin_dashboard.html', 
         'admin_manager': 'admin_manager_dashboard.html',
         'super': 'super_dashboard.html'
       };
 
       const dashboardUrl = dashboardMap[role];
-      console.log('Redirecting to dashboard:', dashboardUrl, 'for role:', role);
+      console.log('🚀 Redirecting to dashboard:', dashboardUrl, 'for role:', role);
       
       if (dashboardUrl) {
         window.location.href = dashboardUrl;
@@ -588,16 +403,22 @@
     }
 
     // Handle login form submission
-    async function handleLogin(event) {
+    document.getElementById('loginForm').addEventListener('submit', async function(event) {
       event.preventDefault();
-      console.log('Login form submitted');
+      console.log('📝 Login form submitted');
       
       hideMessages();
 
+      const role = document.getElementById('role').value;
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value.trim();
 
-      // Basic validation
+      // Validation
+      if (!role) {
+        showError('Please select your role.');
+        return;
+      }
+
       if (!username || !password) {
         showError('Please enter both username and password.');
         return;
@@ -609,24 +430,17 @@
         return;
       }
 
-      console.log('Attempting login for:', username, 'as role:', selectedRole);
+      console.log('🔐 Attempting login for:', username, 'as role:', role);
       setLoading(true);
 
       try {
         // Verify credentials
-        const result = await verifyCredentials(username, password);
+        const result = await verifyCredentials(username, password, role);
 
         if (result.success) {
-          console.log('Login successful for:', result.user.full_name);
+          console.log('✅ Authentication successful for:', result.user.full_name);
           
-          // Verify selected role matches actual role
-          if (result.user.role !== selectedRole) {
-            showError(`Role mismatch. Your account is registered as '${result.user.role}', not '${selectedRole}'. Please select the correct role.`);
-            setLoading(false);
-            return;
-          }
-          
-          // Store user session
+          // Create user session
           const userSession = {
             id: result.user.id,
             name: result.user.full_name,
@@ -637,8 +451,9 @@
             loginTime: new Date().toISOString()
           };
 
+          // Store session
           localStorage.setItem('edsa_staff_session', JSON.stringify(userSession));
-          console.log('Session stored:', userSession);
+          console.log('💾 Session stored:', userSession);
 
           showSuccess(`Welcome back, ${result.user.full_name}! Redirecting to your dashboard...`);
           
@@ -647,18 +462,18 @@
             redirectToDashboard(result.user.role);
           }, 1500);
         } else {
-          console.log('Login failed:', result.message);
+          console.log('❌ Authentication failed:', result.message);
           showError(result.message);
           setLoading(false);
         }
       } catch (error) {
-        console.error('Login error:', error);
+        console.error('💥 Login error:', error);
         showError('An unexpected error occurred. Please try again.');
         setLoading(false);
       }
-    }
+    });
 
-    // Auto-format ID number input
+    // Auto-format ID number input (numbers only, max 13 digits)
     document.getElementById('username').addEventListener('input', function(e) {
       let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
       if (value.length > 13) value = value.substring(0, 13); // Limit to 13 digits
@@ -668,18 +483,21 @@
     // Clear messages when user starts typing
     document.getElementById('username').addEventListener('input', hideMessages);
     document.getElementById('password').addEventListener('input', hideMessages);
+    document.getElementById('role').addEventListener('change', hideMessages);
 
-    // Check if user is already logged in
-    window.addEventListener('load', function() {
-      const session = localStorage.getItem('edsa_staff_session');
-      // Remove auto-login - users must enter credentials each time
-      if (session) {
-        console.log('Clearing existing session - user must login again');
-        localStorage.removeItem('edsa_staff_session');
-      }
+    // Initialize page
+    window.addEventListener('DOMContentLoaded', function() {
+      // Force clear any existing sessions
+      localStorage.removeItem('edsa_staff_session');
+      sessionStorage.clear();
+      
+      console.log('🚀 Login page initialized - authentication required');
+      
+      // Focus on role selection
+      document.getElementById('role').focus();
     });
 
-    console.log('✅ All functions loaded and ready');
+    console.log('✅ All login functions loaded and ready');
   </script>
 </body>
 </html>
