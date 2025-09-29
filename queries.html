@@ -36,7 +36,7 @@
     }
     .container {
       padding: 30px;
-      max-width: 1400px;
+      max-width: 1600px;
       margin: 0 auto;
     }
     .stats {
@@ -97,15 +97,17 @@
     th {
       background: #2970ba;
       color: white;
-      padding: 15px 12px;
+      padding: 15px 10px;
       text-align: left;
       font-weight: bold;
+      font-size: 14px;
     }
     td {
-      padding: 12px;
+      padding: 12px 10px;
       border-bottom: 1px solid #e2e8f0;
       color: #333;
       vertical-align: top;
+      font-size: 13px;
     }
     tr:nth-child(even) {
       background: #f8fafc;
@@ -114,13 +116,13 @@
       background: #e6f3ff;
     }
     .status-badge {
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 15px;
+      font-size: 11px;
       font-weight: bold;
       text-transform: uppercase;
     }
-    .status-pending {
+    .status-pending, .status-new {
       background: #fef3c7;
       color: #92400e;
     }
@@ -134,19 +136,19 @@
     }
     .query-actions {
       display: flex;
-      gap: 8px;
+      gap: 5px;
       flex-wrap: wrap;
     }
     .btn {
-      padding: 6px 12px;
+      padding: 6px 10px;
       border: none;
-      border-radius: 6px;
-      font-size: 12px;
+      border-radius: 5px;
+      font-size: 11px;
       cursor: pointer;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
       white-space: nowrap;
     }
     .btn-view {
@@ -167,37 +169,46 @@
       color: #333;
     }
     .client-details {
-      font-size: 13px;
+      font-size: 12px;
+      line-height: 1.3;
     }
-    .client-details strong {
-      display: block;
+    .client-name {
+      font-weight: bold;
       color: #003865;
-      margin-bottom: 2px;
+      margin-bottom: 3px;
+    }
+    .client-info {
+      color: #666;
+      font-size: 11px;
     }
     .message-cell {
-      max-width: 300px;
+      max-width: 250px;
       word-wrap: break-word;
+      line-height: 1.4;
     }
     .response-cell {
-      max-width: 250px;
+      max-width: 200px;
       word-wrap: break-word;
       font-style: italic;
       color: #059669;
+      font-size: 12px;
     }
     .no-response {
       color: #999;
       font-style: italic;
+      font-size: 11px;
     }
     .attachment-icon {
       color: #2970ba;
       margin-left: 5px;
     }
     .date-cell {
-      font-size: 12px;
+      font-size: 11px;
       color: #666;
+      min-width: 80px;
     }
 
-    /* Modal Styles */
+    /* Professional Modal Styles */
     .modal {
       display: none;
       position: fixed;
@@ -206,34 +217,143 @@
       top: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
+      background-color: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(3px);
     }
     .modal-content {
       background-color: #fff;
-      margin: 5% auto;
-      padding: 30px;
+      margin: 2% auto;
+      padding: 0;
       border-radius: 15px;
-      width: 90%;
-      max-width: 600px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      width: 95%;
+      max-width: 900px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
       color: #333;
-      max-height: 80vh;
-      overflow-y: auto;
+      max-height: 95vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
-    .modal h2 {
-      color: #2970ba;
-      margin-bottom: 20px;
-      text-align: center;
+    .modal-header {
+      background: linear-gradient(135deg, #2970ba, #005c97);
+      color: white;
+      padding: 20px 25px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-header h2 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: bold;
     }
     .modal-close {
-      float: right;
-      font-size: 28px;
-      font-weight: bold;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      font-size: 20px;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
       cursor: pointer;
-      color: #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .modal-close:hover {
-      color: #333;
+      background: rgba(255,255,255,0.3);
+    }
+    .modal-body {
+      padding: 25px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .client-info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      background: #f8fafc;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 25px;
+      border-left: 4px solid #2970ba;
+    }
+    .info-item {
+      display: flex;
+      flex-direction: column;
+    }
+    .info-label {
+      font-size: 12px;
+      font-weight: bold;
+      color: #2970ba;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+    .info-value {
+      font-size: 15px;
+      color: #003865;
+      font-weight: 600;
+    }
+    .query-content {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 25px;
+    }
+    .query-content h4 {
+      color: #2970ba;
+      margin: 0 0 15px 0;
+      font-size: 16px;
+    }
+    .query-text {
+      line-height: 1.6;
+      color: #374151;
+      background: #f9fafb;
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 3px solid #2970ba;
+    }
+    .response-history {
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 25px;
+    }
+    .response-history h4 {
+      color: #2970ba;
+      margin: 0 0 15px 0;
+      font-size: 16px;
+    }
+    .response-item {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 10px;
+    }
+    .response-item:last-child {
+      margin-bottom: 0;
+    }
+    .response-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .response-admin {
+      font-weight: bold;
+      color: #059669;
+    }
+    .response-date {
+      font-size: 12px;
+      color: #6b7280;
+    }
+    .response-text {
+      color: #374151;
+      line-height: 1.5;
     }
     .form-group {
       margin-bottom: 20px;
@@ -242,38 +362,128 @@
       display: block;
       margin-bottom: 8px;
       font-weight: bold;
-      color: #333;
+      color: #2970ba;
     }
     .form-group textarea {
       width: 100%;
-      padding: 12px;
+      padding: 15px;
       border: 2px solid #e1e8f0;
-      border-radius: 8px;
+      border-radius: 10px;
       font-size: 16px;
       box-sizing: border-box;
       min-height: 120px;
       resize: vertical;
+      font-family: inherit;
+    }
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #2970ba;
+      box-shadow: 0 0 0 3px rgba(41, 112, 186, 0.1);
     }
     .modal-actions {
       display: flex;
-      gap: 10px;
-      justify-content: center;
+      gap: 15px;
+      justify-content: flex-end;
       margin-top: 25px;
+      padding-top: 20px;
+      border-top: 1px solid #e2e8f0;
     }
     .btn-modal {
-      padding: 12px 24px;
+      padding: 12px 25px;
       border: none;
       border-radius: 8px;
       font-weight: bold;
       cursor: pointer;
+      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
     }
     .btn-save {
       background: #059669;
       color: white;
     }
+    .btn-save:hover {
+      background: #047857;
+    }
     .btn-cancel {
-      background: #6c757d;
+      background: #6b7280;
       color: white;
+    }
+    .btn-cancel:hover {
+      background: #5b6171;
+    }
+    .btn-resolve {
+      background: #dc2626;
+      color: white;
+    }
+    .btn-resolve:hover {
+      background: #b91c1c;
+    }
+    .attachment-section {
+      background: #fef3c7;
+      border: 1px solid #f59e0b;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+    }
+    .attachment-section h5 {
+      margin: 0 0 10px 0;
+      color: #92400e;
+      font-size: 14px;
+    }
+    .attachment-link {
+      color: #2970ba;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .attachment-link:hover {
+      text-decoration: underline;
+    }
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      z-index: 1001;
+      display: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    .notification.success {
+      background: #059669;
+    }
+    .notification.error {
+      background: #dc2626;
+    }
+    .notification.info {
+      background: #2970ba;
+    }
+    .status-update {
+      background: #f0f9ff;
+      border: 1px solid #0ea5e9;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      color: #0c4a6e;
+    }
+    .admin-info {
+      background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-left: 4px solid #0ea5e9;
+    }
+    .admin-info h5 {
+      margin: 0 0 8px 0;
+      color: #0c4a6e;
+      font-size: 14px;
+    }
+    .admin-details {
+      font-size: 13px;
+      color: #0369a1;
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
@@ -281,7 +491,7 @@
 <body>
   <div class="header">
     <img src="erase-debt-logo.png" alt="Erase Debt SA Logo" />
-    <h1>Query Management</h1>
+    <h1>Professional Query Management System</h1>
     <a href="javascript:history.back()" class="back-button">
       <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
     </a>
@@ -296,7 +506,7 @@
       </div>
       <div class="stat-card">
         <div class="stat-number" id="pendingQueries">-</div>
-        <div class="stat-label">Pending</div>
+        <div class="stat-label">Pending Response</div>
       </div>
       <div class="stat-card">
         <div class="stat-number" id="inProgressQueries">-</div>
@@ -314,7 +524,7 @@
         <label>Status</label>
         <select id="statusFilter">
           <option value="">All Statuses</option>
-          <option value="PENDING">Pending</option>
+          <option value="PENDING">Pending Response</option>
           <option value="IN_PROGRESS">In Progress</option>
           <option value="RESOLVED">Resolved</option>
         </select>
@@ -331,17 +541,14 @@
           <option value="I Want To Settle My Arrears">I Want To Settle My Arrears</option>
           <option value="I Need A Follow Up On My Process">I Need A Follow Up</option>
           <option value="I Did Not Get a Welcome Email">I Did Not Get a Welcome Email</option>
-          <option value="GENERAL">General</option>
-          <option value="APPLICATION_STATUS">Application Status</option>
-          <option value="PAYMENT">Payment</option>
-          <option value="DOCUMENT">Document</option>
-          <option value="COMPLAINT">Complaint</option>
-          <option value="TECHNICAL">Technical</option>
+          <option value="GENERAL">General Query</option>
+          <option value="APPLICATION_UPDATE">Application Update</option>
+          <option value="FOLLOW_UP">Follow Up</option>
         </select>
       </div>
       <div class="filter-group">
-        <label>Search</label>
-        <input type="text" id="searchInput" placeholder="Search by name, ID, or reference..." />
+        <label>Search Client</label>
+        <input type="text" id="searchInput" placeholder="Search by name, ID, email, or reference..." />
       </div>
       <div class="filter-group">
         <label>Date Range</label>
@@ -350,20 +557,20 @@
       </div>
     </div>
 
-    <!-- Queries Table -->
+    <!-- Professional Queries Table -->
     <div class="queries-table">
       <table>
         <thead>
           <tr>
-            <th>Reference</th>
-            <th>Client</th>
-            <th>Contact</th>
-            <th>Type</th>
-            <th>Message</th>
-            <th>Admin Response</th>
-            <th>Status</th>
-            <th>Date</th>
-            <th>Actions</th>
+            <th style="width: 120px;">Reference</th>
+            <th style="width: 150px;">Client Details</th>
+            <th style="width: 140px;">Contact Info</th>
+            <th style="width: 120px;">Query Type</th>
+            <th style="width: 200px;">Client Message</th>
+            <th style="width: 180px;">Admin Response</th>
+            <th style="width: 80px;">Status</th>
+            <th style="width: 90px;">Date</th>
+            <th style="width: 150px;">Actions</th>
           </tr>
         </thead>
         <tbody id="queriesTableBody">
@@ -377,28 +584,55 @@
     </div>
   </div>
 
-  <!-- Reply Modal -->
-  <div id="replyModal" class="modal">
+  <!-- Professional Query View Modal -->
+  <div id="viewModal" class="modal">
     <div class="modal-content">
-      <span class="modal-close" onclick="closeReplyModal()">&times;</span>
-      <h2>Reply to Query</h2>
-      <div id="queryDetailsModal"></div>
-      <form id="replyForm">
-        <div class="form-group">
-          <label>Your Response:</label>
-          <textarea id="responseText" placeholder="Enter your response to the client..." required></textarea>
-        </div>
-        <div class="modal-actions">
-          <button type="submit" class="btn-modal btn-save" id="saveResponseBtn">
-            <i class="fa-solid fa-paper-plane"></i> Send Response
-          </button>
-          <button type="button" class="btn-modal btn-cancel" onclick="closeReplyModal()">
-            <i class="fa-solid fa-times"></i> Cancel
-          </button>
-        </div>
-      </form>
+      <div class="modal-header">
+        <h2><i class="fa-solid fa-file-text"></i> Query Details</h2>
+        <button class="modal-close" onclick="closeViewModal()">
+          <i class="fa-solid fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="viewQueryContent"></div>
+      </div>
     </div>
   </div>
+
+  <!-- Professional Reply Modal -->
+  <div id="replyModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fa-solid fa-reply"></i> Respond to Client Query</h2>
+        <button class="modal-close" onclick="closeReplyModal()">
+          <i class="fa-solid fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="replyQueryContent"></div>
+        <form id="replyForm">
+          <div class="form-group">
+            <label><i class="fa-solid fa-pen"></i> Your Professional Response to Client:</label>
+            <textarea id="responseText" placeholder="Enter your professional response to the client. This will be emailed to them and visible on their portal..." required></textarea>
+          </div>
+          <div class="modal-actions">
+            <button type="submit" class="btn-modal btn-save" id="saveResponseBtn">
+              <i class="fa-solid fa-paper-plane"></i> Send Response & Email Client
+            </button>
+            <button type="button" class="btn-modal btn-resolve" id="resolveAfterResponseBtn">
+              <i class="fa-solid fa-check-double"></i> Send & Mark Resolved
+            </button>
+            <button type="button" class="btn-modal btn-cancel" onclick="closeReplyModal()">
+              <i class="fa-solid fa-times"></i> Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Notification -->
+  <div id="notification" class="notification"></div>
 
   <script>
     const { createClient } = supabase;
@@ -411,7 +645,39 @@
     let filteredQueries = [];
     let currentEditingQuery = null;
 
-    // Load all queries
+    // Show notification
+    function showNotification(message, type = 'success') {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.className = `notification ${type}`;
+      notification.style.display = 'block';
+      
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 4000);
+    }
+
+    // Get current admin user
+    function getCurrentAdmin() {
+      try {
+        const session = JSON.parse(localStorage.getItem('edsa_staff_session') || '{}');
+        return {
+          name: session.name || 'Admin User',
+          email: session.email || 'admin@erasedebtsa.co.za',
+          role: session.role || 'admin',
+          branch: session.branch || 'Erase Debt SA'
+        };
+      } catch (e) {
+        return {
+          name: 'Admin User',
+          email: 'admin@erasedebtsa.co.za',
+          role: 'admin',
+          branch: 'Erase Debt SA'
+        };
+      }
+    }
+
+    // Load all queries with response history
     async function loadQueries() {
       try {
         const { data, error } = await supabaseClient
@@ -450,65 +716,72 @@
       document.getElementById('resolvedQueries').textContent = resolved;
     }
 
-    // Display queries in table
+    // Display queries in professional table
     function displayQueries() {
       const tbody = document.getElementById('queriesTableBody');
       
       if (filteredQueries.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #666;">No queries found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #666; padding: 40px;">No queries found</td></tr>';
         return;
       }
 
       tbody.innerHTML = filteredQueries.map(query => {
         const status = query.status || 'PENDING';
         const statusClass = `status-${status.toLowerCase().replace('_', '-')}`;
-        const clientName = [query.first_name, query.last_name].filter(Boolean).join(' ') || 'Unknown';
+        const clientName = [query.first_name, query.last_name].filter(Boolean).join(' ') || 'Unknown Client';
         
-        // Show ALL client details for admins (no hiding)
-        const clientId = query.id_number || 'N/A';
-        const phoneNumber = query.phone || 'No phone';
-        const email = query.email || 'N/A';
+        // Show ALL client details for admin staff
+        const clientId = query.id_number || 'Not provided';
+        const phoneNumber = query.phone || 'Not provided';
+        const email = query.email || 'Not provided';
         
-        // Format admin response
+        // Format admin response with date
         const adminResponse = query.response_text ? 
-          `<div class="response-cell">${query.response_text}</div>` : 
-          `<div class="no-response">No response yet</div>`;
+          `<div class="response-cell">
+            ${query.response_text.substring(0, 100)}${query.response_text.length > 100 ? '...' : ''}
+            ${query.updated_at ? `<br><small style="color: #6b7280;">Responded: ${new Date(query.updated_at).toLocaleString()}</small>` : ''}
+            ${query.responded_by ? `<br><small style="color: #059669;">By: ${query.responded_by}</small>` : ''}
+          </div>` : 
+          `<div class="no-response">Awaiting admin response</div>`;
         
         return `
           <tr>
-            <td><strong>${query.reference_number || 'N/A'}</strong></td>
+            <td><strong style="color: #2970ba;">${query.reference_number || 'No Ref'}</strong></td>
             <td>
               <div class="client-details">
-                <strong>${clientName}</strong>
-                <div>ID: ${clientId}</div>
+                <div class="client-name">${clientName}</div>
+                <div class="client-info">ID: ${clientId}</div>
               </div>
             </td>
             <td>
               <div class="client-details">
-                <strong>${email}</strong>
-                <div>${phoneNumber}</div>
+                <strong style="color: #2970ba;">${email}</strong>
+                <div class="client-info">📞 ${phoneNumber}</div>
               </div>
             </td>
-            <td>${query.query_type || 'GENERAL'}</td>
+            <td><span style="font-size: 11px; background: #f1f5f9; padding: 4px 8px; border-radius: 12px; color: #374151;">${query.query_type || 'GENERAL'}</span></td>
             <td>
               <div class="message-cell">
-                ${query.query_text || query.client_message || 'No message'}
-                ${query.attachment_url ? '<i class="fa-solid fa-paperclip attachment-icon" title="Has attachment"></i>' : ''}
+                ${query.query_text || query.client_message || 'No message provided'}
+                ${query.attachment_url ? '<i class="fa-solid fa-paperclip attachment-icon" title="Client attached a file"></i>' : ''}
               </div>
             </td>
             <td>${adminResponse}</td>
-            <td><span class="status-badge ${statusClass}">${status.toUpperCase()}</span></td>
-            <td class="date-cell">${new Date(query.created_at).toLocaleDateString()}<br><small>${new Date(query.created_at).toLocaleTimeString()}</small></td>
+            <td><span class="status-badge ${statusClass}">${status === 'new' ? 'PENDING' : status}</span></td>
+            <td class="date-cell">
+              ${new Date(query.created_at).toLocaleDateString()}<br>
+              <small>${new Date(query.created_at).toLocaleTimeString()}</small>
+            </td>
             <td>
               <div class="query-actions">
-                <button class="btn btn-view" onclick="viewQuery('${query.id}')">
+                <button class="btn btn-view" onclick="viewQuery('${query.id}')" title="View full details">
                   <i class="fa-solid fa-eye"></i> View
                 </button>
-                <button class="btn btn-reply" onclick="replyToQuery('${query.id}')">
+                <button class="btn btn-reply" onclick="replyToQuery('${query.id}')" title="Respond to client">
                   <i class="fa-solid fa-reply"></i> Reply
                 </button>
                 ${status !== 'RESOLVED' ? `
-                  <button class="btn btn-resolve" onclick="resolveQuery('${query.id}')">
+                  <button class="btn btn-resolve" onclick="resolveQuery('${query.id}')" title="Mark as resolved">
                     <i class="fa-solid fa-check"></i> Resolve
                   </button>
                 ` : ''}
@@ -517,6 +790,325 @@
           </tr>
         `;
       }).join('');
+    }
+
+    // Professional View Query Modal
+    function viewQuery(queryId) {
+      const query = allQueries.find(q => q.id === queryId);
+      if (!query) return;
+
+      const clientName = [query.first_name, query.last_name].filter(Boolean).join(' ') || 'Unknown Client';
+      const admin = getCurrentAdmin();
+      
+      document.getElementById('viewQueryContent').innerHTML = `
+        <!-- Admin Information -->
+        <div class="admin-info">
+          <h5><i class="fa-solid fa-user-shield"></i> Viewing as Admin</h5>
+          <div class="admin-details">
+            <strong>${admin.name}</strong> | ${admin.role.toUpperCase()} | ${admin.branch}<br>
+            📧 ${admin.email} | 🕒 ${new Date().toLocaleString()}
+          </div>
+        </div>
+
+        <!-- Client Information Grid -->
+        <div class="client-info-grid">
+          <div class="info-item">
+            <div class="info-label">Client Name</div>
+            <div class="info-value">${clientName}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">ID Number</div>
+            <div class="info-value">${query.id_number || 'Not provided'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Email Address</div>
+            <div class="info-value">${query.email || 'Not provided'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Phone Number</div>
+            <div class="info-value">${query.phone || 'Not provided'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Reference Number</div>
+            <div class="info-value">${query.reference_number || 'Not assigned'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Query Status</div>
+            <div class="info-value">
+              <span class="status-badge status-${(query.status || 'PENDING').toLowerCase().replace('_', '-')}">
+                ${query.status === 'new' ? 'PENDING' : (query.status || 'PENDING')}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Query Content -->
+        <div class="query-content">
+          <h4><i class="fa-solid fa-comment-dots"></i> Client's Query (${query.query_type || 'GENERAL'})</h4>
+          <div class="query-text">
+            "${query.query_text || query.client_message || 'No message provided'}"
+          </div>
+          <div style="margin-top: 10px; font-size: 12px; color: #6b7280;">
+            <i class="fa-solid fa-calendar"></i> Submitted: ${new Date(query.created_at).toLocaleString()}
+          </div>
+        </div>
+
+        ${query.attachment_url ? `
+          <div class="attachment-section">
+            <h5><i class="fa-solid fa-paperclip"></i> Client Attachment</h5>
+            <a href="${query.attachment_url}" target="_blank" class="attachment-link">
+              <i class="fa-solid fa-download"></i> View/Download Attachment
+            </a>
+          </div>
+        ` : ''}
+
+        <!-- Response History -->
+        <div class="response-history">
+          <h4><i class="fa-solid fa-history"></i> Admin Response History</h4>
+          ${query.response_text ? `
+            <div class="response-item">
+              <div class="response-header">
+                <span class="response-admin">
+                  <i class="fa-solid fa-user-tie"></i> ${query.responded_by || 'Admin Team'}
+                </span>
+                <span class="response-date">
+                  <i class="fa-solid fa-clock"></i> ${query.updated_at ? new Date(query.updated_at).toLocaleString() : 'Date not recorded'}
+                </span>
+              </div>
+              <div class="response-text">${query.response_text}</div>
+            </div>
+          ` : `
+            <div style="text-align: center; color: #6b7280; font-style: italic; padding: 20px;">
+              <i class="fa-solid fa-inbox"></i><br>
+              No responses yet. Client is waiting for admin response.
+            </div>
+          `}
+        </div>
+
+        <div style="text-align: center; margin-top: 25px;">
+          <button class="btn-modal btn-save" onclick="replyToQuery('${query.id}'); closeViewModal();">
+            <i class="fa-solid fa-reply"></i> Respond to This Query
+          </button>
+          ${(query.status || 'PENDING') !== 'RESOLVED' ? `
+            <button class="btn-modal btn-resolve" onclick="resolveQuery('${query.id}'); closeViewModal();">
+              <i class="fa-solid fa-check"></i> Mark as Resolved
+            </button>
+          ` : ''}
+        </div>
+      `;
+      
+      document.getElementById('viewModal').style.display = 'block';
+    }
+
+    // Close view modal
+    function closeViewModal() {
+      document.getElementById('viewModal').style.display = 'none';
+    }
+
+    // Reply to query with professional interface
+    function replyToQuery(queryId) {
+      const query = allQueries.find(q => q.id === queryId);
+      if (!query) return;
+
+      currentEditingQuery = query;
+      const clientName = [query.first_name, query.last_name].filter(Boolean).join(' ') || 'Unknown Client';
+      const admin = getCurrentAdmin();
+      
+      document.getElementById('replyQueryContent').innerHTML = `
+        <!-- Admin Information -->
+        <div class="admin-info">
+          <h5><i class="fa-solid fa-user-shield"></i> Responding as Admin</h5>
+          <div class="admin-details">
+            <strong>${admin.name}</strong> | ${admin.role.toUpperCase()} | ${admin.branch}<br>
+            📧 ${admin.email} | 🕒 ${new Date().toLocaleString()}
+          </div>
+        </div>
+
+        <!-- Client Summary -->
+        <div class="client-info-grid">
+          <div class="info-item">
+            <div class="info-label">Client</div>
+            <div class="info-value">${clientName}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Reference</div>
+            <div class="info-value">${query.reference_number || 'Not assigned'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Email</div>
+            <div class="info-value">${query.email || 'Not provided'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Query Type</div>
+            <div class="info-value">${query.query_type || 'GENERAL'}</div>
+          </div>
+        </div>
+
+        <!-- Original Query -->
+        <div class="query-content">
+          <h4><i class="fa-solid fa-comment"></i> Client's Original Query</h4>
+          <div class="query-text">
+            "${query.query_text || query.client_message || 'No message provided'}"
+          </div>
+        </div>
+
+        ${query.response_text ? `
+          <div class="status-update">
+            <h5><i class="fa-solid fa-info-circle"></i> Previous Response</h5>
+            <strong>Last Response:</strong> ${query.response_text}<br>
+            <small><strong>Sent by:</strong> ${query.responded_by || 'Admin'} on ${query.updated_at ? new Date(query.updated_at).toLocaleString() : 'Unknown date'}</small>
+          </div>
+        ` : ''}
+      `;
+      
+      document.getElementById('responseText').value = '';
+      document.getElementById('replyModal').style.display = 'block';
+    }
+
+    // Close reply modal
+    function closeReplyModal() {
+      document.getElementById('replyModal').style.display = 'none';
+      currentEditingQuery = null;
+    }
+
+    // Send email notification to client
+    async function sendClientNotification(query, response, adminName) {
+      try {
+        const emailPayload = {
+          email: query.email,
+          clientName: [query.first_name, query.last_name].filter(Boolean).join(' ') || 'Valued Client',
+          reference: query.reference_number || 'Your Query',
+          response: response,
+          adminName: adminName,
+          queryType: query.query_type || 'General Query'
+        };
+
+        // Call email function (you'll need to create this)
+        const emailResponse = await fetch(`https://xzjunkpxvfdpuogoflzh.supabase.co/functions/v1/send-query-response`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ`
+          },
+          body: JSON.stringify(emailPayload)
+        });
+
+        if (emailResponse.ok) {
+          console.log('Email sent successfully to client');
+          return true;
+        } else {
+          console.log('Email service not available - response saved anyway');
+          return false;
+        }
+      } catch (error) {
+        console.error('Email error:', error);
+        return false;
+      }
+    }
+
+    // Handle reply form submission
+    document.getElementById('replyForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      await submitResponse(false); // Don't auto-resolve
+    });
+
+    // Handle resolve after response
+    document.getElementById('resolveAfterResponseBtn').addEventListener('click', async function(e) {
+      e.preventDefault();
+      await submitResponse(true); // Auto-resolve after response
+    });
+
+    // Submit response function
+    async function submitResponse(shouldResolve = false) {
+      if (!currentEditingQuery) return;
+      
+      const responseText = document.getElementById('responseText').value.trim();
+      const saveBtn = document.getElementById('saveResponseBtn');
+      const resolveBtn = document.getElementById('resolveAfterResponseBtn');
+      
+      if (!responseText) {
+        alert('Please enter a response before sending');
+        return;
+      }
+      
+      const admin = getCurrentAdmin();
+      
+      // Disable buttons
+      saveBtn.disabled = true;
+      resolveBtn.disabled = true;
+      saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending Response...';
+      resolveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+      
+      try {
+        // Update query with response
+        const updateData = {
+          response_text: responseText,
+          status: shouldResolve ? 'RESOLVED' : 'IN_PROGRESS',
+          updated_at: new Date().toISOString(),
+          responded_by: admin.name
+        };
+
+        const { error } = await supabaseClient
+          .from('QUERIES')
+          .update(updateData)
+          .eq('id', currentEditingQuery.id);
+
+        if (error) throw error;
+
+        // Send email notification to client
+        const emailSent = await sendClientNotification(currentEditingQuery, responseText, admin.name);
+        
+        // Show success message
+        if (emailSent) {
+          showNotification(`✅ Response sent successfully! Client has been notified via email.`, 'success');
+        } else {
+          showNotification(`✅ Response saved! (Email notification may not be available)`, 'info');
+        }
+        
+        closeReplyModal();
+        loadQueries(); // Reload to show updated data
+        
+      } catch (error) {
+        console.error('Error saving response:', error);
+        showNotification(`❌ Failed to send response: ${error.message}`, 'error');
+      } finally {
+        // Re-enable buttons
+        saveBtn.disabled = false;
+        resolveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Response & Email Client';
+        resolveBtn.innerHTML = '<i class="fa-solid fa-check-double"></i> Send & Mark Resolved';
+      }
+    }
+
+    // Resolve query directly
+    async function resolveQuery(queryId) {
+      const query = allQueries.find(q => q.id === queryId);
+      if (!query) return;
+
+      const clientName = [query.first_name, query.last_name].filter(Boolean).join(' ');
+      
+      if (!confirm(`Mark query from ${clientName} as resolved?\n\nReference: ${query.reference_number || 'No ref'}\nType: ${query.query_type || 'General'}`)) return;
+
+      try {
+        const admin = getCurrentAdmin();
+        
+        const { error } = await supabaseClient
+          .from('QUERIES')
+          .update({
+            status: 'RESOLVED',
+            updated_at: new Date().toISOString(),
+            responded_by: query.responded_by || admin.name
+          })
+          .eq('id', queryId);
+
+        if (error) throw error;
+
+        showNotification(`✅ Query from ${clientName} marked as resolved!`, 'success');
+        loadQueries(); // Reload to show updated data
+      } catch (error) {
+        console.error('Error resolving query:', error);
+        showNotification(`❌ Failed to resolve query: ${error.message}`, 'error');
+      }
     }
 
     // Filter queries
@@ -528,11 +1120,11 @@
       const dateTo = document.getElementById('dateTo').value;
 
       filteredQueries = allQueries.filter(query => {
-        // Status filter - handle both new format and old format
+        // Status filter
         if (statusFilter) {
           const queryStatus = query.status || 'PENDING';
-          if (queryStatus === 'new') {
-            if (statusFilter !== 'PENDING') return false;
+          if (queryStatus === 'new' && statusFilter === 'PENDING') {
+            // Allow 'new' status to match 'PENDING' filter
           } else if (queryStatus !== statusFilter) {
             return false;
           }
@@ -566,138 +1158,6 @@
       displayQueries();
     }
 
-    // View query details
-    function viewQuery(queryId) {
-      const query = allQueries.find(q => q.id === queryId);
-      if (!query) return;
-
-      const clientName = [query.first_name, query.last_name].filter(Boolean).join(' ');
-      
-      const queryDetails = `Query Full Details:
-
-Reference: ${query.reference_number || 'N/A'}
-Client: ${clientName}
-ID Number: ${query.id_number || 'N/A'}
-Email: ${query.email || 'N/A'}
-Phone: ${query.phone || 'N/A'}
-Type: ${query.query_type || 'GENERAL'}
-Status: ${query.status || 'PENDING'}
-Date: ${new Date(query.created_at).toLocaleString()}
-
-CLIENT MESSAGE:
-${query.query_text || query.client_message || 'No message'}
-
-ADMIN RESPONSE:
-${query.response_text || 'No response yet'}
-
-${query.attachment_url ? `\nAttachment: ${query.attachment_url}` : ''}`;
-      
-      alert(queryDetails);
-    }
-
-    // Reply to query
-    function replyToQuery(queryId) {
-      const query = allQueries.find(q => q.id === queryId);
-      if (!query) return;
-
-      currentEditingQuery = query;
-      
-      const clientName = [query.first_name, query.last_name].filter(Boolean).join(' ');
-      
-      document.getElementById('queryDetailsModal').innerHTML = `
-        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-          <strong>Client:</strong> ${clientName}<br>
-          <strong>Reference:</strong> ${query.reference_number || 'N/A'}<br>
-          <strong>Type:</strong> ${query.query_type || 'GENERAL'}<br>
-          <strong>Original Message:</strong><br>
-          <em>"${query.query_text || query.client_message || 'No message'}"</em>
-        </div>
-      `;
-      
-      document.getElementById('responseText').value = query.response_text || '';
-      document.getElementById('replyModal').style.display = 'block';
-    }
-
-    // Close reply modal
-    function closeReplyModal() {
-      document.getElementById('replyModal').style.display = 'none';
-      currentEditingQuery = null;
-    }
-
-    // Handle reply form submission
-    document.getElementById('replyForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      if (!currentEditingQuery) return;
-      
-      const responseText = document.getElementById('responseText').value.trim();
-      const saveBtn = document.getElementById('saveResponseBtn');
-      
-      if (!responseText) {
-        alert('Please enter a response');
-        return;
-      }
-      
-      saveBtn.disabled = true;
-      saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
-      
-      try {
-        const { error } = await supabaseClient
-          .from('QUERIES')
-          .update({
-            response_text: responseText,
-            status: 'IN_PROGRESS',
-            updated_at: new Date().toISOString(),
-            responded_by: getCurrentUser().name || 'Admin'
-          })
-          .eq('id', currentEditingQuery.id);
-
-        if (error) throw error;
-
-        alert('Response sent successfully!');
-        closeReplyModal();
-        loadQueries(); // Reload to show updated data
-      } catch (error) {
-        console.error('Error updating query:', error);
-        alert('Failed to send response. Please try again.');
-      } finally {
-        saveBtn.disabled = false;
-        saveBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Response';
-      }
-    });
-
-    // Resolve query
-    async function resolveQuery(queryId) {
-      if (!confirm('Mark this query as resolved?')) return;
-
-      try {
-        const { error } = await supabaseClient
-          .from('QUERIES')
-          .update({
-            status: 'RESOLVED',
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', queryId);
-
-        if (error) throw error;
-
-        alert('Query marked as resolved!');
-        loadQueries(); // Reload to show updated data
-      } catch (error) {
-        console.error('Error resolving query:', error);
-        alert('Failed to resolve query. Please try again.');
-      }
-    }
-
-    // Get current user info
-    function getCurrentUser() {
-      try {
-        return JSON.parse(localStorage.getItem('edsa_staff_session') || '{}');
-      } catch (e) {
-        return {};
-      }
-    }
-
     // Event listeners for filters
     document.getElementById('statusFilter').addEventListener('change', filterQueries);
     document.getElementById('typeFilter').addEventListener('change', filterQueries);
@@ -705,11 +1165,13 @@ ${query.attachment_url ? `\nAttachment: ${query.attachment_url}` : ''}`;
     document.getElementById('dateFrom').addEventListener('change', filterQueries);
     document.getElementById('dateTo').addEventListener('change', filterQueries);
 
-    // Close modal when clicking outside
+    // Close modals when clicking outside
+    document.getElementById('viewModal').addEventListener('click', function(e) {
+      if (e.target === this) closeViewModal();
+    });
+    
     document.getElementById('replyModal').addEventListener('click', function(e) {
-      if (e.target === this) {
-        closeReplyModal();
-      }
+      if (e.target === this) closeReplyModal();
     });
 
     // Load queries on page load
@@ -724,7 +1186,7 @@ ${query.attachment_url ? `\nAttachment: ${query.attachment_url}` : ''}`;
           return; 
         }
 
-        // Update page title based on user name
+        // Update page title with admin name
         const h1 = document.querySelector('.header h1');
         if (h1 && sess.name) {
           h1.textContent = `Query Management - ${sess.name}`;
