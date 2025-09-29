@@ -12,12 +12,19 @@
     "setup-github": "node setup-github.js",
     "test-github": "node test-github-connection.js"
   },
-  "keywords": ["erase-debt-sa", "client-portal", "static-website"],
+  "keywords": [
+    "erase-debt-sa",
+    "client-portal",
+    "static-website"
+  ],
   "author": "Erase Debt SA",
   "license": "ISC",
   "repository": {
     "type": "git",
     "url": "https://github.com/erase-debt-sa/client-portal"
   },
-  "homepage": "https://www.erasedebtsa.co.za"
+  "homepage": "https://www.erasedebtsa.co.za",
+  "devDependencies": {
+    "chokidar": "^4.0.3"
+  }
 }
