@@ -979,7 +979,9 @@
     // Send email notification to client
     async function sendClientNotification(query, response, adminName) {
       try {
-        console.log('🔍 Attempting to send email notification...');
+        console.log('🔍 Attempting to send email notification to:', query.email);
+        console.log('📧 Admin response:', response);
+        console.log('👤 Admin name:', adminName);
         
         const emailPayload = {
           email: query.email,
@@ -994,6 +996,8 @@
 
         console.log('📧 Email payload:', emailPayload);
         
+        console.log('🌐 Making request to send-query-response function...');
+        
         // Try the email function
         const emailResponse = await fetch(`https://xzjunkpxvfdpuogoflzh.supabase.co/functions/v1/send-query-response`, {
           method: 'POST',
@@ -1007,9 +1011,20 @@
 
         console.log('📡 Email response status:', emailResponse.status);
         
+        if (!emailResponse.ok) {
+          const errorText = await emailResponse.text();
+          console.error('❌ Email failed - Status:', emailResponse.status);
+          console.error('❌ Email failed - Error:', errorText);
+          
+          // Show detailed error to admin
+          showNotification(`❌ Email failed: ${emailResponse.status} - ${errorText}`, 'error');
+          return false;
+        }
+        
         if (emailResponse.ok) {
           const result = await emailResponse.json();
           console.log('✅ Email sent successfully:', result);
+          showNotification(`✅ Email sent to ${query.email}!`, 'success');
           return true;
         } else {
           const errorText = await emailResponse.text();
@@ -1019,7 +1034,7 @@
         }
       } catch (error) {
         console.error('💥 Email error:', error);
-        console.log('⚠️ Email service unavailable - response still saved to database');
+        showNotification(`💥 Email system error: ${error.message}`, 'error');
         return false;
       }
     }
