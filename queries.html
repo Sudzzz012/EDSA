@@ -39,6 +39,27 @@
       max-width: 1400px;
       margin: 0 auto;
     }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .stat-card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .stat-label {
+      color: #dce8f7;
+      font-size: 0.9rem;
+    }
     .filters {
       background: rgba(255, 255, 255, 0.1);
       padding: 20px;
@@ -84,6 +105,7 @@
       padding: 12px;
       border-bottom: 1px solid #e2e8f0;
       color: #333;
+      vertical-align: top;
     }
     tr:nth-child(even) {
       background: #f8fafc;
@@ -113,6 +135,7 @@
     .query-actions {
       display: flex;
       gap: 8px;
+      flex-wrap: wrap;
     }
     .btn {
       padding: 6px 12px;
@@ -124,6 +147,7 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
+      white-space: nowrap;
     }
     .btn-view {
       background: #2970ba;
@@ -133,60 +157,123 @@
       background: #059669;
       color: white;
     }
-    .btn-close {
+    .btn-resolve {
       background: #dc2626;
       color: white;
-    }
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-    .stat-card {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 20px;
-      border-radius: 15px;
-      text-align: center;
-    }
-    .stat-number {
-      font-size: 2.5rem;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-    .stat-label {
-      color: #dce8f7;
-      font-size: 0.9rem;
     }
     .loading {
       text-align: center;
       padding: 40px;
       color: #333;
     }
-    .hidden-sensitive {
+    .client-details {
+      font-size: 13px;
+    }
+    .client-details strong {
+      display: block;
+      color: #003865;
+      margin-bottom: 2px;
+    }
+    .message-cell {
+      max-width: 300px;
+      word-wrap: break-word;
+    }
+    .response-cell {
+      max-width: 250px;
+      word-wrap: break-word;
+      font-style: italic;
+      color: #059669;
+    }
+    .no-response {
       color: #999;
       font-style: italic;
     }
-    .export-section {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 20px;
-      border-radius: 15px;
-      margin-bottom: 30px;
-      text-align: center;
-      display: none;
+    .attachment-icon {
+      color: #2970ba;
+      margin-left: 5px;
     }
-    .export-btn {
-      background: #16a34a;
-      color: white;
+    .date-cell {
+      font-size: 12px;
+      color: #666;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+    .modal-content {
+      background-color: #fff;
+      margin: 5% auto;
+      padding: 30px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      color: #333;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .modal h2 {
+      color: #2970ba;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .modal-close {
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #999;
+    }
+    .modal-close:hover {
+      color: #333;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #333;
+    }
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e1e8f0;
+      border-radius: 8px;
+      font-size: 16px;
+      box-sizing: border-box;
+      min-height: 120px;
+      resize: vertical;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 25px;
+    }
+    .btn-modal {
       padding: 12px 24px;
       border: none;
       border-radius: 8px;
       font-weight: bold;
-      margin: 0 10px;
       cursor: pointer;
     }
-    .export-btn:hover {
-      background: #15803d;
+    .btn-save {
+      background: #059669;
+      color: white;
+    }
+    .btn-cancel {
+      background: #6c757d;
+      color: white;
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
@@ -201,17 +288,6 @@
   </div>
 
   <div class="container">
-    <!-- Export Section (Super User Only) -->
-    <div id="exportSection" class="export-section">
-      <h3><i class="fa-solid fa-download"></i> Export Query Data</h3>
-      <button class="export-btn" onclick="exportQueriesToCSV()">
-        <i class="fa-solid fa-file-csv"></i> Export as CSV
-      </button>
-      <button class="export-btn" onclick="exportQueriesToExcel()">
-        <i class="fa-solid fa-file-excel"></i> Export as Excel
-      </button>
-    </div>
-
     <!-- Statistics Cards -->
     <div class="stats">
       <div class="stat-card">
@@ -247,6 +323,14 @@
         <label>Query Type</label>
         <select id="typeFilter">
           <option value="">All Types</option>
+          <option value="I Need a Callback">I Need a Callback</option>
+          <option value="I Have a Complaint">I Have a Complaint</option>
+          <option value="I Have Fully Paid My Fees">I Have Fully Paid My Fees</option>
+          <option value="I Have Submitted Documents And Am Awaiting a Reply">I Have Submitted Documents</option>
+          <option value="I Want to Pay My Outstanding Funds">I Want to Pay Outstanding Funds</option>
+          <option value="I Want To Settle My Arrears">I Want To Settle My Arrears</option>
+          <option value="I Need A Follow Up On My Process">I Need A Follow Up</option>
+          <option value="I Did Not Get a Welcome Email">I Did Not Get a Welcome Email</option>
           <option value="GENERAL">General</option>
           <option value="APPLICATION_STATUS">Application Status</option>
           <option value="PAYMENT">Payment</option>
@@ -276,6 +360,7 @@
             <th>Contact</th>
             <th>Type</th>
             <th>Message</th>
+            <th>Admin Response</th>
             <th>Status</th>
             <th>Date</th>
             <th>Actions</th>
@@ -283,12 +368,35 @@
         </thead>
         <tbody id="queriesTableBody">
           <tr>
-            <td colspan="8" class="loading">
+            <td colspan="9" class="loading">
               <i class="fa-solid fa-spinner fa-spin"></i> Loading queries...
             </td>
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- Reply Modal -->
+  <div id="replyModal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeReplyModal()">&times;</span>
+      <h2>Reply to Query</h2>
+      <div id="queryDetailsModal"></div>
+      <form id="replyForm">
+        <div class="form-group">
+          <label>Your Response:</label>
+          <textarea id="responseText" placeholder="Enter your response to the client..." required></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="btn-modal btn-save" id="saveResponseBtn">
+            <i class="fa-solid fa-paper-plane"></i> Send Response
+          </button>
+          <button type="button" class="btn-modal btn-cancel" onclick="closeReplyModal()">
+            <i class="fa-solid fa-times"></i> Cancel
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -301,6 +409,7 @@
 
     let allQueries = [];
     let filteredQueries = [];
+    let currentEditingQuery = null;
 
     // Load all queries
     async function loadQueries() {
@@ -321,7 +430,7 @@
       } catch (error) {
         console.error('Error loading queries:', error);
         document.getElementById('queriesTableBody').innerHTML = `
-          <tr><td colspan="8" style="color: red; text-align: center;">
+          <tr><td colspan="9" style="color: red; text-align: center;">
             Error loading queries: ${error.message}
           </td></tr>
         `;
@@ -331,7 +440,7 @@
     // Update statistics
     function updateStats() {
       const total = allQueries.length;
-      const pending = allQueries.filter(q => q.status === 'PENDING').length;
+      const pending = allQueries.filter(q => !q.status || q.status === 'new' || q.status === 'PENDING').length;
       const inProgress = allQueries.filter(q => q.status === 'IN_PROGRESS').length;
       const resolved = allQueries.filter(q => q.status === 'RESOLVED').length;
 
@@ -344,42 +453,52 @@
     // Display queries in table
     function displayQueries() {
       const tbody = document.getElementById('queriesTableBody');
-      const userRole = getUserRole();
-      const isSuperUser = userRole === 'super';
       
       if (filteredQueries.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #666;">No queries found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #666;">No queries found</td></tr>';
         return;
       }
 
       tbody.innerHTML = filteredQueries.map(query => {
-        const statusClass = `status-${query.status?.toLowerCase().replace('_', '-') || 'pending'}`;
+        const status = query.status || 'PENDING';
+        const statusClass = `status-${status.toLowerCase().replace('_', '-')}`;
         const clientName = [query.first_name, query.last_name].filter(Boolean).join(' ') || 'Unknown';
         
-        // Hide sensitive data for non-super users
-        const clientId = isSuperUser ? (query.id_number || 'N/A') : 'Hidden';
-        const phoneNumber = isSuperUser ? (query.phone || 'No phone') : 'Hidden';
+        // Show ALL client details for admins (no hiding)
+        const clientId = query.id_number || 'N/A';
+        const phoneNumber = query.phone || 'No phone';
+        const email = query.email || 'N/A';
+        
+        // Format admin response
+        const adminResponse = query.response_text ? 
+          `<div class="response-cell">${query.response_text}</div>` : 
+          `<div class="no-response">No response yet</div>`;
         
         return `
           <tr>
             <td><strong>${query.reference_number || 'N/A'}</strong></td>
             <td>
-              ${clientName}<br>
-              <small>ID: ${clientId}</small>
+              <div class="client-details">
+                <strong>${clientName}</strong>
+                <div>ID: ${clientId}</div>
+              </div>
             </td>
             <td>
-              ${query.email || 'N/A'}<br>
-              <small>${phoneNumber}</small>
+              <div class="client-details">
+                <strong>${email}</strong>
+                <div>${phoneNumber}</div>
+              </div>
             </td>
             <td>${query.query_type || 'GENERAL'}</td>
             <td>
-              <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
+              <div class="message-cell">
                 ${query.query_text || query.client_message || 'No message'}
+                ${query.attachment_url ? '<i class="fa-solid fa-paperclip attachment-icon" title="Has attachment"></i>' : ''}
               </div>
-              ${query.attachment_url ? '<br><small><i class="fa-solid fa-paperclip"></i> Has attachment</small>' : ''}
             </td>
-            <td><span class="status-badge ${statusClass}">${query.status || 'PENDING'}</span></td>
-            <td>${new Date(query.created_at).toLocaleDateString()}</td>
+            <td>${adminResponse}</td>
+            <td><span class="status-badge ${statusClass}">${status.toUpperCase()}</span></td>
+            <td class="date-cell">${new Date(query.created_at).toLocaleDateString()}<br><small>${new Date(query.created_at).toLocaleTimeString()}</small></td>
             <td>
               <div class="query-actions">
                 <button class="btn btn-view" onclick="viewQuery('${query.id}')">
@@ -388,8 +507,8 @@
                 <button class="btn btn-reply" onclick="replyToQuery('${query.id}')">
                   <i class="fa-solid fa-reply"></i> Reply
                 </button>
-                ${query.status !== 'RESOLVED' ? `
-                  <button class="btn btn-close" onclick="resolveQuery('${query.id}')">
+                ${status !== 'RESOLVED' ? `
+                  <button class="btn btn-resolve" onclick="resolveQuery('${query.id}')">
                     <i class="fa-solid fa-check"></i> Resolve
                   </button>
                 ` : ''}
@@ -409,8 +528,15 @@
       const dateTo = document.getElementById('dateTo').value;
 
       filteredQueries = allQueries.filter(query => {
-        // Status filter
-        if (statusFilter && query.status !== statusFilter) return false;
+        // Status filter - handle both new format and old format
+        if (statusFilter) {
+          const queryStatus = query.status || 'PENDING';
+          if (queryStatus === 'new') {
+            if (statusFilter !== 'PENDING') return false;
+          } else if (queryStatus !== statusFilter) {
+            return false;
+          }
+        }
         
         // Type filter
         if (typeFilter && query.query_type !== typeFilter) return false;
@@ -423,7 +549,8 @@
             query.id_number,
             query.email,
             query.reference_number,
-            query.query_text
+            query.query_text,
+            query.phone
           ].join(' ').toLowerCase();
           
           if (!searchableText.includes(searchTerm)) return false;
@@ -439,170 +566,107 @@
       displayQueries();
     }
 
-    // Get current user role
-    function getUserRole() {
-      try {
-        const sess = JSON.parse(localStorage.getItem('edsa_staff_session') || '{}');
-        return sess.role || 'agent';
-      } catch (e) {
-        return 'agent';
-      }
-    }
-
-    // Export functions (Super User only)
-    function exportQueriesToCSV() {
-      if (getUserRole() !== 'super') {
-        alert('Access denied. Only Super Users can export data.');
-        return;
-      }
-      
-      const headers = ['Reference', 'Client Name', 'ID Number', 'Email', 'Phone', 'Query Type', 'Message', 'Status', 'Date'];
-      const csvData = [headers.join(',')];
-      
-      allQueries.forEach(query => {
-        const clientName = [query.first_name, query.last_name].filter(Boolean).join(' ') || 'Unknown';
-        const row = [
-          `"${query.reference_number || 'N/A'}"`,
-          `"${clientName}"`,
-          `"${query.id_number || 'N/A'}"`,
-          `"${query.email || 'N/A'}"`,
-          `"${query.phone || 'N/A'}"`,
-          `"${query.query_type || 'GENERAL'}"`,
-          `"${(query.query_text || 'No message').replace(/"/g, '""')}"`,
-          `"${query.status || 'PENDING'}"`,
-          `"${new Date(query.created_at).toLocaleString()}"`
-        ];
-        csvData.push(row.join(','));
-      });
-      
-      downloadFile(csvData.join('\n'), 'queries-export.csv', 'text/csv');
-    }
-
-    function exportQueriesToExcel() {
-      if (getUserRole() !== 'super') {
-        alert('Access denied. Only Super Users can export data.');
-        return;
-      }
-      
-      // Create a simple HTML table for Excel
-      let htmlTable = '<table border="1"><tr>';
-      const headers = ['Reference', 'Client Name', 'ID Number', 'Email', 'Phone', 'Query Type', 'Message', 'Status', 'Date'];
-      headers.forEach(header => htmlTable += `<th>${header}</th>`);
-      htmlTable += '</tr>';
-      
-      allQueries.forEach(query => {
-        const clientName = [query.first_name, query.last_name].filter(Boolean).join(' ') || 'Unknown';
-        htmlTable += '<tr>';
-        htmlTable += `<td>${query.reference_number || 'N/A'}</td>`;
-        htmlTable += `<td>${clientName}</td>`;
-        htmlTable += `<td>${query.id_number || 'N/A'}</td>`;
-        htmlTable += `<td>${query.email || 'N/A'}</td>`;
-        htmlTable += `<td>${query.phone || 'N/A'}</td>`;
-        htmlTable += `<td>${query.query_type || 'GENERAL'}</td>`;
-        htmlTable += `<td>${query.query_text || 'No message'}</td>`;
-        htmlTable += `<td>${query.status || 'PENDING'}</td>`;
-        htmlTable += `<td>${new Date(query.created_at).toLocaleString()}</td>`;
-        htmlTable += '</tr>';
-      });
-      htmlTable += '</table>';
-      
-      downloadFile(htmlTable, 'queries-export.xls', 'application/vnd.ms-excel');
-    }
-
-    function downloadFile(content, filename, mimeType) {
-      const blob = new Blob([content], { type: mimeType });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-
-    // Query action handlers
+    // View query details
     function viewQuery(queryId) {
       const query = allQueries.find(q => q.id === queryId);
       if (!query) return;
-      
-      const userRole = getUserRole();
-      const isSuperUser = userRole === 'super';
 
       const clientName = [query.first_name, query.last_name].filter(Boolean).join(' ');
       
-      const queryDetails = isSuperUser ? `Query Details:
+      const queryDetails = `Query Full Details:
 
 Reference: ${query.reference_number || 'N/A'}
 Client: ${clientName}
-ID: ${query.id_number || 'N/A'}
+ID Number: ${query.id_number || 'N/A'}
 Email: ${query.email || 'N/A'}
 Phone: ${query.phone || 'N/A'}
 Type: ${query.query_type || 'GENERAL'}
 Status: ${query.status || 'PENDING'}
 Date: ${new Date(query.created_at).toLocaleString()}
 
-Message:
+CLIENT MESSAGE:
 ${query.query_text || query.client_message || 'No message'}
 
-${query.response_text ? `Admin Response:\n${query.response_text}` : 'No response yet'}
+ADMIN RESPONSE:
+${query.response_text || 'No response yet'}
 
-${query.attachment_url ? `\nAttachment: ${query.attachment_url}` : ''}` : `Query Summary:
-
-Reference: ${query.reference_number || 'N/A'}
-Client: ${clientName}
-Email: ${query.email || 'N/A'}
-Type: ${query.query_type || 'GENERAL'}
-Status: ${query.status || 'PENDING'}
-Date: ${new Date(query.created_at).toLocaleString()}
-
-Message:
-${query.query_text || query.client_message || 'No message'}
-
-${query.response_text ? `Admin Response:\n${query.response_text}` : 'No response yet'}
-
-Note: Personal details are restricted to Super Users only.`;
+${query.attachment_url ? `\nAttachment: ${query.attachment_url}` : ''}`;
       
       alert(queryDetails);
     }
 
+    // Reply to query
     function replyToQuery(queryId) {
       const query = allQueries.find(q => q.id === queryId);
       if (!query) return;
 
-      const response = prompt(`Reply to query from ${query.first_name} ${query.last_name}:
-
-Original message:
-${query.query_text || query.client_message || 'No message'}
-
-Enter your response:`);
-
-      if (response && response.trim()) {
-        updateQueryResponse(queryId, response.trim());
-      }
+      currentEditingQuery = query;
+      
+      const clientName = [query.first_name, query.last_name].filter(Boolean).join(' ');
+      
+      document.getElementById('queryDetailsModal').innerHTML = `
+        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+          <strong>Client:</strong> ${clientName}<br>
+          <strong>Reference:</strong> ${query.reference_number || 'N/A'}<br>
+          <strong>Type:</strong> ${query.query_type || 'GENERAL'}<br>
+          <strong>Original Message:</strong><br>
+          <em>"${query.query_text || query.client_message || 'No message'}"</em>
+        </div>
+      `;
+      
+      document.getElementById('responseText').value = query.response_text || '';
+      document.getElementById('replyModal').style.display = 'block';
     }
 
-    async function updateQueryResponse(queryId, responseText) {
+    // Close reply modal
+    function closeReplyModal() {
+      document.getElementById('replyModal').style.display = 'none';
+      currentEditingQuery = null;
+    }
+
+    // Handle reply form submission
+    document.getElementById('replyForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      if (!currentEditingQuery) return;
+      
+      const responseText = document.getElementById('responseText').value.trim();
+      const saveBtn = document.getElementById('saveResponseBtn');
+      
+      if (!responseText) {
+        alert('Please enter a response');
+        return;
+      }
+      
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+      
       try {
         const { error } = await supabaseClient
           .from('QUERIES')
           .update({
             response_text: responseText,
             status: 'IN_PROGRESS',
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
+            responded_by: getCurrentUser().name || 'Admin'
           })
-          .eq('id', queryId);
+          .eq('id', currentEditingQuery.id);
 
         if (error) throw error;
 
         alert('Response sent successfully!');
+        closeReplyModal();
         loadQueries(); // Reload to show updated data
       } catch (error) {
         console.error('Error updating query:', error);
         alert('Failed to send response. Please try again.');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Response';
       }
-    }
+    });
 
+    // Resolve query
     async function resolveQuery(queryId) {
       if (!confirm('Mark this query as resolved?')) return;
 
@@ -625,6 +689,15 @@ Enter your response:`);
       }
     }
 
+    // Get current user info
+    function getCurrentUser() {
+      try {
+        return JSON.parse(localStorage.getItem('edsa_staff_session') || '{}');
+      } catch (e) {
+        return {};
+      }
+    }
+
     // Event listeners for filters
     document.getElementById('statusFilter').addEventListener('change', filterQueries);
     document.getElementById('typeFilter').addEventListener('change', filterQueries);
@@ -632,16 +705,15 @@ Enter your response:`);
     document.getElementById('dateFrom').addEventListener('change', filterQueries);
     document.getElementById('dateTo').addEventListener('change', filterQueries);
 
-    // Load queries on page load
-    document.addEventListener('DOMContentLoaded', loadQueries);
-
-    // Show export section for super users only
-    document.addEventListener('DOMContentLoaded', function() {
-      const userRole = getUserRole();
-      if (userRole === 'super') {
-        document.getElementById('exportSection').style.display = 'block';
+    // Close modal when clicking outside
+    document.getElementById('replyModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeReplyModal();
       }
     });
+
+    // Load queries on page load
+    document.addEventListener('DOMContentLoaded', loadQueries);
 
     // Session management
     (function(){
@@ -652,7 +724,7 @@ Enter your response:`);
           return; 
         }
 
-        // Update page title based on user role
+        // Update page title based on user name
         const h1 = document.querySelector('.header h1');
         if (h1 && sess.name) {
           h1.textContent = `Query Management - ${sess.name}`;
