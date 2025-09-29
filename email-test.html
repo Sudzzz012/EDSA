@@ -26,6 +26,7 @@
     <input type="email" id="testEmail" placeholder="Enter email address to test" />
     <button onclick="testEmailService()">Test Email Service</button>
     <button onclick="checkFunctionStatus()">Check Function Status</button>
+    <button onclick="testQueryResponse()">Test Query Response Email</button>
     
     <div id="result"></div>
     <div id="debug"></div>
@@ -147,6 +148,66 @@
 
       } catch (error) {
         showResult(`❌ Cannot reach function: ${error.message}`, 'error');
+        showDebug({
+          error: error.message,
+          stack: error.stack
+        });
+      }
+    }
+    
+    async function testQueryResponse() {
+      const email = document.getElementById('testEmail').value.trim();
+      if (!email) {
+        showResult('Please enter an email address', 'error');
+        return;
+      }
+
+      showResult('Testing query response email...', 'info');
+      
+      try {
+        const functionUrl = `${SUPABASE_URL}/functions/v1/send-query-response`;
+        
+        const payload = {
+          email: email,
+          clientName: 'Test Client',
+          reference: 'TEST-QUERY-RESPONSE',
+          response: 'This is a test response from the admin team to verify the email system is working correctly.',
+          adminName: 'Test Admin',
+          queryType: 'Test Query'
+        };
+        
+        const response = await fetch(functionUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'apikey': SUPABASE_KEY
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          showResult(`Query response email failed: ${response.status} ${response.statusText}`, 'error');
+          showDebug({
+            status: response.status,
+            statusText: response.statusText,
+            errorBody: errorText,
+            payload: payload
+          });
+          return;
+        }
+
+        const result = await response.json();
+        showResult('✅ Query response email sent! Check your inbox for the admin response.', 'success');
+        showDebug({
+          status: response.status,
+          result: result,
+          payload: payload
+        });
+
+      } catch (error) {
+        showResult(`Network error: ${error.message}`, 'error');
         showDebug({
           error: error.message,
           stack: error.stack

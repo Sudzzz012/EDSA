@@ -974,8 +974,12 @@
     // Send email notification to client
     async function sendClientNotification(query, response, adminName) {
       try {
+        console.log('🔍 Attempting to send email notification...');
+        
         const emailPayload = {
           email: query.email,
+          firstName: query.first_name || 'Valued Client',
+          lastName: query.last_name || '',
           clientName: [query.first_name, query.last_name].filter(Boolean).join(' ') || 'Valued Client',
           reference: query.reference_number || 'Your Query',
           response: response,
@@ -983,25 +987,34 @@
           queryType: query.query_type || 'General Query'
         };
 
-        // Call email function (you'll need to create this)
+        console.log('📧 Email payload:', emailPayload);
+        
+        // Try the email function
         const emailResponse = await fetch(`https://xzjunkpxvfdpuogoflzh.supabase.co/functions/v1/send-query-response`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ`
+            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ`,
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6anVua3B4dmZkcHVvZ29mbHpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjMwNzksImV4cCI6MjA2NDczOTA3OX0.bRMANK5hzAKnuFXylVfhtzuU18CsjeJ4wa1UWHvSPNQ'
           },
           body: JSON.stringify(emailPayload)
         });
 
+        console.log('📡 Email response status:', emailResponse.status);
+        
         if (emailResponse.ok) {
-          console.log('Email sent successfully to client');
+          const result = await emailResponse.json();
+          console.log('✅ Email sent successfully:', result);
           return true;
         } else {
-          console.log('Email service not available - response saved anyway');
+          const errorText = await emailResponse.text();
+          console.error('❌ Email failed:', errorText);
+          console.log('⚠️ Email service issue - response saved anyway');
           return false;
         }
       } catch (error) {
-        console.error('Email error:', error);
+        console.error('💥 Email error:', error);
+        console.log('⚠️ Email service unavailable - response still saved to database');
         return false;
       }
     }
