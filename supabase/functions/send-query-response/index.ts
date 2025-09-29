@@ -181,21 +181,18 @@ Website: www.erasedebtsa.co.za | Portal: www.erasedebtsa.net
 © 2025 Erase Debt SA. All rights reserved.
     `
 
--        // SendGrid email payload
-+        // SendGrid email payload
+        // SendGrid email payload
         const emailPayload = {
           personalizations: [
             {
               to: [{ email: email }],
--              subject: `Response to Your ${queryType} - Erase Debt SA (${reference})`
-+              subject: `✅ Admin Response: ${queryType} - Erase Debt SA (${reference})`
+              subject: `✅ Admin Response: ${queryType} - Erase Debt SA (${reference})`
             }
           ],
--          from: { email: FROM_EMAIL, name: 'Erase Debt SA Admin Team' },
-+          from: { 
-+            email: FROM_EMAIL, 
-+            name: 'Erase Debt SA Admin Team' 
-+          },
+          from: { 
+            email: FROM_EMAIL, 
+            name: 'Erase Debt SA Admin Team' 
+          },
           content: [
             {
               type: 'text/plain',
@@ -208,35 +205,30 @@ Website: www.erasedebtsa.co.za | Portal: www.erasedebtsa.net
           ]
         }
 
-+        console.log('📤 Sending via SendGrid...');
-+        
+        console.log('📤 Sending via SendGrid...')
+        
         // Send email via SendGrid
--        const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
-+        const sendGridResponse = await fetch('https://api.sendgrid.com/v3/mail/send', {
+        const sendGridResponse = await fetch('https://api.sendgrid.com/v3/mail/send', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${SENDGRID_API_KEY}`,
             'Content-Type': 'application/json'
           },
--          body: JSON.stringify(emailPayload)
-+          body: JSON.stringify(sgPayload)
+          body: JSON.stringify(emailPayload)
         })
 
--        if (!response.ok) {
--          const errorText = await response.text()
-+        console.log('📡 SendGrid response status:', sendGridResponse.status)
-+        
-+        if (!sendGridResponse.ok) {
-+          const errorText = await sendGridResponse.text()
+        console.log('📡 SendGrid response status:', sendGridResponse.status)
+        
+        if (!sendGridResponse.ok) {
+          const errorText = await sendGridResponse.text()
           console.error('SendGrid error:', errorText)
           return new Response(
             JSON.stringify({ 
               success: false,
               error: 'Failed to send email notification',
--              details: errorText
-+              status: sendGridResponse.status,
-+              details: errorText,
-+              apiKeyStatus: SENDGRID_API_KEY ? 'Present' : 'Missing'
+              status: sendGridResponse.status,
+              details: errorText,
+              apiKeyStatus: SENDGRID_API_KEY ? 'Present' : 'Missing'
             }),
             { 
               status: 500, 
@@ -245,17 +237,15 @@ Website: www.erasedebtsa.co.za | Portal: www.erasedebtsa.net
           )
         }
 
--        console.log(`Query response email sent to ${email} for reference ${reference}`)
-+        console.log(`✅ Query response email sent successfully to ${email} for reference ${reference}`)
+        console.log(`✅ Query response email sent successfully to ${email} for reference ${reference}`)
 
         return new Response(
           JSON.stringify({ 
             success: true, 
--            message: 'Query response email sent successfully to client' 
-+            message: 'Query response email sent successfully to client',
-+            email: email,
-+            reference: reference,
-+            timestamp: new Date().toISOString()
+            message: 'Query response email sent successfully to client',
+            email: email,
+            reference: reference,
+            timestamp: new Date().toISOString()
           }),
           {
             status: 200,
@@ -268,9 +258,8 @@ Website: www.erasedebtsa.co.za | Portal: www.erasedebtsa.net
         return new Response(
           JSON.stringify({ 
             error: 'Internal server error',
--            message: error.message
-+            message: error.message,
-+            stack: error.stack
+            message: error.message,
+            stack: error.stack
           }),
           {
             status: 500,
