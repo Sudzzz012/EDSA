@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EDSA | Email Templates (Super Admin)</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.8/dist/umd/supabase.js"></script>
+  <style>
+    body{font-family:Inter,system-ui,Arial,sans-serif;background:#0b1220;color:#e8eef9;margin:0}
+    header{display:flex;align-items:center;gap:12px;padding:18px 22px;background:#0e1830;position:sticky;top:0}
+    header img{height:28px}
+    h1{font-size:18px;margin:0}
+    main{max-width:1000px;margin:24px auto;padding:0 16px}
+    .card{background:#0f1d3a;border:1px solid #1e2b4d;border-radius:14px;overflow:hidden;margin-bottom:16px}
+    .card h2{font-size:16px;margin:0;padding:14px 16px;border-bottom:1px solid #1e2b4d}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:12px 14px;border-bottom:1px solid #1e2b4d;text-align:left;vertical-align:middle}
+    th{font-weight:600;color:#a9b7d9}
+    input[type=text]{width:100%;padding:10px 12px;border-radius:10px;border:1px solid #33446d;background:#0a142a;color:#e8eef9;outline:none}
+    button{background:#0b66ff;color:#fff;border:none;padding:10px 14px;border-radius:10px;cursor:pointer}
+    button:disabled{opacity:.6;cursor:not-allowed}
+    .row-actions{display:flex;gap:8px}
+    .muted{color:#a9b7d9;font-size:13px}
+    .toolbar{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #1e2b4d}
+    .pill{padding:4px 8px;border-radius:999px;background:#0a142a;border:1px solid #33446d;color:#a9b7d9;font-size:12px}
+    .ok{color:#74f0a7}
+    .err{color:#ff7b7b}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width: 720px){ .grid{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="https://www.erasedebtsa.net/assets/logo.png" alt="logo">
+    <h1>EDSA • SendGrid Templates</h1>
+    <div style="margin-left:auto" id="authStatus" class="muted">Checking auth…</div>
+  </header>
+
+  <main>
+    <div class="card">
+      <div class="toolbar">
+        <div>
+          <strong>Project:</strong> <span id="projectUrl" class="pill"></span>
+          <span class="pill">RLS protected</span>
+        </div>
+        <div class="muted">Only <strong>Super User</strong> can update template IDs</div>
+      </div>
+      <div class="grid" style="padding:12px 16px">
+        <div>
+          <label class="muted">Supabase URL</label>
+          <input id="sbUrl" type="text" placeholder="https://YOUR-PROJECT.supabase.co">
+        </div>
+        <div>
+          <label class="muted">Anon Key</label>
+          <input id="sbKey" type="text" placeholder="YOUR_ANON_KEY">
+        </div>
+      </div>
+      <div style="padding:0 16px 12px">
+        <button id="connectBtn">Connect</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Templates</h2>
+      <div style="padding:12px 16px" class="muted">Edit <code>template_id</code> then click <strong>Save</strong> per row. Subject is for reference only.</div>
+      <div style="overflow:auto">
+        <table id="tplTable">
+          <thead>
+            <tr>
+              <th style="width:180px">Key</th>
+              <th style="width:260px">Name</th>
+              <th>Subject</th>
+              <th style="width:320px">Template ID</th>
+              <th style="width:140px">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tplBody">
+            <tr><td colspan="5" class="muted">Connect to load templates…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+<script>
+let supa = null;
+let sessionUser = null;
+
+function el(id){ return document.getElementById(id); }
+
+async function connect() {
+  const url = el('sbUrl').value.trim();
+  const key = el('sbKey').value.trim();
+  if(!url || !key){ alert('Enter Supabase URL and Anon Key'); return; }
+  window.supabase = supabase;
+  supa = supabase.createClient(url, key);
+  el('projectUrl').textContent = url;
+
+  // If you use Supabase Auth for staff, you can require sign-in here.
+  const { data: { user } } = await supa.auth.getUser();
+  sessionUser = user;
+  el('authStatus').innerHTML = user ? 'Signed in' : 'Anon (policies will still apply)';
+  await loadTemplates();
+}
+
+async function loadTemplates(){
+  const { data, error } = await supa.from('email_templates').select('*').order('key');
+  const tbody = el('tplBody');
+  if(error){ tbody.innerHTML = '<tr><td colspan="5" class="err">'+error.message+'</td></tr>'; return; }
+  tbody.innerHTML = '';
+  data.forEach(row => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${row.key}</strong></td>
+      <td>${row.name ?? ''}</td>
+      <td class="muted">${row.subject ?? ''}</td>
+      <td><input type="text" value="${row.template_id ?? ''}" data-key="${row.key}" /></td>
+      <td class="row-actions">
+        <button data-save="${row.key}">Save</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+
+  tbody.querySelectorAll('button[data-save]').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const key = e.target.getAttribute('data-save');
+      const input = tbody.querySelector('input[data-key="'+key+'"]');
+      const template_id = input.value.trim() || null;
+      e.target.disabled = true;
+      const { data, error } = await supa.from('email_templates')
+        .update({ template_id })
+        .eq('key', key)
+        .select();
+      e.target.disabled = false;
+      if(error){ alert('Update failed: '+error.message); return; }
+      alert('Saved ✅');
+    });
+  });
+}
+
+document.getElementById('connectBtn').addEventListener('click', connect);
+</script>
+</body>
+</html>

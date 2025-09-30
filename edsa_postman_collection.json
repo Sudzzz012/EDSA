@@ -1,0 +1,409 @@
+{
+  "info": {
+    "name": "EDSA \u2013 SendGrid Email Flow",
+    "_postman_id": "edsa-2025-09-30T19:52:26.267477",
+    "description": "Calls to unified send-email and admin endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "send-email (unified)",
+      "item": [
+        {
+          "name": "send-email \u2022 query_received",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer YOUR_SERVICE_ROLE_KEY",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/functions/v1/send-email",
+              "host": [
+                "{{SUPABASE_URL}}"
+              ],
+              "path": [
+                "functions",
+                "v1",
+                "send-email"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to\": \"you@example.com\",\n  \"key\": \"query_received\",\n  \"ref_number\": \"EDSA-2025-09-000123\",\n  \"data\": {\n    \"client_first_name\": \"Sudeer\",\n    \"track_url\": \"https://www.erasedebtsa.net/track?ref=EDSA-2025-09-000123\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "send-email \u2022 otp_for_query",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer YOUR_SERVICE_ROLE_KEY",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/functions/v1/send-email",
+              "host": [
+                "{{SUPABASE_URL}}"
+              ],
+              "path": [
+                "functions",
+                "v1",
+                "send-email"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to\": \"you@example.com\",\n  \"key\": \"otp_for_query\",\n  \"ref_number\": \"EDSA-2025-09-000123\",\n  \"data\": {\n    \"otp_code\": \"482913\",\n    \"otp_ttl_minutes\": 10,\n    \"track_url\": \"https://www.erasedebtsa.net/track?ref=EDSA-2025-09-000123\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "send-email \u2022 query_update",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer YOUR_SERVICE_ROLE_KEY",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/functions/v1/send-email",
+              "host": [
+                "{{SUPABASE_URL}}"
+              ],
+              "path": [
+                "functions",
+                "v1",
+                "send-email"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to\": \"you@example.com\",\n  \"key\": \"query_update\",\n  \"ref_number\": \"EDSA-2025-09-000123\",\n  \"data\": {\n    \"preview\": \"We\\u2019ve replied to your query.\",\n    \"track_url\": \"https://www.erasedebtsa.net/track?ref=EDSA-2025-09-000123\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "send-email \u2022 welcome",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer YOUR_SERVICE_ROLE_KEY",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/functions/v1/send-email",
+              "host": [
+                "{{SUPABASE_URL}}"
+              ],
+              "path": [
+                "functions",
+                "v1",
+                "send-email"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to\": \"you@example.com\",\n  \"key\": \"welcome\",\n  \"ref_number\": \"EDSA-2025-09-000123\",\n  \"data\": {\n    \"client_first_name\": \"Sudeer\",\n    \"service_label\": \"SERVICE 2 - D4 - BELOW 12M\",\n    \"payment_plan_months\": 6,\n    \"monthly_payment\": \"1297.75\",\n    \"total_amount\": \"6037.50\",\n    \"service_page_url\": \"https://www.erasedebtsa.net/services/s2\",\n    \"mandate_url\": \"https://www.erasedebtsa.net/mandates/EDSA-2025-09-000123.pdf\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "send-email \u2022 payment_reminder_T2",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer YOUR_SERVICE_ROLE_KEY",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/functions/v1/send-email",
+              "host": [
+                "{{SUPABASE_URL}}"
+              ],
+              "path": [
+                "functions",
+                "v1",
+                "send-email"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to\": \"you@example.com\",\n  \"key\": \"payment_reminder_T2\",\n  \"ref_number\": \"EDSA-2025-09-000123\",\n  \"data\": {\n    \"amount\": \"1297.75\",\n    \"due_date\": \"2025-10-02\",\n    \"portfolio_url\": \"https://www.erasedebtsa.net/portal/portfolio?id=...\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "send-email \u2022 payment_thank_you",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer YOUR_SERVICE_ROLE_KEY",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/functions/v1/send-email",
+              "host": [
+                "{{SUPABASE_URL}}"
+              ],
+              "path": [
+                "functions",
+                "v1",
+                "send-email"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to\": \"you@example.com\",\n  \"key\": \"payment_thank_you\",\n  \"ref_number\": \"EDSA-2025-09-000123\",\n  \"data\": {\n    \"amount\": \"1297.75\",\n    \"paid_at\": \"2025-10-02 10:05\",\n    \"payments_made\": 3,\n    \"payments_total\": 6,\n    \"settle_all_url\": \"https://www.erasedebtsa.net/pay?settle_all=true&id=...\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "send-email \u2022 payment_missed",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer YOUR_SERVICE_ROLE_KEY",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/functions/v1/send-email",
+              "host": [
+                "{{SUPABASE_URL}}"
+              ],
+              "path": [
+                "functions",
+                "v1",
+                "send-email"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to\": \"you@example.com\",\n  \"key\": \"payment_missed\",\n  \"ref_number\": \"EDSA-2025-09-000123\",\n  \"data\": {\n    \"amount\": \"1297.75\",\n    \"due_date\": \"2025-10-02\",\n    \"pay_arrears_url\": \"https://www.erasedebtsa.net/pay?arrears=true&id=...\",\n    \"settle_all_url\": \"https://www.erasedebtsa.net/pay?settle_all=true&id=...\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "send-email \u2022 password_reset",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer YOUR_SERVICE_ROLE_KEY",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/functions/v1/send-email",
+              "host": [
+                "{{SUPABASE_URL}}"
+              ],
+              "path": [
+                "functions",
+                "v1",
+                "send-email"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to\": \"you@example.com\",\n  \"key\": \"password_reset\",\n  \"ref_number\": \"\",\n  \"data\": {\n    \"link_ttl_minutes\": 15,\n    \"reset_url\": \"https://www.erasedebtsa.net/reset?token=...\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "send-email \u2022 login_magic_link",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer YOUR_SERVICE_ROLE_KEY",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/functions/v1/send-email",
+              "host": [
+                "{{SUPABASE_URL}}"
+              ],
+              "path": [
+                "functions",
+                "v1",
+                "send-email"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to\": \"you@example.com\",\n  \"key\": \"login_magic_link\",\n  \"ref_number\": \"\",\n  \"data\": {\n    \"link_ttl_minutes\": 15,\n    \"login_url\": \"https://www.erasedebtsa.net/magic?token=...\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "send-email \u2022 terms_confirmation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer YOUR_SERVICE_ROLE_KEY",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{SUPABASE_URL}}/functions/v1/send-email",
+              "host": [
+                "{{SUPABASE_URL}}"
+              ],
+              "path": [
+                "functions",
+                "v1",
+                "send-email"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to\": \"you@example.com\",\n  \"key\": \"terms_confirmation\",\n  \"ref_number\": \"EDSA-2025-09-000123\",\n  \"data\": {\n    \"client_first_name\": \"Sudeer\",\n    \"mandate_url\": \"https://www.erasedebtsa.net/mandates/EDSA-2025-09-000123.pdf\"\n  }\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "email-templates-admin \u2022 GET (Edge Function alt)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-admin-secret",
+            "value": "YOUR_ADMIN_PANEL_SECRET",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{SUPABASE_URL}}/functions/v1/email-templates-admin",
+          "host": [
+            "{{SUPABASE_URL}}"
+          ],
+          "path": [
+            "functions",
+            "v1",
+            "email-templates-admin"
+          ]
+        }
+      }
+    },
+    {
+      "name": "email-templates-admin \u2022 PATCH (Edge Function alt)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "x-admin-secret",
+            "value": "YOUR_ADMIN_PANEL_SECRET",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{SUPABASE_URL}}/functions/v1/email-templates-admin",
+          "host": [
+            "{{SUPABASE_URL}}"
+          ],
+          "path": [
+            "functions",
+            "v1",
+            "email-templates-admin"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"key\": \"query_received\",\n  \"template_id\": \"d-XXXX\"\n}"
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "SUPABASE_URL",
+      "value": "https://xzjunkpxvfdpuogoflzh.supabase.co",
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EDSA | Terms & Mandate Confirmation</title>
+  <style>
+    body { margin:0; padding:0; font-family: Arial, sans-serif; background:#f6f7fb; }
+    .container { width:100%; background:#f6f7fb; padding:24px 0; }
+    .card { max-width:640px; margin:0 auto; background:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.06); }
+    .header { padding:20px 24px; border-bottom:1px solid #eef0f4; display:flex; align-items:center; gap:12px; }
+    .logo { height:32px; }
+    .brand { font-weight:700; font-size:16px; color:#0b2e61; }
+    .content { padding:24px; color:#1a1d29; line-height:1.55; }
+    h1 { font-size:20px; margin:0 0 12px; color:#0b2e61; }
+    p { margin:0 0 12px; }
+    .cta { display:inline-block; padding:12px 18px; border-radius:8px; background:#0b66ff; color:#fff; text-decoration:none; }
+    .muted { color:#566070; font-size:12px; }
+    .footer { padding:16px 24px; background:#f9fafc; border-top:1px solid #eef0f4; }
+    .divider { height:1px; background:#eef0f4; margin:16px 0; }
+    code { background:#f1f3f8; padding:2px 6px; border-radius:6px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="header">
+        <img class="logo" src="{{brand_logo_url}}" alt="logo"/>
+        <div class="brand">{{brand_name}}</div>
+      </div>
+      <div class="content">
+        
+      <h1>Terms & Mandate Confirmation</h1>
+      <p>Thanks, {{client_first_name}}. Your terms & mandate have been recorded.</p>
+      <p><a class="cta" href="{{mandate_url}}">View Mandate</a></p>
+    
+        <div class="divider"></div>
+        <p class="muted">
+          Reference: <strong>{{ref_number}}</strong><br/>
+          If you didn’t request this, please contact support at <a href="mailto:{{support_email}}">{{support_email}}</a>.
+        </p>
+      </div>
+      <div class="footer muted">
+        <p><strong>Privacy:</strong> We never use WhatsApp for support. Use the client portal or email only.</p>
+        <p>© {current_year} {{brand_name}}. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

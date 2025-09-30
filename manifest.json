@@ -1,0 +1,60 @@
+{
+  "generated": "2025-09-30",
+  "brand_defaults": {
+    "brand_name": "Erase Debt SA",
+    "brand_logo_url": "https://www.erasedebtsa.net/assets/logo.png",
+    "support_email": "support@erasedebtsa.net"
+  },
+  "templates": {
+    "query_received": {
+      "name": "EDSA | Query Received",
+      "subject": "EDSA | Query Received \u2013 REF: {{ref_number}}",
+      "template_id": "REPLACE_WITH_SENDGRID_TEMPLATE_ID"
+    },
+    "otp_for_query": {
+      "name": "EDSA | Your One-Time PIN (OTP)",
+      "subject": "EDSA | Your OTP Code \u2013 REF: {{ref_number}}",
+      "template_id": "REPLACE_WITH_SENDGRID_TEMPLATE_ID"
+    },
+    "query_update": {
+      "name": "EDSA | Update on Your Query",
+      "subject": "EDSA | Update on Your Query \u2013 REF: {{ref_number}}",
+      "template_id": "REPLACE_WITH_SENDGRID_TEMPLATE_ID"
+    },
+    "welcome": {
+      "name": "EDSA | Welcome & Next Steps",
+      "subject": "Welcome to Erase Debt SA \u2013 {{client_first_name}}",
+      "template_id": "REPLACE_WITH_SENDGRID_TEMPLATE_ID"
+    },
+    "payment_reminder_T2": {
+      "name": "EDSA | Reminder: Debit in 2 Days",
+      "subject": "Reminder: Debit in 2 Days \u2013 {{due_date}}",
+      "template_id": "REPLACE_WITH_SENDGRID_TEMPLATE_ID"
+    },
+    "payment_thank_you": {
+      "name": "EDSA | Payment Received \u2013 Thank You",
+      "subject": "Payment Received \u2013 Thank You (R{{amount}})",
+      "template_id": "REPLACE_WITH_SENDGRID_TEMPLATE_ID"
+    },
+    "payment_missed": {
+      "name": "EDSA | Payment Not Received",
+      "subject": "Payment Not Received \u2013 Action Required",
+      "template_id": "REPLACE_WITH_SENDGRID_TEMPLATE_ID"
+    },
+    "password_reset": {
+      "name": "EDSA | Password Reset",
+      "subject": "Reset your password",
+      "template_id": "REPLACE_WITH_SENDGRID_TEMPLATE_ID"
+    },
+    "login_magic_link": {
+      "name": "EDSA | Secure Login Link",
+      "subject": "Your secure login link",
+      "template_id": "REPLACE_WITH_SENDGRID_TEMPLATE_ID"
+    },
+    "terms_confirmation": {
+      "name": "EDSA | Terms & Mandate Confirmation",
+      "subject": "Terms & Mandate Confirmation \u2013 {{ref_number}}",
+      "template_id": "REPLACE_WITH_SENDGRID_TEMPLATE_ID"
+    }
+  }
+}
